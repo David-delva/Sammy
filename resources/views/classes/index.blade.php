@@ -27,6 +27,9 @@
                                 <a href="{{ route('classes.show', $classe) }}" class="btn btn-sm btn-info">
                                     <i class="bi bi-eye"></i>
                                 </a>
+                                <a href="{{ route('classes.liste.pdf', $classe) }}" class="btn btn-sm btn-secondary" title="Feuille d'appel">
+                                    <i class="bi bi-printer"></i>
+                                </a>
                                 <a href="{{ route('classes.edit', $classe) }}" class="btn btn-sm btn-warning">
                                     <i class="bi bi-pencil"></i>
                                 </a>
