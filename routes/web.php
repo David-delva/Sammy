@@ -22,31 +22,27 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Routes Secrétariat + Admin (Base)
-    // Explicit parameter name to avoid incorrect singularization (e.g. "elefe")
-    Route::resource('eleves', EleveController::class)->parameters([
-        'eleves' => 'eleve'
-    ]);
-    Route::get('/bulletin/pdf/{id}', [BulletinController::class, 'generatePdf'])->name('bulletins.pdf');
+    Route::middleware(['readonly'])->group(function () {
+        Route::get('/eleves/{eleve}/historique', [EleveController::class, 'historique'])->name('eleves.historique');
+        Route::resource('eleves', EleveController::class)->parameters([
+            'eleves' => 'eleve'
+        ]);
+        Route::get('/bulletin/pdf/{id}', [BulletinController::class, 'generatePdf'])->name('bulletins.pdf');
 
-    // Classement
-    Route::get('/classement', [App\Http\Controllers\ClassementController::class, 'index'])->name('classement.index');
-    Route::get('/classement/pdf/{classe_id}', [App\Http\Controllers\ClassementController::class, 'exportPdf'])->name('classement.pdf');
-    Route::get('/classes/{classe}/liste-pdf', [App\Http\Controllers\ListeClasseController::class, 'generatePdf'])->name('classes.liste.pdf');
+        // Classement
+        Route::get('/classement', [App\Http\Controllers\ClassementController::class, 'index'])->name('classement.index');
+        Route::get('/classement/pdf/{classe_id}', [App\Http\Controllers\ClassementController::class, 'exportPdf'])->name('classement.pdf');
+        Route::get('/classes/{classe}/liste-pdf', [App\Http\Controllers\ListeClasseController::class, 'generatePdf'])->name('classes.liste.pdf');
 
-    // Routes STRICTEMENT Admin
-    Route::middleware(['role:admin'])->group(function () {
-        Route::resource('classes', ClasseController::class);
-
-        // Matières
-        Route::resource('matieres', MatiereController::class);
-
-        // Notes
-        Route::resource('notes', NoteController::class);
-        Route::get('/notes-masse', [App\Http\Controllers\NoteMasseController::class, 'index'])->name('notes.masse.index');
-        Route::post('/notes-masse', [App\Http\Controllers\NoteMasseController::class, 'store'])->name('notes.masse.store');
-
-        // Années académiques
-        Route::resource('annees', AnneeAcademiqueController::class);
+        // Routes STRICTEMENT Admin
+        Route::middleware(['role:admin'])->group(function () {
+            Route::resource('classes', ClasseController::class);
+            Route::resource('matieres', MatiereController::class);
+            Route::resource('notes', NoteController::class);
+            Route::get('/notes-masse', [App\Http\Controllers\NoteMasseController::class, 'index'])->name('notes.masse.index');
+            Route::post('/notes-masse', [App\Http\Controllers\NoteMasseController::class, 'store'])->name('notes.masse.store');
+            Route::resource('annees', AnneeAcademiqueController::class);
+        });
     });
 });
 

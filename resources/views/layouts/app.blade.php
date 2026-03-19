@@ -147,6 +147,14 @@
             </header>
 
             <main class="p-4 main-content">
+                @if(isset($isCurrentAcademicYear) && !$isCurrentAcademicYear)
+                    <div class="alert alert-info border-0 rounded-0 mb-4 py-2 text-center shadow-sm">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Vous consultez les données de l'année <strong>{{ $currentAcademicYear->libelle ?? 'Inconnue' }}</strong>.
+                        <span class="d-none d-md-inline">Le mode modification est désactivé.</span>
+                        <a href="{{ url()->current() }}?date={{ date('Y-m-d') }}" class="alert-link ms-2">Retourner à aujourd'hui</a>
+                    </div>
+                @endif
                 <div class="container-fluid">
                     @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show">

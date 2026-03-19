@@ -15,9 +15,12 @@
                 </div>
                 <h4 class="fw-bold mb-1">{{ $eleve->nom }} {{ $eleve->prenom }}</h4>
                 <p class="text-muted mb-3">{{ $eleve->matricule }}</p>
-                <div class="d-grid gap-2">
-                    <a href="{{ route('eleves.edit', $eleve) }}" class="btn btn-outline-primary btn-sm">
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="{{ route('eleves.edit', $eleve) }}" class="btn btn-outline-primary btn-sm flex-fill">
                         <i class="bi bi-pencil me-1"></i>Modifier
+                    </a>
+                    <a href="{{ route('eleves.historique', $eleve) }}" class="btn btn-outline-info btn-sm flex-fill">
+                        <i class="bi bi-clock-history me-1"></i>Historique
                     </a>
                 </div>
             </div>

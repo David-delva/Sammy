@@ -163,4 +163,21 @@ class EleveController extends Controller
             ->route('eleves.index')
             ->with('success', 'Élève supprimé avec succès.');
     }
+
+    public function historique(Eleve $eleve)
+    {
+        $historique = Inscription::with(['classe', 'anneeAcademique'])
+            ->where('eleve_id', $eleve->id)
+            ->get()
+            ->map(function ($ins) use ($eleve) {
+                $calculationService = app(\App\Services\CalculationService::class);
+                return [
+                    'annee' => $ins->anneeAcademique,
+                    'classe' => $ins->classe,
+                    'moyenne_generale' => $calculationService->calculateMoyenneGenerale($eleve, $ins->anneeAcademique),
+                ];
+            })->sortByDesc(fn($item) => $item['annee']->libelle);
+
+        return view('eleves.historique', compact('eleve', 'historique'));
+    }
 }
