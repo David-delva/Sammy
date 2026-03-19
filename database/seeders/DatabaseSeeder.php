@@ -76,5 +76,8 @@ class DatabaseSeeder extends Seeder
             'classe_id'           => $classe6A->id,
             'annee_academique_id' => $annee->id,
         ]);
+
+        // Appeler NoteSeeder pour générer des notes cohérentes
+        $this->call(NoteSeeder::class);
     }
 }
