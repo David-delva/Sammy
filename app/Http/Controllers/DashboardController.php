@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Eleve;
 use App\Models\Classe;
+use App\Models\Matiere;
 use App\Models\Inscription;
 use App\Models\Note;
 use Illuminate\Support\Facades\Cache;
@@ -22,6 +23,7 @@ class DashboardController extends Controller
                 return [
                     'total_eleves' => $elevesIds->count(),
                     'total_classes' => Classe::count(),
+                    'total_matieres' => Matiere::count(),
                     'total_notes'   => Note::where('annee_academique_id', $annee->id)->count(),
                     'moyenne_generale' => round(Note::where('annee_academique_id', $annee->id)->avg('note'), 2)
                 ];
@@ -30,6 +32,7 @@ class DashboardController extends Controller
             return [
                 'total_eleves' => Eleve::count(),
                 'total_classes' => Classe::count(),
+                'total_matieres' => Matiere::count(),
                 'total_notes'   => Note::count(),
                 'moyenne_generale' => round(Note::avg('note'), 2)
             ];
