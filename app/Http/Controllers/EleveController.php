@@ -2,100 +2,165 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Eleve;
+use App\Http\Requests\StoreEleveRequest;
+use App\Http\Requests\UpdateEleveRequest;
+use App\Models\AnneeAcademique;
 use App\Models\Classe;
+use App\Models\Eleve;
+use App\Models\Inscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EleveController extends Controller
 {
+    // --- Liste ---
+
     public function index()
     {
-        $date = request()->query('date') ?? (function_exists('currentAcademicDate') ? currentAcademicDate() : (session('academic_year_date') ?? now()->toDateString()));
-
-        // Resolve academic year safely
-        if (function_exists('currentAcademicYear')) {
-            $annee = currentAcademicYear();
-        } elseif (app()->bound('currentAcademicYear')) {
-            $annee = app('currentAcademicYear');
-        } else {
-            $annee = \App\Models\AnneeAcademique::getActiveByDate($date);
-        }
+        $date  = request()->query('date') ?? currentAcademicDate();
+        $annee = currentAcademicYear();
 
         if ($annee) {
-            $eleveIds = \App\Models\Inscription::where('annee_academique_id', $annee->id)->distinct('eleve_id')->pluck('eleve_id');
-            $eleves = Eleve::whereIn('id', $eleveIds)->paginate(20);
-            // attach resolved_classe to paginated collection
-            $eleves->getCollection()->transform(function($e) use ($date) {
-                $e->resolved_classe = $e->classeForDate($date);
-                return $e;
-            });
+            $eleveIds = Inscription::where('annee_academique_id', $annee->id)
+                ->distinct('eleve_id')
+                ->pluck('eleve_id');
+
+            $eleves = Eleve::whereIn('id', $eleveIds)
+                ->orderBy('nom')
+                ->paginate(20);
         } else {
-            $eleves = Eleve::paginate(20);
-            $eleves->getCollection()->transform(function($e) use ($date) {
-                $e->resolved_classe = $e->classeForDate($date);
-                return $e;
-            });
+            $eleves = Eleve::orderBy('nom')->paginate(20);
         }
+
+        // Attacher la classe résolue à chaque élève
+        $eleves->getCollection()->transform(function (Eleve $eleve) use ($date) {
+            $eleve->resolved_classe = $eleve->classeForDate($date);
+            return $eleve;
+        });
 
         return view('eleves.index', compact('eleves'));
     }
 
+    // --- Formulaire de création ---
+
     public function create()
     {
-        $classes = Classe::all();
-        return view('eleves.create', compact('classes'));
+        $annee   = currentAcademicYear();
+        $classes = Classe::orderBy('nom_classe')->get();
+
+        return view('eleves.create', compact('classes', 'annee'));
     }
 
-    public function store(Request $request)
+    // --- Enregistrement ---
+
+    public function store(StoreEleveRequest $request)
     {
-        $validated = $request->validate([
-            'matricule' => 'required|string|unique:eleves|max:255',
-            'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
-            'date_naissance' => 'required|date',
-            'sexe' => 'required|in:M,F',
-            'classe_id' => 'required|exists:classes,id',
-        ]);
+        // Résoudre l'année académique active
+        $annee = currentAcademicYear()
+            ?? AnneeAcademique::forDate(now()->toDateString(), true);
 
-        Eleve::create($validated);
-        return redirect()->route('eleves.index')->with('success', 'Élève inscrit avec succès.');
+        if (! $annee) {
+            return back()
+                ->withInput()
+                ->withErrors(['general' => "Aucune année académique active. Veuillez en créer une d'abord."]);
+        }
+
+        DB::transaction(function () use ($request, $annee) {
+            // 1. Créer l'élève (sans classe_id)
+            $eleve = Eleve::create($request->only([
+                'matricule', 'nom', 'prenom', 'date_naissance', 'sexe',
+            ]));
+
+            // 2. Créer l'inscription liée à l'année académique
+            Inscription::create([
+                'eleve_id'            => $eleve->id,
+                'classe_id'           => $request->classe_id,
+                'annee_academique_id' => $annee->id,
+            ]);
+        });
+
+        return redirect()
+            ->route('eleves.index')
+            ->with('success', "Élève inscrit avec succès pour l'année " . $annee->libelle . ".");
     }
+
+    // --- Affichage ---
 
     public function show(Eleve $eleve)
     {
-        $date = request()->query('date') ?? currentAcademicDate();
+        $date  = request()->query('date') ?? currentAcademicDate();
         $annee = currentAcademicYear();
-        $eleve->load(['notes' => function($q) use ($annee) {
-            if ($annee) $q->where('annee_academique_id', $annee->id);
-        }, 'notes.matiere']);
+
+        $eleve->load([
+            'notes' => function ($q) use ($annee) {
+                if ($annee) {
+                    $q->where('annee_academique_id', $annee->id);
+                }
+                $q->with('matiere');
+            },
+        ]);
+
         $eleve->resolved_classe = $eleve->classeForDate($date);
+
         return view('eleves.show', compact('eleve'));
     }
 
+    // --- Formulaire d'édition ---
+
     public function edit(Eleve $eleve)
     {
-        $classes = Classe::all();
-        return view('eleves.edit', compact('eleve', 'classes'));
+        $date       = request()->query('date') ?? currentAcademicDate();
+        $annee      = currentAcademicYear();
+        $classes    = Classe::orderBy('nom_classe')->get();
+        $inscription = $eleve->inscriptionForDate($date);
+
+        return view('eleves.edit', compact('eleve', 'classes', 'inscription', 'annee'));
     }
 
-    public function update(Request $request, Eleve $eleve)
+    // --- Mise à jour ---
+
+    public function update(UpdateEleveRequest $request, Eleve $eleve)
     {
-        $validated = $request->validate([
-            'matricule' => 'required|string|unique:eleves,matricule,' . $eleve->id . '|max:255',
-            'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
-            'date_naissance' => 'required|date',
-            'sexe' => 'required|in:M,F',
-            'classe_id' => 'required|exists:classes,id',
-        ]);
+        $date  = request()->query('date') ?? currentAcademicDate();
+        $annee = currentAcademicYear();
 
-        $eleve->update($validated);
-        return redirect()->route('eleves.index')->with('success', 'Élève modifié avec succès.');
+        DB::transaction(function () use ($request, $eleve, $annee, $date) {
+            // 1. Mettre à jour les infos de l'élève
+            $eleve->update($request->only([
+                'matricule', 'nom', 'prenom', 'date_naissance', 'sexe',
+            ]));
+
+            // 2. Mettre à jour l'inscription (changer de classe si besoin)
+            if ($annee) {
+                $inscription = $eleve->inscriptionForDate($date);
+
+                if ($inscription) {
+                    $inscription->update(['classe_id' => $request->classe_id]);
+                } else {
+                    // Créer une inscription si elle n'existe pas encore pour cette année
+                    Inscription::create([
+                        'eleve_id'            => $eleve->id,
+                        'classe_id'           => $request->classe_id,
+                        'annee_academique_id' => $annee->id,
+                    ]);
+                }
+            }
+        });
+
+        return redirect()
+            ->route('eleves.index')
+            ->with('success', 'Élève modifié avec succès.');
     }
+
+    // --- Suppression ---
 
     public function destroy(Eleve $eleve)
     {
+        // La suppression cascade sur inscriptions et notes (FK onDelete cascade)
         $eleve->delete();
-        return redirect()->route('eleves.index')->with('success', 'Élève supprimé avec succès.');
+
+        return redirect()
+            ->route('eleves.index')
+            ->with('success', 'Élève supprimé avec succès.');
     }
 }

@@ -2,80 +2,79 @@
 
 namespace Database\Seeders;
 
+use App\Models\AnneeAcademique;
+use App\Models\Classe;
+use App\Models\Eleve;
+use App\Models\Inscription;
+use App\Models\Matiere;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // Création de l'Administrateur par défaut
-        User::factory()->create([
-            'name' => 'Admin Système',
-            'email' => 'admin@ecole.com',
+        // ── Utilisateurs ──────────────────────────────────────
+        User::create([
+            'name'     => 'Admin Système',
+            'email'    => 'admin@ecole.com',
             'password' => Hash::make('password'),
-            'role' => 'admin',
+            'role'     => 'admin',
         ]);
 
-        // Création du Secrétariat par défaut
-        User::factory()->create([
-            'name' => 'Service Secrétariat',
-            'email' => 'secretariat@ecole.com',
+        User::create([
+            'name'     => 'Service Secrétariat',
+            'email'    => 'secretariat@ecole.com',
             'password' => Hash::make('password'),
-            'role' => 'secretariat',
+            'role'     => 'secretariat',
         ]);
 
-        // Créer une année académique par défaut
-        $annee = \App\Models\AnneeAcademique::create([
+        // ── Année académique ───────────────────────────────────
+        $annee = AnneeAcademique::create([
             'libelle' => '2025-2026',
-            'active' => true
+            'active'  => true,
         ]);
 
-        // Créer des classes de test
-        $classe1 = \App\Models\Classe::create(['nom_classe' => '6ème A']);
-        $classe2 = \App\Models\Classe::create(['nom_classe' => '5ème B']);
+        // ── Classes ───────────────────────────────────────────
+        $classe6A = Classe::create(['nom_classe' => '6ème A']);
+        $classe5B = Classe::create(['nom_classe' => '5ème B']);
 
-        // Créer des matières de test pour chaque classe
-        $matMath6A = \App\Models\Matiere::create([
-            'nom_matiere' => 'Mathématiques', 
-            'classe_id' => $classe1->id, 
-            'coefficient' => 4
-        ]);
-        $matFran6A = \App\Models\Matiere::create([
-            'nom_matiere' => 'Français', 
-            'classe_id' => $classe1->id, 
-            'coefficient' => 3
-        ]);
-        
-        $matMath5B = \App\Models\Matiere::create([
-            'nom_matiere' => 'Mathématiques', 
-            'classe_id' => $classe2->id, 
-            'coefficient' => 5
-        ]);
-        $matFran5B = \App\Models\Matiere::create([
-            'nom_matiere' => 'Français', 
-            'classe_id' => $classe2->id, 
-            'coefficient' => 4
-        ]);
+        // ── Matières avec coefficients ────────────────────────
+        // 6ème A
+        $matieres6A = [
+            ['nom_matiere' => 'Mathématiques',     'coefficient' => 4, 'classe_id' => $classe6A->id],
+            ['nom_matiere' => 'Français',           'coefficient' => 3, 'classe_id' => $classe6A->id],
+            ['nom_matiere' => 'Sciences Physiques', 'coefficient' => 2, 'classe_id' => $classe6A->id],
+            ['nom_matiere' => 'Histoire-Géo',       'coefficient' => 2, 'classe_id' => $classe6A->id],
+        ];
 
-        // Créer un élève de test
-        $eleve = \App\Models\Eleve::create([
-            'matricule' => 'E-2025-001',
-            'nom' => 'Dupont',
-            'prenom' => 'Jean',
+        // 5ème B
+        $matieres5B = [
+            ['nom_matiere' => 'Mathématiques',     'coefficient' => 5, 'classe_id' => $classe5B->id],
+            ['nom_matiere' => 'Français',           'coefficient' => 4, 'classe_id' => $classe5B->id],
+            ['nom_matiere' => 'Sciences Physiques', 'coefficient' => 3, 'classe_id' => $classe5B->id],
+            ['nom_matiere' => 'Anglais',            'coefficient' => 2, 'classe_id' => $classe5B->id],
+        ];
+
+        foreach (array_merge($matieres6A, $matieres5B) as $m) {
+            Matiere::create($m);
+        }
+
+        // ── Élève de test ──────────────────────────────────────
+        $eleve = Eleve::create([
+            'matricule'      => 'E-2025-001',
+            'nom'            => 'Dupont',
+            'prenom'         => 'Jean',
             'date_naissance' => '2010-05-15',
-            'sexe' => 'M'
+            'sexe'           => 'M',
         ]);
 
-        // L'inscrire dans la classe 1
-        \App\Models\Inscription::create([
-            'eleve_id' => $eleve->id,
-            'classe_id' => $classe1->id,
-            'annee_academique_id' => $annee->id
+        // ── Inscription ───────────────────────────────────────
+        Inscription::create([
+            'eleve_id'            => $eleve->id,
+            'classe_id'           => $classe6A->id,
+            'annee_academique_id' => $annee->id,
         ]);
     }
 }
