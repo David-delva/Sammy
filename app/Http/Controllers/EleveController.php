@@ -38,7 +38,7 @@ class EleveController extends Controller
             return $eleve;
         });
 
-        return view('eleves.index', compact('eleves'));
+        return view('eleves.index', compact('eleves', 'annee'));
     }
 
     // --- Formulaire de création ---
