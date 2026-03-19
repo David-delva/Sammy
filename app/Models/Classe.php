@@ -22,6 +22,11 @@ class Classe extends Model
             ->withTimestamps();
     }
 
+    public function inscriptions(): HasMany
+    {
+        return $this->hasMany(Inscription::class);
+    }
+
     public function matieres(): HasMany
     {
         return $this->hasMany(Matiere::class);
