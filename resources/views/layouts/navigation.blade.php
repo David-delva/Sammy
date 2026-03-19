@@ -123,6 +123,14 @@
                     </x-responsive-nav-link>
                 </form>
             </div>
+            @if(auth()->user()->role === 'admin')
+                <div class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('notes.masse.index') ? 'active' : '' }}" href="{{ route('notes.masse.index') }}">
+                        <i class="bi bi-table me-2"></i>
+                        <span>Saisie en masse</span>
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
 </nav>

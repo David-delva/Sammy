@@ -37,6 +37,9 @@ Route::middleware('auth')->group(function () {
 
         // Notes
         Route::resource('notes', NoteController::class);
+        Route::get('/notes-masse', [App\Http\Controllers\NoteMasseController::class, 'index'])->name('notes.masse.index');
+        Route::post('/notes-masse', [App\Http\Controllers\NoteMasseController::class, 'store'])->name('notes.masse.store');
+
         // Années académiques
         Route::resource('annees', AnneeAcademiqueController::class);
     });
