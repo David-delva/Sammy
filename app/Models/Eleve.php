@@ -18,7 +18,6 @@ class Eleve extends Model
         'prenom',
         'date_naissance',
         'sexe',
-        'classe_id',   // ← doit correspondre à ta migration
     ];
 
     /**

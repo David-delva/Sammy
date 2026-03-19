@@ -39,16 +39,28 @@ class DatabaseSeeder extends Seeder
         $classe1 = \App\Models\Classe::create(['nom_classe' => '6ème A']);
         $classe2 = \App\Models\Classe::create(['nom_classe' => '5ème B']);
 
-        // Créer des matières de test
-        $matMath = \App\Models\Matiere::create(['nom_matiere' => 'Mathématiques']);
-        $matFran = \App\Models\Matiere::create(['nom_matiere' => 'Français']);
-
-        // Lier les matières aux classes pour l'année active avec un coefficient
-        $classe1->matieres()->attach($matMath->id, ['annee_academique_id' => $annee->id, 'coefficient' => 4]);
-        $classe1->matieres()->attach($matFran->id, ['annee_academique_id' => $annee->id, 'coefficient' => 3]);
+        // Créer des matières de test pour chaque classe
+        $matMath6A = \App\Models\Matiere::create([
+            'nom_matiere' => 'Mathématiques', 
+            'classe_id' => $classe1->id, 
+            'coefficient' => 4
+        ]);
+        $matFran6A = \App\Models\Matiere::create([
+            'nom_matiere' => 'Français', 
+            'classe_id' => $classe1->id, 
+            'coefficient' => 3
+        ]);
         
-        $classe2->matieres()->attach($matMath->id, ['annee_academique_id' => $annee->id, 'coefficient' => 5]);
-        $classe2->matieres()->attach($matFran->id, ['annee_academique_id' => $annee->id, 'coefficient' => 4]);
+        $matMath5B = \App\Models\Matiere::create([
+            'nom_matiere' => 'Mathématiques', 
+            'classe_id' => $classe2->id, 
+            'coefficient' => 5
+        ]);
+        $matFran5B = \App\Models\Matiere::create([
+            'nom_matiere' => 'Français', 
+            'classe_id' => $classe2->id, 
+            'coefficient' => 4
+        ]);
 
         // Créer un élève de test
         $eleve = \App\Models\Eleve::create([
