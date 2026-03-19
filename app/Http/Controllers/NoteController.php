@@ -2,128 +2,115 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Note;
+use App\Http\Requests\StoreNoteRequest;
+use App\Http\Requests\UpdateNoteRequest;
 use App\Models\Eleve;
 use App\Models\Matiere;
+use App\Models\Note;
+use App\Models\Inscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class NoteController extends Controller
 {
     public function index()
     {
-        // Resolve academic year safely
-        if (function_exists('currentAcademicYear')) {
-            $annee = currentAcademicYear();
-        } elseif (app()->bound('currentAcademicYear')) {
-            $annee = app('currentAcademicYear');
-        } else {
-            $date = request()->query('date') ?? session('academic_year_date');
-            $annee = \App\Models\AnneeAcademique::getActiveByDate($date);
-        }
+        $annee = currentAcademicYear();
 
-        $query = Note::with(['eleve', 'matiere']);
-        if ($annee) {
-            $query->where('annee_academique_id', $annee->id);
-        }
+        $notes = Note::with(['eleve', 'matiere.classe', 'anneeAcademique'])
+            ->when($annee, function ($q) use ($annee) {
+                $q->where('annee_academique_id', $annee->id);
+            })
+            ->latest()
+            ->paginate(30);
 
-        $notes = $query->orderByDesc('id')->paginate(25);
         return view('notes.index', compact('notes'));
     }
 
     public function create()
     {
-        $date = request()->query('date') ?? currentAcademicDate();
         $annee = currentAcademicYear();
-
-        if ($annee) {
-            $eleveIds = \App\Models\Inscription::where('annee_academique_id', $annee->id)->distinct('eleve_id')->pluck('eleve_id');
-            $eleves = Eleve::whereIn('id', $eleveIds)->get()->map(function($e) use ($date) {
-                $e->resolved_classe = $e->classeForDate($date);
-                return $e;
-            });
-
-            $classeIds = \App\Models\Inscription::where('annee_academique_id', $annee->id)->distinct('classe_id')->pluck('classe_id');
-            $matieres = Matiere::with('classe')->whereIn('classe_id', $classeIds)->get();
-        } else {
-            $eleves = Eleve::all()->map(function($e) use ($date) {
-                $e->resolved_classe = $e->classeForDate($date);
-                return $e;
-            });
-            $matieres = Matiere::with('classe')->get();
-        }
-        return view('notes.create', compact('eleves', 'matieres'));
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'eleve_id' => 'required|exists:eleves,id',
-            'matiere_id' => 'required|exists:matieres,id',
-            'note' => 'required|numeric|min:0|max:20',
-            'type_devoir' => 'required|in:devoir,composition',
-        ]);
-        // Resolve academic year from provided date query or current date
-        $date = $request->input('date') ?? $request->query('date');
-        $annee = \App\Models\AnneeAcademique::forDate($date, true);
-        if ($annee) {
-            $validated['annee_academique_id'] = $annee->id;
+        if (!$annee) {
+            return back()->with('error', "Aucune année académique active. Veuillez en créer une.");
         }
 
-        Note::create($validated);
-        return redirect()->route('notes.index')->with('success', 'Note enregistrée avec succès.');
+        // Récupérer les élèves inscrits cette année avec leur classe résolue
+        $inscriptions = Inscription::with(['eleve', 'classe'])
+            ->where('annee_academique_id', $annee->id)
+            ->get();
+
+        $eleves = $inscriptions->map(function ($ins) {
+            $ins->eleve->resolved_classe_id = $ins->classe_id;
+            $ins->eleve->resolved_classe_nom = $ins->classe->nom_classe;
+            return $ins->eleve;
+        })->sortBy('nom');
+
+        // Récupérer toutes les matières pour le filtrage dynamique
+        $matieres = Matiere::with('classe')->orderBy('nom_matiere')->get();
+
+        return view('notes.create', compact('eleves', 'matieres', 'annee'));
     }
 
-    public function show(Note $note)
+    public function store(StoreNoteRequest $request)
     {
-        $note->load(['eleve', 'matiere']);
-        return view('notes.show', compact('note'));
+        $annee = currentAcademicYear();
+        if (!$annee) return back()->with('error', "Pas d'année active.");
+
+        $data = $request->validated();
+        $data['annee_academique_id'] = $annee->id;
+
+        Note::create($data);
+
+        // Invalidation du cache de moyenne pour cet élève
+        Cache::forget("moyenne:eleve:{$request->eleve_id}:matiere:{$request->matiere_id}:annee:{$annee->id}");
+        Cache::forget("moyenne_generale:eleve:{$request->eleve_id}:annee:{$annee->id}");
+
+        return redirect()->route('notes.index')->with('success', 'Note ajoutée avec succès.');
     }
 
     public function edit(Note $note)
     {
-        $date = request()->query('date') ?? currentAcademicDate();
         $annee = currentAcademicYear();
+        
+        $inscriptions = Inscription::with(['eleve', 'classe'])
+            ->where('annee_academique_id', $annee->id)
+            ->get();
 
-        if ($annee) {
-            $eleveIds = \App\Models\Inscription::where('annee_academique_id', $annee->id)->distinct('eleve_id')->pluck('eleve_id');
-            $eleves = Eleve::whereIn('id', $eleveIds)->get()->map(function($e) use ($date) {
-                $e->resolved_classe = $e->classeForDate($date);
-                return $e;
-            });
+        $eleves = $inscriptions->map(function ($ins) {
+            $ins->eleve->resolved_classe_id = $ins->classe_id;
+            $ins->eleve->resolved_classe_nom = $ins->classe->nom_classe;
+            return $ins->eleve;
+        })->sortBy('nom');
 
-            $classeIds = \App\Models\Inscription::where('annee_academique_id', $annee->id)->distinct('classe_id')->pluck('classe_id');
-            $matieres = Matiere::with('classe')->whereIn('classe_id', $classeIds)->get();
-        } else {
-            $eleves = Eleve::all()->map(function($e) use ($date) {
-                $e->resolved_classe = $e->classeForDate($date);
-                return $e;
-            });
-            $matieres = Matiere::with('classe')->get();
-        }
-        return view('notes.edit', compact('note', 'eleves', 'matieres'));
+        $matieres = Matiere::with('classe')->orderBy('nom_matiere')->get();
+
+        return view('notes.edit', compact('note', 'eleves', 'matieres', 'annee'));
     }
 
-    public function update(Request $request, Note $note)
+    public function update(UpdateNoteRequest $request, Note $note)
     {
-        $validated = $request->validate([
-            'eleve_id' => 'required|exists:eleves,id',
-            'matiere_id' => 'required|exists:matieres,id',
-            'note' => 'required|numeric|min:0|max:20',
-            'type_devoir' => 'required|in:devoir,composition',
-        ]);
-        $date = $request->input('date') ?? $request->query('date');
-        $annee = \App\Models\AnneeAcademique::forDate($date, true);
-        if ($annee) {
-            $validated['annee_academique_id'] = $annee->id;
-        }
+        $annee = currentAcademicYear();
+        $note->update($request->validated());
 
-        $note->update($validated);
-        return redirect()->route('notes.index')->with('success', 'Note modifiée avec succès.');
+        // Invalidation du cache
+        Cache::forget("moyenne:eleve:{$note->eleve_id}:matiere:{$note->matiere_id}:annee:{$annee->id}");
+        Cache::forget("moyenne_generale:eleve:{$note->eleve_id}:annee:{$annee->id}");
+
+        return redirect()->route('notes.index')->with('success', 'Note mise à jour.');
     }
 
     public function destroy(Note $note)
     {
+        $annee = currentAcademicYear();
+        $eleveId = $note->eleve_id;
+        $matiereId = $note->matiere_id;
+        
         $note->delete();
-        return redirect()->route('notes.index')->with('success', 'Note supprimée avec succès.');
+
+        // Nettoyage cache
+        Cache::forget("moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$annee->id}");
+        Cache::forget("moyenne_generale:eleve:{$eleveId}:annee:{$annee->id}");
+
+        return redirect()->route('notes.index')->with('success', 'Note supprimée.');
     }
 }
