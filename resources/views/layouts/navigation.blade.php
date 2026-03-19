@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('eleves.index')" :active="request()->routeIs('eleves.*')">
                         {{ __('Élèves') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('classement.index')" :active="request()->routeIs('classement.*')">
+                        {{ __('Classement') }}
+                    </x-nav-link>
                     @if(auth()->user()->role === 'admin')
                         <x-nav-link :href="route('matieres.index')" :active="request()->routeIs('matieres.*')">
                             {{ __('Matières') }}

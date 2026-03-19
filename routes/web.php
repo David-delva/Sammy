@@ -28,6 +28,10 @@ Route::middleware('auth')->group(function () {
     ]);
     Route::get('/bulletin/pdf/{id}', [BulletinController::class, 'generatePdf'])->name('bulletins.pdf');
 
+    // Classement
+    Route::get('/classement', [App\Http\Controllers\ClassementController::class, 'index'])->name('classement.index');
+    Route::get('/classement/pdf/{classe_id}', [App\Http\Controllers\ClassementController::class, 'exportPdf'])->name('classement.pdf');
+
     // Routes STRICTEMENT Admin
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('classes', ClasseController::class);
