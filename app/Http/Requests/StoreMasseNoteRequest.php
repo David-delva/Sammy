@@ -14,11 +14,12 @@ class StoreMasseNoteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'classe_id'   => ['required', 'exists:classes,id'],
-            'matiere_id'  => ['required', 'exists:matieres,id'],
+            'classe_id' => ['required', 'exists:classes,id'],
+            'matiere_id' => ['required', 'exists:matieres,id'],
             'type_devoir' => ['required', 'in:devoir,composition'],
-            'notes'       => ['required', 'array'],
-            'notes.*'     => ['nullable', 'numeric', 'min:0', 'max:20'],
+            'semestre' => ['required', 'integer', 'in:1,2'],
+            'notes' => ['required', 'array'],
+            'notes.*' => ['nullable', 'numeric', 'min:0', 'max:20'],
         ];
     }
 }

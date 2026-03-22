@@ -4,386 +4,333 @@
     <meta charset="UTF-8">
     <title>Bulletin - {{ $eleve->nom }} {{ $eleve->prenom }}</title>
     <style>
+        @page {
+            margin: 10mm 9mm;
+        }
+
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 11px;
-            color: #1f2937;
+            font-size: 8px;
+            color: #000000;
             margin: 0;
-            padding: 22px;
-            line-height: 1.45;
         }
 
-        .sheet {
-            border: 1px solid #dbe4f0;
-            padding: 18px;
+        .page {
+            width: 100%;
         }
 
-        .header {
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 18px;
-            border-bottom: 2px solid #1a56db;
-            padding-bottom: 10px;
         }
 
-        .header td {
+        .top td {
             vertical-align: top;
         }
 
-        .brand {
-            font-size: 10px;
+        .ministry {
+            width: 72%;
+            text-align: center;
+            line-height: 1.28;
+        }
+
+        .ministry .line {
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #1a56db;
+        }
+
+        .ministry .line-strong {
             font-weight: bold;
-            margin-bottom: 6px;
+            text-transform: uppercase;
         }
 
-        .title {
-            font-size: 22px;
-            color: #0f2d56;
-            font-weight: bold;
-            margin: 0 0 4px;
+        .ministry .meta {
+            margin-top: 3px;
         }
 
-        .subtitle {
-            font-size: 11px;
-            color: #64748b;
-            margin: 0;
-        }
-
-        .stamp {
+        .republic {
+            width: 28%;
             text-align: right;
         }
 
-        .stamp-box {
+        .republic-box {
             display: inline-block;
-            min-width: 145px;
+            width: 118px;
+            border: 1px solid #000000;
             text-align: center;
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            color: #1d4ed8;
-            padding: 10px 12px;
+            font-size: 8px;
+            line-height: 1.2;
         }
 
-        .stamp-box .label {
-            display: block;
-            text-transform: uppercase;
-            font-size: 9px;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-            color: #1e3a8a;
-        }
-
-        .stamp-box .value {
-            font-size: 16px;
+        .republic-box .head {
+            background: #1d7f3f;
+            color: #ffffff;
             font-weight: bold;
-        }
-
-        .meta {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-bottom: 18px;
-        }
-
-        .meta td {
-            width: 50%;
-            vertical-align: top;
-            padding-right: 8px;
-        }
-
-        .panel {
-            border: 1px solid #e5e7eb;
-            background: #f8fafc;
-            padding: 12px 14px;
-            min-height: 96px;
-        }
-
-        .panel-title {
-            font-size: 9px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #64748b;
-            margin: 0 0 8px;
-            font-weight: bold;
+            padding: 2px 4px;
         }
 
-        .panel p {
+        .republic-box .subhead {
+            background: #f4dd42;
+            font-weight: bold;
+            padding: 2px 4px;
+        }
+
+        .school-year {
+            margin-top: 18px;
+            text-align: right;
+            font-size: 7px;
+        }
+
+        .title-box {
+            width: 64%;
+            margin: 10px auto 10px;
+            border: 2px solid #4b4b4b;
+            background: #e7e7e7;
+            text-align: center;
+            padding: 5px 6px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .identity {
+            margin-bottom: 8px;
+        }
+
+        .identity p {
             margin: 4px 0;
         }
 
-        .label {
+        .fill {
+            display: inline-block;
+            min-height: 10px;
+            border-bottom: 1px solid #000000;
+            vertical-align: bottom;
+            padding: 0 2px;
+            line-height: 1.1;
+        }
+
+        .w-name { width: 155px; }
+        .w-prenom { width: 120px; }
+        .w-date { width: 72px; }
+        .w-place { width: 100px; }
+        .w-class { width: 75px; }
+
+        .notes th,
+        .notes td,
+        .summary td,
+        .decision td {
+            border: 1px solid #000000;
+        }
+
+        .notes th {
+            background: #efefef;
+            font-size: 7px;
             font-weight: bold;
-            color: #475569;
-        }
-
-        table.results {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 18px;
-        }
-
-        table.results th {
-            background: #0f2d56;
-            color: #ffffff;
-            text-transform: uppercase;
-            font-size: 9px;
-            letter-spacing: 0.7px;
-            padding: 8px 7px;
-            border: 1px solid #0a1f3d;
-        }
-
-        table.results td {
-            border: 1px solid #dbe4f0;
-            padding: 8px 7px;
             text-align: center;
-            font-size: 10px;
+            padding: 2px 3px;
         }
 
-        table.results tbody tr:nth-child(even) {
-            background: #f8fafc;
+        .notes td {
+            height: 15px;
+            padding: 1px 3px;
+            font-size: 7.4px;
+            text-align: center;
         }
 
-        .text-left {
-            text-align: left !important;
+        .notes .subject {
+            text-align: left;
+            width: 31%;
         }
 
-        .muted {
-            color: #94a3b8;
+        .notes .w-dev { width: 10%; }
+        .notes .w-comp { width: 10%; }
+        .notes .w-moy { width: 10%; }
+        .notes .w-coef { width: 8%; }
+        .notes .w-points { width: 12%; }
+        .notes .w-app { width: 19%; }
+
+        .total-row td {
+            font-weight: bold;
         }
 
         .summary {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-bottom: 22px;
+            margin-top: 0;
         }
 
         .summary td {
-            vertical-align: top;
+            padding: 2px 4px;
+            font-size: 7.5px;
         }
 
-        .summary-table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 1px solid #bfdbfe;
-            background: #eff6ff;
-        }
-
-        .summary-table td {
-            padding: 9px 10px;
-            border-bottom: 1px solid #dbeafe;
-            font-size: 10px;
-        }
-
-        .summary-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .summary-table .value {
-            text-align: right;
+        .summary .label {
             font-weight: bold;
-            color: #0f2d56;
         }
 
-        .decision-box {
-            margin-left: 14px;
-            border: 1px solid #e5e7eb;
-            background: #ffffff;
-            padding: 14px;
-            min-height: 116px;
-        }
-
-        .decision-title {
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #64748b;
-            font-weight: bold;
-            margin: 0 0 8px;
-        }
-
-        .decision-result {
-            font-size: 16px;
-            font-weight: bold;
-            color: #1a56db;
-            margin: 0 0 8px;
-        }
-
-        .signature {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 28px;
-        }
-
-        .signature td {
-            width: 50%;
+        .summary .value {
             text-align: center;
+        }
+
+        .decision {
+            margin-top: -1px;
+        }
+
+        .decision td {
             vertical-align: top;
         }
 
-        .signature .line {
-            margin: 52px auto 0;
-            width: 180px;
-            border-top: 1px solid #334155;
-            padding-top: 6px;
-            font-size: 10px;
-            color: #475569;
+        .decision .head {
+            font-weight: bold;
+            padding: 3px 4px;
+        }
+
+        .decision .body {
+            height: 44px;
+            padding: 4px;
+            line-height: 1.35;
+        }
+
+        .footer {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 5.8px;
         }
     </style>
 </head>
 <body>
     @php
-        $totalPoints = 0;
-        $totalCoeffs = 0;
-        $decision = null;
+        $rows = $lignes;
+        $targetRows = 14;
 
-        if ($moyenneGenerale !== null) {
-            $decision = $moyenneGenerale >= 10
-                ? 'Admis(e) en classe sup&eacute;rieure'
-                : 'R&eacute;sultat insuffisant';
+        while (count($rows) < $targetRows) {
+            $rows[] = [
+                'matiere' => '',
+                'moyenne_devoirs' => '',
+                'note_composition' => '',
+                'moyenne' => '',
+                'coefficient' => '',
+                'moy_x_coef' => '',
+                'appreciation' => '',
+            ];
         }
+
+        $nom = $eleve->nom ?? '';
+        $prenoms = $eleve->prenom ?? '';
+        $dateNaissance = $eleve->date_naissance ? $eleve->date_naissance->format('d/m/Y') : '';
+        $classeLibelle = $classe->nom_classe ?? '';
+        $moyenneDisplay = $moyenne_generale !== null ? number_format($moyenne_generale, 2, ',', ' ') : '';
+        $moyenneS1Display = $moyenne_semestre_1 !== null ? number_format($moyenne_semestre_1, 2, ',', ' ') : '';
+        $moyenneS2Display = $moyenne_semestre_2 !== null ? number_format($moyenne_semestre_2, 2, ',', ' ') : '';
+        $moyenneAnnuelleDisplay = $moyenne_annuelle !== null ? number_format($moyenne_annuelle, 2, ',', ' ') : '';
+        $rangDisplay = $rang ? $rang . ' / ' . $total_eleves : '';
+        $appreciationConseil = $mention ? 'Mention : ' . $mention : '';
     @endphp
 
-    <div class="sheet">
-        <table class="header">
+    <div class="page">
+        <table class="top">
             <tr>
-                <td>
-                    <div class="brand">{{ config('app.name', 'Gestion scolaire') }}</div>
-                    <p class="title">Bulletin de notes</p>
-                    <p class="subtitle">Ann&eacute;e acad&eacute;mique : {{ $annee->libelle }}</p>
+                <td class="ministry">
+                    <div class="line">MINISTERE DE LA FORMATION PROFESSIONNELLE</div>
+                    <div class="line" style="height: 10px;"></div>
+                    <div class="line">ECOLE TECHNIQUE ET PROFESSIONNELLE DES METIERS</div>
+                    <div class="line-strong">E.T.P.M / KOULAMOUTOU</div>
+                    <div class="meta">TEL 066.06.89.00 / 077.49.45.46</div>
+                    <div class="meta">B.P 30 - KOULAMOUTOU</div>
                 </td>
-                <td class="stamp">
-                    <div class="stamp-box">
-                        <span class="label">Classe</span>
-                        <span class="value">{{ $classe->nom_classe }}</span>
+                <td class="republic">
+                    <div class="republic-box">
+                        <div class="head">REPUBLIQUE GABONAISE</div>
+                        <div class="subhead">Union - Travail - Justice</div>
                     </div>
+                    <div class="school-year">Annee scolaire : {{ $annee->libelle }}</div>
                 </td>
             </tr>
         </table>
 
-        <table class="meta">
-            <tr>
-                <td>
-                    <div class="panel">
-                        <p class="panel-title">Informations de l'&eacute;l&egrave;ve</p>
-                        <p><span class="label">Nom complet :</span> {{ $eleve->nom }} {{ $eleve->prenom }}</p>
-                        <p><span class="label">Matricule :</span> {{ $eleve->matricule }}</p>
-                        <p><span class="label">Sexe :</span> {{ $eleve->sexe }}</p>
-                    </div>
-                </td>
-                <td>
-                    <div class="panel">
-                        <p class="panel-title">Contexte acad&eacute;mique</p>
-                        <p><span class="label">Classe :</span> {{ $classe->nom_classe }}</p>
-                        <p><span class="label">Date d'&eacute;dition :</span> {{ date('d/m/Y') }}</p>
-                        <p><span class="label">Mention g&eacute;n&eacute;rale :</span> {{ $mention ?? '-' }}</p>
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <div class="title-box">{{ $bulletin_titre }}</div>
 
-        <table class="results">
+        <div class="identity">
+            <p>
+                Nom : <span class="fill w-name">{{ $nom }}</span>
+                prenoms : <span class="fill w-prenom">{{ $prenoms }}</span>
+            </p>
+            <p>
+                N&eacute;(e) le : <span class="fill w-date">{{ $dateNaissance }}</span>
+                &agrave; <span class="fill w-place"></span>
+                classe : <span class="fill w-class">{{ $classeLibelle }}</span>
+            </p>
+        </div>
+
+        <table class="notes">
             <thead>
                 <tr>
-                    <th class="text-left">Mati&egrave;re</th>
-                    <th>Coeff.</th>
-                    <th>Moyenne / 20</th>
-                    <th>Points</th>
-                    <th>Appr&eacute;ciation</th>
+                    <th class="subject">Matieres</th>
+                    <th class="w-dev">Dev</th>
+                    <th class="w-comp">comp</th>
+                    <th class="w-moy">Moy/20</th>
+                    <th class="w-coef">coef</th>
+                    <th class="w-points">Moy*coef</th>
+                    <th class="w-app">Applications</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($results as $res)
-                    @php
-                        $moy = $res['moyenne'];
-                        $coeff = $res['matiere']->pivot->coefficient;
-                        $points = $moy !== null ? $moy * $coeff : null;
-
-                        if ($moy !== null) {
-                            $totalPoints += $points;
-                            $totalCoeffs += $coeff;
-                        }
-                    @endphp
+                @foreach($rows as $row)
                     <tr>
-                        <td class="text-left">{{ $res['matiere']->nom_matiere }}</td>
-                        <td>{{ $coeff }}</td>
-                        <td>{{ $moy === null ? '-' : number_format($moy, 2, ',', ' ') }}</td>
-                        <td>{{ $points === null ? '-' : number_format($points, 2, ',', ' ') }}</td>
-                        <td>
-                            @if($moy === null)
-                                <span class="muted">-</span>
-                            @elseif($moy >= 16)
-                                Tr&egrave;s bien
-                            @elseif($moy >= 14)
-                                Bien
-                            @elseif($moy >= 12)
-                                Assez bien
-                            @elseif($moy >= 10)
-                                Passable
-                            @else
-                                Insuffisant
-                            @endif
-                        </td>
+                        <td class="subject">{{ $row['matiere'] }}</td>
+                        <td>{{ $row['moyenne_devoirs'] }}</td>
+                        <td>{{ $row['note_composition'] }}</td>
+                        <td>{{ $row['moyenne'] }}</td>
+                        <td>{{ $row['coefficient'] }}</td>
+                        <td>{{ $row['moy_x_coef'] }}</td>
+                        <td>{{ $row['appreciation'] }}</td>
                     </tr>
                 @endforeach
+                <tr class="total-row">
+                    <td colspan="5" style="text-align: center;">Total</td>
+                    <td>{{ $total_points_formatted }}</td>
+                    <td></td>
+                </tr>
             </tbody>
         </table>
 
         <table class="summary">
             <tr>
-                <td style="width: 62%;">
-                    <table class="summary-table">
-                        <tr>
-                            <td>Total des points</td>
-                            <td class="value">{{ number_format($totalPoints, 2, ',', ' ') }}</td>
-                        </tr>
-                        <tr>
-                            <td>Total des coefficients pris en compte</td>
-                            <td class="value">{{ $totalCoeffs }}</td>
-                        </tr>
-                        <tr>
-                            <td>Moyenne g&eacute;n&eacute;rale</td>
-                            <td class="value">{{ $moyenneGenerale === null ? '-' : number_format($moyenneGenerale, 2, ',', ' ') }} / 20</td>
-                        </tr>
-                        <tr>
-                            <td>Rang de l'&eacute;l&egrave;ve</td>
-                            <td class="value">{{ $rang ? $rang . ' / ' . $totalEleves : '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td>Effectif de la classe</td>
-                            <td class="value">{{ $totalEleves }}</td>
-                        </tr>
-                    </table>
+                <td class="label" style="width: 34%;">Moyenne</td>
+                <td class="value" style="width: 18%;">{{ $moyenneDisplay }}</td>
+                <td class="label" style="width: 18%; text-align: center;">rang</td>
+                <td class="value" style="width: 30%;">{{ $rangDisplay }}</td>
+            </tr>
+            <tr>
+                <td class="label" colspan="3">Moyenne du 1&deg; semestre</td>
+                <td class="value">{{ $moyenneS1Display }}</td>
+            </tr>
+            <tr>
+                <td class="label" colspan="3">moyenne du 2&deg; semestre</td>
+                <td class="value">{{ $moyenneS2Display }}</td>
+            </tr>
+            <tr>
+                <td class="label" colspan="3">Moyenne annuelle</td>
+                <td class="value">{{ $moyenneAnnuelleDisplay }}</td>
+            </tr>
+        </table>
+
+        <table class="decision">
+            <tr>
+                <td style="width: 53%;">
+                    <div class="head">Appreciations du conseil de classe :</div>
+                    <div class="body">{{ $appreciationConseil }}</div>
                 </td>
                 <td>
-                    <div class="decision-box">
-                        <p class="decision-title">D&eacute;cision du conseil</p>
-                        <p class="decision-result">{!! $decision ?? '&mdash;' !!}</p>
-                        <p>
-                            <span class="label">Mention :</span>
-                            {{ $mention ?? '-' }}
-                        </p>
-                        <p>
-                            <span class="label">Observation :</span>
-                            {{ $moyenneGenerale !== null && $moyenneGenerale >= 10 ? 'Progression satisfaisante sur l\'ann&eacute;e.' : 'Renforcement recommand&eacute; sur les mati&egrave;res &agrave; faible moyenne.' }}
-                        </p>
-                    </div>
+                    <div class="head">Cachet et signature du Directeur</div>
+                    <div class="body"></div>
                 </td>
             </tr>
         </table>
 
-        <table class="signature">
-            <tr>
-                <td>
-                    <div class="line">Signature des parents</div>
-                </td>
-                <td>
-                    <div class="line">Chef d'&eacute;tablissement</div>
-                </td>
-            </tr>
-        </table>
+        <div class="footer">
+            Reconnu sous le N&deg;555/METRFP/SG/DGFP/SI du ministere de la Formation Professionnelle
+        </div>
     </div>
 </body>
 </html>

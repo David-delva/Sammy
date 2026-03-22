@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
 @section('title', 'Saisie en masse')
-@section('breadcrumb', 'Évaluations / Notes / Saisie en masse')
+@section('breadcrumb', 'Evaluations / Notes / Saisie en masse')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Évaluations</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Evaluations</p>
             <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Saisie en masse</h2>
             <p class="mt-2 max-w-3xl text-sm text-gray-500">
-                Saisissez rapidement les notes par classe et par matière
+                Saisissez rapidement les notes par classe, matiere et semestre
                 @if(isset($annee) && $annee)
                     pour <span class="font-medium text-gray-700">{{ $annee->libelle }}</span>
                 @endif.
@@ -21,14 +21,18 @@
     <div class="card">
         <div class="card-header">
             <h4>Filtrer la saisie</h4>
-            <span class="badge-gray">Étapes 1 à 3</span>
+            <span class="badge-gray">Etapes 1 a 4</span>
         </div>
         <div class="card-body">
-            <form action="{{ route('notes.masse.index') }}" method="GET" id="filterForm" class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <form action="{{ route('notes.masse.index') }}" method="GET" id="filterForm" class="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
+                @if(request()->query('date'))
+                    <input type="hidden" name="date" value="{{ request()->query('date') }}">
+                @endif
+
                 <div class="form-field">
                     <label class="form-label" for="classe_id">1. Classe</label>
                     <select id="classe_id" name="classe_id" class="form-select" onchange="document.getElementById('filterForm').submit()">
-                        <option value="">Sélectionner</option>
+                        <option value="">Selectionner</option>
                         @foreach($classes as $c)
                             <option value="{{ $c->id }}" {{ $selectedClasse == $c->id ? 'selected' : '' }}>{{ $c->nom_classe }}</option>
                         @endforeach
@@ -36,9 +40,9 @@
                 </div>
 
                 <div class="form-field">
-                    <label class="form-label" for="matiere_id">2. Matière</label>
+                    <label class="form-label" for="matiere_id">2. Matiere</label>
                     <select id="matiere_id" name="matiere_id" class="form-select" {{ !$selectedClasse ? 'disabled' : '' }} onchange="document.getElementById('filterForm').submit()">
-                        <option value="">Sélectionner</option>
+                        <option value="">Selectionner</option>
                         @foreach($matieres as $m)
                             <option value="{{ $m->id }}" {{ $selectedMatiere == $m->id ? 'selected' : '' }}>{{ $m->nom_matiere }}</option>
                         @endforeach
@@ -48,14 +52,24 @@
                 <div class="form-field">
                     <label class="form-label" for="type_devoir">3. Type</label>
                     <select id="type_devoir" name="type_devoir" class="form-select" {{ !$selectedMatiere ? 'disabled' : '' }} onchange="document.getElementById('filterForm').submit()">
-                        <option value="">Sélectionner</option>
+                        <option value="">Selectionner</option>
                         <option value="devoir" {{ $selectedType == 'devoir' ? 'selected' : '' }}>Devoir</option>
                         <option value="composition" {{ $selectedType == 'composition' ? 'selected' : '' }}>Composition</option>
                     </select>
                 </div>
 
+                <div class="form-field">
+                    <label class="form-label" for="semestre">4. Semestre</label>
+                    <select id="semestre" name="semestre" class="form-select" {{ !$selectedType ? 'disabled' : '' }} onchange="document.getElementById('filterForm').submit()">
+                        <option value="">Selectionner</option>
+                        @foreach(\App\Models\Note::semestreOptions() as $value => $label)
+                            <option value="{{ $value }}" {{ (string) $selectedSemestre === (string) $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <div class="flex items-end">
-                    <a href="{{ route('notes.masse.index') }}" class="btn-secondary w-full justify-center">Réinitialiser</a>
+                    <a href="{{ route('notes.masse.index', ['date' => request()->query('date')]) }}" class="btn-secondary w-full justify-center">Reinitialiser</a>
                 </div>
             </form>
         </div>
@@ -65,8 +79,8 @@
         <div class="card overflow-hidden">
             <div class="card-header">
                 <div>
-                    <h4>Liste des élèves</h4>
-                    <p class="mt-1 text-xs text-gray-400">{{ $eleves->count() }} élève(s) à renseigner</p>
+                    <h4>Liste des eleves</h4>
+                    <p class="mt-1 text-xs text-gray-400">{{ $eleves->count() }} eleve(s) a renseigner pour {{ \App\Models\Note::semestreOptions()[$selectedSemestre] }}</p>
                 </div>
                 <div class="flex flex-col gap-2 sm:flex-row">
                     <button type="button" class="btn-secondary btn-sm justify-center" onclick="remplirAbsents()">
@@ -85,13 +99,14 @@
                 <input type="hidden" name="classe_id" value="{{ $selectedClasse }}">
                 <input type="hidden" name="matiere_id" value="{{ $selectedMatiere }}">
                 <input type="hidden" name="type_devoir" value="{{ $selectedType }}">
+                <input type="hidden" name="semestre" value="{{ $selectedSemestre }}">
 
                 <div class="overflow-x-auto">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Matricule</th>
-                                <th>Nom & prénom</th>
+                                <th>Nom & prenom</th>
                                 <th class="text-center">Note / 20</th>
                                 <th class="text-center">Statut</th>
                             </tr>
@@ -119,7 +134,7 @@
                                     </td>
                                     <td class="text-center">
                                         @if($noteExistante)
-                                            <span class="badge-green">Màj</span>
+                                            <span class="badge-green">Maj</span>
                                         @else
                                             <span class="badge-gray">Vide</span>
                                         @endif
@@ -133,7 +148,7 @@
                 <div class="flex flex-col gap-4 border-t border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                     <p class="text-sm text-gray-500">
                         <i class="bi bi-info-circle mr-1"></i>
-                        Astuce : utilisez Entrée pour passer rapidement au champ suivant.
+                        Astuce : utilisez Entree pour passer rapidement au champ suivant.
                     </p>
                     <button type="submit" class="btn-primary justify-center">
                         <i class="bi bi-check-circle"></i>
@@ -142,10 +157,10 @@
                 </div>
             </form>
         </div>
-    @elseif($selectedType)
+    @elseif($selectedSemestre)
         <div class="alert-info">
             <i class="bi bi-info-circle-fill"></i>
-            <span>Aucun élève inscrit dans cette classe pour l'année sélectionnée.</span>
+            <span>Aucun eleve inscrit dans cette classe pour l'annee selectionnee.</span>
         </div>
     @endif
 </div>

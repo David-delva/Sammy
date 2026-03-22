@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\AnneeAcademique;
-use App\Models\Classe;
 use App\Models\Inscription;
 use App\Models\Note;
 use Illuminate\Database\Seeder;
@@ -15,18 +14,18 @@ class NoteSeeder extends Seeder
     {
         $annee = AnneeAcademique::where('active', true)->first();
 
-        if (!$annee) {
+        if (! $annee) {
             return;
         }
 
-        // Récupérer tous les élèves inscrits cette année
-        $inscriptions = Inscription::with('eleve')->where('annee_academique_id', $annee->id)->get();
+        $inscriptions = Inscription::with('eleve')
+            ->where('annee_academique_id', $annee->id)
+            ->get();
 
         foreach ($inscriptions as $inscription) {
             $eleve = $inscription->eleve;
             $classeId = $inscription->classe_id;
 
-            // Récupérer les matières DE CETTE classe pour CETTE année via classe_matiere
             $matieres = DB::table('classe_matiere')
                 ->where('classe_id', $classeId)
                 ->where('annee_academique_id', $annee->id)
@@ -35,25 +34,27 @@ class NoteSeeder extends Seeder
                 ->get();
 
             foreach ($matieres as $matiere) {
-                // 2 devoirs par matière
-                for ($i = 0; $i < 2; $i++) {
+                foreach ([Note::SEMESTRE_1, Note::SEMESTRE_2] as $semestre) {
+                    for ($i = 0; $i < 2; $i++) {
+                        Note::create([
+                            'eleve_id' => $eleve->id,
+                            'matiere_id' => $matiere->id,
+                            'annee_academique_id' => $annee->id,
+                            'note' => rand(800, 2000) / 100,
+                            'type_devoir' => 'devoir',
+                            'semestre' => $semestre,
+                        ]);
+                    }
+
                     Note::create([
-                        'eleve_id'            => $eleve->id,
-                        'matiere_id'          => $matiere->id,
+                        'eleve_id' => $eleve->id,
+                        'matiere_id' => $matiere->id,
                         'annee_academique_id' => $annee->id,
-                        'note'                => rand(800, 2000) / 100, // 8.00 → 20.00
-                        'type_devoir'         => 'devoir',
+                        'note' => rand(800, 2000) / 100,
+                        'type_devoir' => 'composition',
+                        'semestre' => $semestre,
                     ]);
                 }
-
-                // 1 composition par matière
-                Note::create([
-                    'eleve_id'            => $eleve->id,
-                    'matiere_id'          => $matiere->id,
-                    'annee_academique_id' => $annee->id,
-                    'note'                => rand(800, 2000) / 100,
-                    'type_devoir'         => 'composition',
-                ]);
             }
         }
     }

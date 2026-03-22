@@ -4,19 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMasseNoteRequest;
 use App\Models\Classe;
-use App\Models\Matiere;
 use App\Models\Note;
 use App\Models\Inscription;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class NoteMasseController extends Controller
 {
     public function index(Request $request)
     {
         $annee = currentAcademicYear();
-        if (!$annee) return redirect()->route('annees.index')->with('error', 'Créez une année active.');
+
+        if (! $annee) {
+            return redirect()->route('annees.index')->with('error', 'Creez une annee active.');
+        }
 
         $classes = Classe::orderBy('nom_classe')->get();
         $matieres = collect();
@@ -25,9 +27,11 @@ class NoteMasseController extends Controller
         $selectedClasse = $request->query('classe_id');
         $selectedMatiere = $request->query('matiere_id');
         $selectedType = $request->query('type_devoir');
+        $selectedSemestre = in_array((int) $request->query('semestre'), array_keys(Note::semestreOptions()), true)
+            ? (int) $request->query('semestre')
+            : null;
 
         if ($selectedClasse) {
-            // Récupérer les matières DE CETTE classe pour CETTE année via classe_matiere
             $matieres = DB::table('classe_matiere')
                 ->where('classe_id', $selectedClasse)
                 ->where('annee_academique_id', $annee->id)
@@ -35,47 +39,77 @@ class NoteMasseController extends Controller
                 ->select('matieres.id', 'matieres.nom_matiere')
                 ->orderBy('matieres.nom_matiere')
                 ->get();
+        }
 
-            if ($selectedMatiere && $selectedType) {
-                $eleves = Inscription::with(['eleve', 'notes' => function($q) use ($selectedMatiere, $selectedType, $annee) {
-                    $q->where('matiere_id', $selectedMatiere)
-                      ->where('type_devoir', $selectedType)
-                      ->where('annee_academique_id', $annee->id);
-                }])
+        if ($selectedClasse && $selectedMatiere && $selectedType && $selectedSemestre) {
+            $eleves = Inscription::with([
+                'eleve',
+                'notes' => function ($query) use ($selectedMatiere, $selectedType, $selectedSemestre, $annee) {
+                    $query->where('matiere_id', $selectedMatiere)
+                        ->where('type_devoir', $selectedType)
+                        ->where('semestre', $selectedSemestre)
+                        ->where('annee_academique_id', $annee->id);
+                },
+            ])
                 ->where('classe_id', $selectedClasse)
                 ->where('annee_academique_id', $annee->id)
                 ->get()
-                ->sortBy(fn($ins) => $ins->eleve->nom);
-            }
+                ->sortBy(fn ($inscription) => $inscription->eleve->nom);
         }
 
-        return view('notes.masse', compact('classes', 'matieres', 'eleves', 'selectedClasse', 'selectedMatiere', 'selectedType', 'annee'));
+        return view('notes.masse', compact(
+            'classes',
+            'matieres',
+            'eleves',
+            'selectedClasse',
+            'selectedMatiere',
+            'selectedType',
+            'selectedSemestre',
+            'annee'
+        ));
     }
 
     public function store(StoreMasseNoteRequest $request)
     {
         $annee = currentAcademicYear();
 
-        DB::transaction(function() use ($request, $annee) {
+        DB::transaction(function () use ($request, $annee) {
             foreach ($request->notes as $eleveId => $valeur) {
-                if ($valeur === null || $valeur === '') continue;
+                if ($valeur === null || $valeur === '') {
+                    continue;
+                }
 
                 Note::updateOrCreate(
                     [
-                        'eleve_id'            => $eleveId,
-                        'matiere_id'          => $request->matiere_id,
-                        'type_devoir'         => $request->type_devoir,
+                        'eleve_id' => $eleveId,
+                        'matiere_id' => $request->matiere_id,
+                        'type_devoir' => $request->type_devoir,
                         'annee_academique_id' => $annee->id,
+                        'semestre' => (int) $request->semestre,
                     ],
                     ['note' => $valeur]
                 );
 
-                // Invalider les caches de moyenne
-                Cache::forget("moyenne:eleve:{$eleveId}:matiere:{$request->matiere_id}:annee:{$annee->id}");
-                Cache::forget("moyenne_generale:eleve:{$eleveId}:annee:{$annee->id}");
+                $this->forgetNoteCaches((int) $eleveId, (int) $request->matiere_id, $annee->id);
             }
         });
 
-        return redirect()->back()->with('success', 'Les notes ont été enregistrées avec succès.');
+        return redirect()->back()->with('success', 'Les notes ont ete enregistrees avec succes.');
+    }
+
+    protected function forgetNoteCaches(int $eleveId, int $matiereId, int $anneeId): void
+    {
+        $keys = [
+            "moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$anneeId}:annuel",
+            "moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$anneeId}:semestre:1",
+            "moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$anneeId}:semestre:2",
+            "moyenne_generale:eleve:{$eleveId}:annee:{$anneeId}:annuel",
+            "moyenne_generale:eleve:{$eleveId}:annee:{$anneeId}:semestre:1",
+            "moyenne_generale:eleve:{$eleveId}:annee:{$anneeId}:semestre:2",
+        ];
+
+        foreach ($keys as $key) {
+            Cache::forget($key);
+        }
     }
 }

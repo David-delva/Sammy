@@ -14,10 +14,11 @@ class UpdateNoteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'eleve_id'    => ['required', 'exists:eleves,id'],
-            'matiere_id'  => ['required', 'exists:matieres,id'],
-            'note'        => ['required', 'numeric', 'min:0', 'max:20'],
+            'eleve_id' => ['required', 'exists:eleves,id'],
+            'matiere_id' => ['required', 'exists:matieres,id'],
+            'note' => ['required', 'numeric', 'min:0', 'max:20'],
             'type_devoir' => ['required', 'in:devoir,composition'],
+            'semestre' => ['required', 'integer', 'in:1,2'],
         ];
     }
 }

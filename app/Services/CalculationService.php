@@ -5,55 +5,61 @@ namespace App\Services;
 use App\Models\AnneeAcademique;
 use App\Models\Eleve;
 use App\Models\Matiere;
+use App\Models\Note;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CalculationService
 {
-    public function calculateMoyenneMatiere(Eleve $eleve, Matiere $matiere, ?AnneeAcademique $annee = null): ?float
+    public function calculateMoyenneMatiere(Eleve $eleve, Matiere $matiere, ?AnneeAcademique $annee = null, ?int $semestre = null): ?float
     {
         $annee = $annee ?? currentAcademicYear();
+        $semestre = $this->normalizeSemestre($semestre);
 
         if (! $annee) {
             return null;
         }
 
-        $cacheKey = "moyenne:eleve:{$eleve->id}:matiere:{$matiere->id}:annee:{$annee->id}";
+        $cacheKey = "moyenne:eleve:{$eleve->id}:matiere:{$matiere->id}:annee:{$annee->id}{$this->cacheSuffix($semestre)}";
 
-        return Cache::remember($cacheKey, 300, function () use ($eleve, $matiere, $annee) {
+        return Cache::remember($cacheKey, 300, function () use ($eleve, $matiere, $annee, $semestre) {
             $notes = DB::table('notes')
                 ->where('eleve_id', $eleve->id)
                 ->where('matiere_id', $matiere->id)
                 ->where('annee_academique_id', $annee->id)
+                ->when($semestre !== null, fn ($query) => $query->where('semestre', $semestre))
                 ->get();
 
             if ($notes->isEmpty()) {
                 return null;
             }
 
-            $avgDevoirs = $notes->where('type_devoir', 'devoir')->avg('note');
-            $noteComposition = $notes->where('type_devoir', 'composition')->first()?->note;
+            $moyenneDevoirs = $notes->where('type_devoir', 'devoir')->avg('note');
+            $noteComposition = $notes->where('type_devoir', 'composition')->max('note');
 
-            if ($avgDevoirs === null && $noteComposition === null) {
+            if ($moyenneDevoirs === null && $noteComposition === null) {
                 return null;
             }
 
-            $mDevoirs = $avgDevoirs ?? 0;
-            $mComp = $noteComposition ?? $avgDevoirs ?? 0;
+            $baseDevoirs = $moyenneDevoirs ?? 0;
+            $baseComposition = $noteComposition ?? $moyenneDevoirs ?? 0;
 
-            return round(($mDevoirs + $mComp) / 2, 2);
+            return round(($baseDevoirs + $baseComposition) / 2, 2);
         });
     }
 
-    public function calculateMoyenneGenerale(Eleve $eleve, ?AnneeAcademique $annee = null): ?float
+    public function calculateMoyenneGenerale(Eleve $eleve, ?AnneeAcademique $annee = null, ?int $semestre = null): ?float
     {
         $annee = $annee ?? currentAcademicYear();
+        $semestre = $this->normalizeSemestre($semestre);
 
         if (! $annee) {
             return null;
         }
 
-        $inscription = $eleve->inscriptions()->where('annee_academique_id', $annee->id)->first();
+        $inscription = $eleve->inscriptions()
+            ->where('annee_academique_id', $annee->id)
+            ->first();
 
         if (! $inscription || ! $inscription->classe) {
             return null;
@@ -62,30 +68,35 @@ class CalculationService
         $matieres = $inscription->classe->matieresForAnnee($annee->id)->get();
 
         $totalPoints = 0;
-        $totalCoeffs = 0;
+        $totalCoefficients = 0;
 
         foreach ($matieres as $matiere) {
-            $coefficient = $matiere->pivot->coefficient;
-            $moyenne = $this->calculateMoyenneMatiere($eleve, $matiere, $annee);
+            $coefficient = (int) $matiere->pivot->coefficient;
+            $moyenne = $this->calculateMoyenneMatiere($eleve, $matiere, $annee, $semestre);
 
             if ($moyenne !== null) {
                 $totalPoints += $moyenne * $coefficient;
-                $totalCoeffs += $coefficient;
+                $totalCoefficients += $coefficient;
             }
         }
 
-        return $totalCoeffs > 0 ? round($totalPoints / $totalCoeffs, 2) : null;
+        return $totalCoefficients > 0
+            ? round($totalPoints / $totalCoefficients, 2)
+            : null;
     }
 
-    public function calculateRang(Eleve $eleve, ?AnneeAcademique $annee = null): array
+    public function calculateRang(Eleve $eleve, ?AnneeAcademique $annee = null, ?int $semestre = null): array
     {
         $annee = $annee ?? currentAcademicYear();
+        $semestre = $this->normalizeSemestre($semestre);
 
         if (! $annee) {
             return ['rang' => null, 'total' => 0];
         }
 
-        $inscription = $eleve->inscriptions()->where('annee_academique_id', $annee->id)->first();
+        $inscription = $eleve->inscriptions()
+            ->where('annee_academique_id', $annee->id)
+            ->first();
 
         if (! $inscription) {
             return ['rang' => null, 'total' => 0];
@@ -109,7 +120,7 @@ class CalculationService
                 continue;
             }
 
-            $moyenne = $this->calculateMoyenneGenerale($currentEleve, $annee);
+            $moyenne = $this->calculateMoyenneGenerale($currentEleve, $annee, $semestre);
 
             if ($moyenne !== null) {
                 $moyennes[$eleveId] = $moyenne;
@@ -158,8 +169,9 @@ class CalculationService
         return 'Insuffisant';
     }
 
-    public function getBulletinData(Eleve $eleve): array
+    public function getBulletinData(Eleve $eleve, int $semestre = Note::SEMESTRE_1): array
     {
+        $semestre = $this->normalizeSemestre($semestre) ?? Note::SEMESTRE_1;
         $annee = currentAcademicYear();
         $date = currentAcademicDate();
         $classe = $eleve->classeForDate($date);
@@ -187,6 +199,7 @@ class CalculationService
             ->where('eleve_id', $eleve->id)
             ->whereIn('matiere_id', $matieres->pluck('id'))
             ->where('annee_academique_id', $annee->id)
+            ->where('semestre', $semestre)
             ->groupBy('matiere_id')
             ->get()
             ->keyBy('matiere_id');
@@ -199,14 +212,16 @@ class CalculationService
             $coefficient = (int) $matiere->pivot->coefficient;
             $row = $notesParMatiere->get($matiere->id);
 
-            $avgDevoir = $row && $row->avg_devoir !== null ? round((float) $row->avg_devoir, 2) : null;
+            $moyenneDevoirs = $row && $row->avg_devoir !== null ? round((float) $row->avg_devoir, 2) : null;
             $noteComposition = $row && $row->note_composition !== null ? round((float) $row->note_composition, 2) : null;
 
-            $moyenneMatiere = ($avgDevoir === null && $noteComposition === null)
+            $moyenneMatiere = ($moyenneDevoirs === null && $noteComposition === null)
                 ? null
-                : round((($avgDevoir ?? 0) + ($noteComposition ?? $avgDevoir ?? 0)) / 2, 2);
+                : round((($moyenneDevoirs ?? 0) + ($noteComposition ?? $moyenneDevoirs ?? 0)) / 2, 2);
 
-            $moyXCoef = $moyenneMatiere !== null ? round($moyenneMatiere * $coefficient, 2) : null;
+            $moyXCoef = $moyenneMatiere !== null
+                ? round($moyenneMatiere * $coefficient, 2)
+                : null;
 
             if ($moyenneMatiere !== null) {
                 $totalPoints += $moyXCoef;
@@ -216,11 +231,7 @@ class CalculationService
             $lignes[] = [
                 'matiere' => $matiere->nom_matiere,
                 'coefficient' => $coefficient,
-                'devoir_value' => $avgDevoir,
-                'composition_value' => $noteComposition,
-                'moyenne_value' => $moyenneMatiere,
-                'moy_x_coef_value' => $moyXCoef,
-                'moyenne_devoirs' => $this->formatNote($avgDevoir),
+                'moyenne_devoirs' => $this->formatNote($moyenneDevoirs),
                 'note_composition' => $this->formatNote($noteComposition),
                 'moyenne' => $this->formatNote($moyenneMatiere),
                 'moy_x_coef' => $this->formatNote($moyXCoef),
@@ -228,27 +239,35 @@ class CalculationService
             ];
         }
 
-        $moyenneGenerale = $totalCoefficients > 0
-            ? round($totalPoints / $totalCoefficients, 2)
+        $moyenneSemestre1 = $this->calculateMoyenneGenerale($eleve, $annee, Note::SEMESTRE_1);
+        $moyenneSemestre2 = $this->calculateMoyenneGenerale($eleve, $annee, Note::SEMESTRE_2);
+        $moyenneSelectionnee = $semestre === Note::SEMESTRE_1 ? $moyenneSemestre1 : $moyenneSemestre2;
+        $moyenneAnnuelle = ($moyenneSemestre1 !== null && $moyenneSemestre2 !== null)
+            ? round(($moyenneSemestre1 + $moyenneSemestre2) / 2, 2)
             : null;
 
-        $rangData = $this->calculateRang($eleve, $annee);
+        $rangData = $this->calculateRang($eleve, $annee, $semestre);
+        $bulletinTitre = $semestre === Note::SEMESTRE_1
+            ? 'BULLETIN DU 1° SEMESTRE'
+            : 'BULLETIN DU 2° SEMESTRE';
 
         return [
             'eleve' => $eleve,
             'classe' => $classe,
             'annee' => $annee,
+            'semestre' => $semestre,
+            'bulletin_titre' => $bulletinTitre,
             'lignes' => $lignes,
             'total_points' => round($totalPoints, 2),
-            'total_points_formatted' => $this->formatNote($totalPoints > 0 ? round($totalPoints, 2) : null),
+            'total_points_formatted' => $this->formatNote($totalCoefficients > 0 ? $totalPoints : null),
             'total_coefficients' => $totalCoefficients,
-            'moyenne_generale' => $moyenneGenerale,
-            'moyenne_semestre_1' => $moyenneGenerale,
-            'moyenne_semestre_2' => null,
-            'moyenne_annuelle' => null,
+            'moyenne_generale' => $moyenneSelectionnee,
+            'moyenne_semestre_1' => $moyenneSemestre1,
+            'moyenne_semestre_2' => $moyenneSemestre2,
+            'moyenne_annuelle' => $moyenneAnnuelle,
             'rang' => $rangData['rang'],
             'total_eleves' => $rangData['total'],
-            'mention' => $moyenneGenerale !== null ? $this->getMention($moyenneGenerale) : '',
+            'mention' => $moyenneSelectionnee !== null ? $this->getMention($moyenneSelectionnee) : '',
         ];
     }
 
@@ -260,5 +279,17 @@ class CalculationService
     protected function getAppreciation(?float $moyenne): string
     {
         return $moyenne !== null ? $this->getMention($moyenne) : '';
+    }
+
+    protected function normalizeSemestre(?int $semestre): ?int
+    {
+        return in_array($semestre, [Note::SEMESTRE_1, Note::SEMESTRE_2], true)
+            ? $semestre
+            : null;
+    }
+
+    protected function cacheSuffix(?int $semestre): string
+    {
+        return $semestre === null ? ':annuel' : ':semestre:' . $semestre;
     }
 }
