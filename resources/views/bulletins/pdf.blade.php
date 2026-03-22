@@ -4,152 +4,386 @@
     <meta charset="UTF-8">
     <title>Bulletin - {{ $eleve->nom }} {{ $eleve->prenom }}</title>
     <style>
-        body { font-family: 'Helvetica', sans-serif; font-size: 12px; color: #333; margin: 0; padding: 20px; }
-        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
-        .header h1 { margin: 0; color: #007bff; text-transform: uppercase; font-size: 20px; }
-        .header p { margin: 5px 0; font-weight: bold; }
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 11px;
+            color: #1f2937;
+            margin: 0;
+            padding: 22px;
+            line-height: 1.45;
+        }
 
-        .info-section { width: 100%; margin-bottom: 20px; }
-        .info-section td { vertical-align: top; width: 50%; }
-        .student-info, .academic-info { border: 1px solid #ddd; padding: 10px; border-radius: 5px; background: #f9f9f9; }
-        .student-info p, .academic-info p { margin: 4px 0; }
-        .label { font-weight: bold; color: #555; }
+        .sheet {
+            border: 1px solid #dbe4f0;
+            padding: 18px;
+        }
 
-        table.results { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
-        table.results th, table.results td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        table.results th { background-color: #007bff; color: white; text-transform: uppercase; font-size: 11px; }
-        table.results tr:nth-child(even) { background-color: #f2f2f2; }
-        .text-left { text-align: left !important; }
+        .header {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+            border-bottom: 2px solid #1a56db;
+            padding-bottom: 10px;
+        }
 
-        .summary-box { width: 100%; margin-bottom: 30px; }
-        .summary-box td { vertical-align: top; }
-        .summary-table { width: 300px; border: 1px solid #007bff; }
-        .summary-table td { padding: 8px; border-bottom: 1px solid #ddd; }
-        .summary-table tr:last-child td { border-bottom: none; }
-        .highlight { font-weight: bold; color: #007bff; font-size: 14px; }
+        .header td {
+            vertical-align: top;
+        }
 
-        .signature { margin-top: 50px; width: 100%; }
-        .signature td { width: 50%; text-align: center; font-weight: bold; }
-        .signature .line { margin-top: 60px; border-top: 1px solid #333; width: 200px; display: inline-block; }
+        .brand {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1a56db;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .title {
+            font-size: 22px;
+            color: #0f2d56;
+            font-weight: bold;
+            margin: 0 0 4px;
+        }
+
+        .subtitle {
+            font-size: 11px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .stamp {
+            text-align: right;
+        }
+
+        .stamp-box {
+            display: inline-block;
+            min-width: 145px;
+            text-align: center;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+            padding: 10px 12px;
+        }
+
+        .stamp-box .label {
+            display: block;
+            text-transform: uppercase;
+            font-size: 9px;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            color: #1e3a8a;
+        }
+
+        .stamp-box .value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .meta {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 18px;
+        }
+
+        .meta td {
+            width: 50%;
+            vertical-align: top;
+            padding-right: 8px;
+        }
+
+        .panel {
+            border: 1px solid #e5e7eb;
+            background: #f8fafc;
+            padding: 12px 14px;
+            min-height: 96px;
+        }
+
+        .panel-title {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin: 0 0 8px;
+            font-weight: bold;
+        }
+
+        .panel p {
+            margin: 4px 0;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #475569;
+        }
+
+        table.results {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+        }
+
+        table.results th {
+            background: #0f2d56;
+            color: #ffffff;
+            text-transform: uppercase;
+            font-size: 9px;
+            letter-spacing: 0.7px;
+            padding: 8px 7px;
+            border: 1px solid #0a1f3d;
+        }
+
+        table.results td {
+            border: 1px solid #dbe4f0;
+            padding: 8px 7px;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        table.results tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .text-left {
+            text-align: left !important;
+        }
+
+        .muted {
+            color: #94a3b8;
+        }
+
+        .summary {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 22px;
+        }
+
+        .summary td {
+            vertical-align: top;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #bfdbfe;
+            background: #eff6ff;
+        }
+
+        .summary-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid #dbeafe;
+            font-size: 10px;
+        }
+
+        .summary-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .summary-table .value {
+            text-align: right;
+            font-weight: bold;
+            color: #0f2d56;
+        }
+
+        .decision-box {
+            margin-left: 14px;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            padding: 14px;
+            min-height: 116px;
+        }
+
+        .decision-title {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            font-weight: bold;
+            margin: 0 0 8px;
+        }
+
+        .decision-result {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a56db;
+            margin: 0 0 8px;
+        }
+
+        .signature {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 28px;
+        }
+
+        .signature td {
+            width: 50%;
+            text-align: center;
+            vertical-align: top;
+        }
+
+        .signature .line {
+            margin: 52px auto 0;
+            width: 180px;
+            border-top: 1px solid #334155;
+            padding-top: 6px;
+            font-size: 10px;
+            color: #475569;
+        }
     </style>
 </head>
 <body>
+    @php
+        $totalPoints = 0;
+        $totalCoeffs = 0;
+        $decision = null;
 
-    <div class="header">
-        <h1>Bulletin de Notes</h1>
-        <p>Année Académique : {{ $annee->libelle }}</p>
-    </div>
+        if ($moyenneGenerale !== null) {
+            $decision = $moyenneGenerale >= 10
+                ? 'Admis(e) en classe sup&eacute;rieure'
+                : 'R&eacute;sultat insuffisant';
+        }
+    @endphp
 
-    <table class="info-section">
-        <tr>
-            <td>
-                <div class="student-info">
-                    <p><span class="label">Élève :</span> {{ $eleve->nom }} {{ $eleve->prenom }}</p>
-                    <p><span class="label">Matricule :</span> {{ $eleve->matricule }}</p>
-                    <p><span class="label">Sexe :</span> {{ $eleve->sexe }}</p>
-                </div>
-            </td>
-            <td>
-                <div class="academic-info" style="margin-left: 10px;">
-                    <p><span class="label">Classe :</span> {{ $classe->nom_classe }}</p>
-                    <p><span class="label">Date :</span> {{ date('d/m/Y') }}</p>
-                </div>
-            </td>
-        </tr>
-    </table>
-
-    <table class="results">
-        <thead>
+    <div class="sheet">
+        <table class="header">
             <tr>
-                <th class="text-left">Matières</th>
-                <th>Coeff.</th>
-                <th>Moyenne / 20</th>
-                <th>Moy. x Coeff.</th>
-                <th>Appréciation</th>
+                <td>
+                    <div class="brand">{{ config('app.name', 'Gestion scolaire') }}</div>
+                    <p class="title">Bulletin de notes</p>
+                    <p class="subtitle">Ann&eacute;e acad&eacute;mique : {{ $annee->libelle }}</p>
+                </td>
+                <td class="stamp">
+                    <div class="stamp-box">
+                        <span class="label">Classe</span>
+                        <span class="value">{{ $classe->nom_classe }}</span>
+                    </div>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @php $totalPoints = 0; $totalCoeffs = 0; @endphp
-            @foreach($results as $res)
-                @php
-                    $moy = $res['moyenne'];
-                    $coeff = $res['matiere']->coefficient;
-                    $points = $moy ? $moy * $coeff : null;
-                    if ($moy !== null) {
-                        $totalPoints += $points;
-                        $totalCoeffs += $coeff;
-                    }
-                @endphp
-                <tr>
-                    <td class="text-left">{{ $res['matiere']->nom_matiere }}</td>
-                    <td>{{ $coeff }}</td>
-                    <td>{{ $moy ?? '—' }}</td>
-                    <td>{{ $points ?? '—' }}</td>
-                    <td>
-                        @if($moy >= 16) Très Bien
-                        @elseif($moy >= 14) Bien
-                        @elseif($moy >= 12) Assez Bien
-                        @elseif($moy >= 10) Passable
-                        @else Médiocre @endif
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+        </table>
 
-    <table class="summary-box">
-        <tr>
-            <td style="width: 60%;">
-                <table class="summary-table">
+        <table class="meta">
+            <tr>
+                <td>
+                    <div class="panel">
+                        <p class="panel-title">Informations de l'&eacute;l&egrave;ve</p>
+                        <p><span class="label">Nom complet :</span> {{ $eleve->nom }} {{ $eleve->prenom }}</p>
+                        <p><span class="label">Matricule :</span> {{ $eleve->matricule }}</p>
+                        <p><span class="label">Sexe :</span> {{ $eleve->sexe }}</p>
+                    </div>
+                </td>
+                <td>
+                    <div class="panel">
+                        <p class="panel-title">Contexte acad&eacute;mique</p>
+                        <p><span class="label">Classe :</span> {{ $classe->nom_classe }}</p>
+                        <p><span class="label">Date d'&eacute;dition :</span> {{ date('d/m/Y') }}</p>
+                        <p><span class="label">Mention g&eacute;n&eacute;rale :</span> {{ $mention ?? '-' }}</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <table class="results">
+            <thead>
+                <tr>
+                    <th class="text-left">Mati&egrave;re</th>
+                    <th>Coeff.</th>
+                    <th>Moyenne / 20</th>
+                    <th>Points</th>
+                    <th>Appr&eacute;ciation</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($results as $res)
+                    @php
+                        $moy = $res['moyenne'];
+                        $coeff = $res['matiere']->pivot->coefficient;
+                        $points = $moy !== null ? $moy * $coeff : null;
+
+                        if ($moy !== null) {
+                            $totalPoints += $points;
+                            $totalCoeffs += $coeff;
+                        }
+                    @endphp
                     <tr>
-                        <td class="label">Total des points</td>
-                        <td class="highlight">{{ round($totalPoints, 2) }} / {{ $totalCoeffs * 20 }}</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Moyenne Générale</td>
-                        <td class="highlight" style="font-size: 18px;">{{ $moyenneGenerale ?? '—' }} / 20</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Rang de l'élève</td>
+                        <td class="text-left">{{ $res['matiere']->nom_matiere }}</td>
+                        <td>{{ $coeff }}</td>
+                        <td>{{ $moy === null ? '-' : number_format($moy, 2, ',', ' ') }}</td>
+                        <td>{{ $points === null ? '-' : number_format($points, 2, ',', ' ') }}</td>
                         <td>
-                            @if($rang)
-                                <strong>{{ $rang }}</strong> / {{ $totalEleves }}
+                            @if($moy === null)
+                                <span class="muted">-</span>
+                            @elseif($moy >= 16)
+                                Tr&egrave;s bien
+                            @elseif($moy >= 14)
+                                Bien
+                            @elseif($moy >= 12)
+                                Assez bien
+                            @elseif($moy >= 10)
+                                Passable
                             @else
-                                —
+                                Insuffisant
                             @endif
                         </td>
                     </tr>
-                    <tr>
-                        <td class="label">Effectif de la classe</td>
-                        <td>{{ $totalEleves }} élève(s)</td>
-                    </tr>
-                </table>
-            </td>
-            <td>
-                @if($moyenneGenerale)
-                <div style="border: 1px solid #ddd; padding: 15px; text-align: center; border-radius: 5px;">
-                    <p style="margin: 0; font-weight: bold; color: #555;">OBSERVATIONS</p>
-                    <p style="font-size: 16px; margin-top: 10px; color: #007bff;">
-                        {{ $moyenneGenerale >= 10 ? 'Admis(e) en classe supérieure' : 'Résultat Insuffisant' }}
-                    </p>
-                </div>
-                @endif
-            </td>
-        </tr>
-    </table>
+                @endforeach
+            </tbody>
+        </table>
 
-    <table class="signature">
-        <tr>
-            <td>
-                <p>Signature des Parents</p>
-                <div class="line"></div>
-            </td>
-            <td>
-                <p>Le Chef d'Établissement</p>
-                <div class="line"></div>
-            </td>
-        </tr>
-    </table>
+        <table class="summary">
+            <tr>
+                <td style="width: 62%;">
+                    <table class="summary-table">
+                        <tr>
+                            <td>Total des points</td>
+                            <td class="value">{{ number_format($totalPoints, 2, ',', ' ') }}</td>
+                        </tr>
+                        <tr>
+                            <td>Total des coefficients pris en compte</td>
+                            <td class="value">{{ $totalCoeffs }}</td>
+                        </tr>
+                        <tr>
+                            <td>Moyenne g&eacute;n&eacute;rale</td>
+                            <td class="value">{{ $moyenneGenerale === null ? '-' : number_format($moyenneGenerale, 2, ',', ' ') }} / 20</td>
+                        </tr>
+                        <tr>
+                            <td>Rang de l'&eacute;l&egrave;ve</td>
+                            <td class="value">{{ $rang ? $rang . ' / ' . $totalEleves : '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td>Effectif de la classe</td>
+                            <td class="value">{{ $totalEleves }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <div class="decision-box">
+                        <p class="decision-title">D&eacute;cision du conseil</p>
+                        <p class="decision-result">{!! $decision ?? '&mdash;' !!}</p>
+                        <p>
+                            <span class="label">Mention :</span>
+                            {{ $mention ?? '-' }}
+                        </p>
+                        <p>
+                            <span class="label">Observation :</span>
+                            {{ $moyenneGenerale !== null && $moyenneGenerale >= 10 ? 'Progression satisfaisante sur l\'ann&eacute;e.' : 'Renforcement recommand&eacute; sur les mati&egrave;res &agrave; faible moyenne.' }}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        </table>
 
+        <table class="signature">
+            <tr>
+                <td>
+                    <div class="line">Signature des parents</div>
+                </td>
+                <td>
+                    <div class="line">Chef d'&eacute;tablissement</div>
+                </td>
+            </tr>
+        </table>
+    </div>
 </body>
 </html>

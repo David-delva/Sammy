@@ -8,6 +8,7 @@ use App\Models\Matiere;
 use App\Models\AnneeAcademique;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ListeClasseController extends Controller
 {
@@ -26,11 +27,16 @@ class ListeClasseController extends Controller
             ->map(fn($ins) => $ins->eleve)
             ->sortBy('nom');
 
-        // Récupérer les matières de la classe
-        $matieres = Matiere::where('classe_id', $classe->id)->get();
+        // Récupérer les matières de la classe AVEC coefficients via classe_matiere
+        $matieresData = DB::table('classe_matiere')
+            ->where('classe_id', $classe->id)
+            ->where('annee_academique_id', $annee->id)
+            ->join('matieres', 'classe_matiere.matiere_id', '=', 'matieres.id')
+            ->select('matieres.id', 'matieres.nom_matiere', 'classe_matiere.coefficient')
+            ->get();
 
-        $pdf = Pdf::loadView('classes.liste-pdf', compact('classe', 'eleves', 'matieres', 'annee'))
-            ->setPaper('a4', 'landscape'); // Format paysage pour la feuille d'appel
+        $pdf = Pdf::loadView('classes.liste-pdf', compact('classe', 'eleves', 'matieresData', 'annee'))
+            ->setPaper('a4', 'landscape');
 
         return $pdf->download("liste_classe_{$classe->nom_classe}_{$annee->libelle}.pdf");
     }

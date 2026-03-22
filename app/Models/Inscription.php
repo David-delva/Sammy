@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Inscription extends Model
 {
@@ -25,5 +26,10 @@ class Inscription extends Model
     public function anneeAcademique(): BelongsTo
     {
         return $this->belongsTo(AnneeAcademique::class);
+    }
+
+    public function notes(): HasMany
+    {
+        return $this->hasMany(Note::class, 'eleve_id', 'eleve_id');
     }
 }

@@ -21,7 +21,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Routes Secrétariat + Admin (Base)
+    // Routes SecrÃ©tariat + Admin (Base)
     Route::middleware(['readonly'])->group(function () {
         Route::get('/eleves/{eleve}/historique', [EleveController::class, 'historique'])->name('eleves.historique');
         Route::resource('eleves', EleveController::class)->parameters([
@@ -36,8 +36,16 @@ Route::middleware('auth')->group(function () {
 
         // Routes STRICTEMENT Admin
         Route::middleware(['role:admin'])->group(function () {
-            Route::resource('classes', ClasseController::class);
+            Route::resource('classes', ClasseController::class)->parameters([
+                'classes' => 'classe'
+            ]);
             Route::resource('matieres', MatiereController::class);
+            
+            // Gestion des liaisons classe Ã— matiÃ¨re
+            Route::get('/matieres/assigner', [MatiereController::class, 'assignerIndex'])->name('matieres.assigner');
+            Route::get('/matieres/assigner/classe', [MatiereController::class, 'assignerClasse'])->name('matieres.assigner.classe');
+            Route::post('/matieres/assigner', [MatiereController::class, 'assignerSauvegarder'])->name('matieres.assigner.store');
+            
             Route::resource('notes', NoteController::class);
             Route::get('/notes-masse', [App\Http\Controllers\NoteMasseController::class, 'index'])->name('notes.masse.index');
             Route::post('/notes-masse', [App\Http\Controllers\NoteMasseController::class, 'store'])->name('notes.masse.store');

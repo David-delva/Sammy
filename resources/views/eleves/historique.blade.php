@@ -1,64 +1,72 @@
 @extends('layouts.app')
 
 @section('title', 'Historique scolaire')
+@section('breadcrumb', 'Scolarité / Élèves / Historique')
 
 @section('content')
-<div class="mb-4 d-flex align-items-center justify-content-between">
-    <div>
-        <h4 class="mb-0 fw-bold text-primary">Parcours Scolaire</h4>
-        <p class="text-muted mb-0">{{ $eleve->nom }} {{ $eleve->prenom }} ({{ $eleve->matricule }})</p>
+<div class="space-y-6">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Historique</p>
+            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Parcours scolaire</h2>
+            <p class="mt-2 text-sm text-gray-500">{{ $eleve->nom }} {{ $eleve->prenom }} • {{ $eleve->matricule }}</p>
+        </div>
+        <a href="{{ route('eleves.show', $eleve) }}" class="btn-secondary self-start lg:self-auto">
+            <i class="bi bi-arrow-left"></i>
+            Retour au profil
+        </a>
     </div>
-    <a href="{{ route('eleves.show', $eleve) }}" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-arrow-left me-1"></i>Retour au profil
-    </a>
-</div>
 
-@if($historique->isEmpty())
-    <div class="alert alert-info border-0 shadow-sm">
-        <i class="bi bi-info-circle me-2"></i> Aucune inscription historique trouvée pour cet élève.
-    </div>
-@else
-    <div class="row">
-        @foreach($historique as $item)
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 reveal">
-                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <span class="fw-bold fs-5">{{ $item['annee']->libelle }}</span>
+    @if($historique->isEmpty())
+        <div class="alert-info">
+            <i class="bi bi-info-circle-fill"></i>
+            <span>Aucune inscription historique trouvée pour cet élève.</span>
+        </div>
+    @else
+        <div class="grid gap-6 lg:grid-cols-2">
+            @foreach($historique as $item)
+                <div class="card overflow-hidden">
+                    <div class="card-header">
+                        <div>
+                            <h4>{{ $item['annee']->libelle }}</h4>
+                            <p class="mt-1 text-xs text-gray-400">Parcours annuel</p>
+                        </div>
                         @if($item['annee']->active)
-                            <span class="badge bg-success">Année Active</span>
+                            <span class="badge-green">Année active</span>
                         @endif
                     </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 text-primary">
-                                <i class="bi bi-building fs-4"></i>
+                    <div class="card-body space-y-5">
+                        <div class="flex items-center gap-4 rounded-xl border border-gray-100 bg-slate-50 px-4 py-4">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                                <i class="bi bi-building text-xl"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block small uppercase fw-bold">Classe fréquentée</small>
-                                <span class="fw-bold text-dark fs-5">{{ $item['classe']->nom_classe }}</span>
+                                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Classe fréquentée</p>
+                                <p class="mt-1 text-sm font-semibold text-gray-900">{{ $item['classe']->nom_classe }}</p>
                             </div>
                         </div>
-                        
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3 text-info">
-                                <i class="bi bi-graph-up-arrow fs-4"></i>
+
+                        <div class="flex items-center gap-4 rounded-xl border border-gray-100 bg-slate-50 px-4 py-4">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-xl {{ $item['moyenne_generale'] >= 10 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600' }}">
+                                <i class="bi bi-graph-up-arrow text-xl"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block small uppercase fw-bold">Moyenne générale</small>
-                                <span class="fw-bold fs-5 {{ $item['moyenne_generale'] >= 10 ? 'text-success' : 'text-danger' }}">
+                                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Moyenne générale</p>
+                                <p class="mt-1 text-sm font-semibold {{ $item['moyenne_generale'] >= 10 ? 'text-emerald-600' : 'text-red-600' }}">
                                     {{ $item['moyenne_generale'] ? number_format($item['moyenne_generale'], 2) . ' / 20' : '—' }}
-                                </span>
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-light border-0 py-3">
-                        <a href="{{ route('eleves.show', $eleve) }}?date={{ explode('-', $item['annee']->libelle)[0] }}-10-01" class="btn btn-sm btn-link text-decoration-none">
-                            Consulter les détails de cette année <i class="bi bi-arrow-right small ms-1"></i>
+                    <div class="border-t border-gray-100 px-5 py-4">
+                        <a href="{{ route('eleves.show', $eleve) }}?date={{ explode('-', $item['annee']->libelle)[0] }}-09-01" class="btn-secondary btn-sm">
+                            <i class="bi bi-arrow-right"></i>
+                            Consulter cette année
                         </a>
                     </div>
                 </div>
-            </div>
-        @endforeach
-    </div>
-@endif
+            @endforeach
+        </div>
+    @endif
+</div>
 @endsection

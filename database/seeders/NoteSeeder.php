@@ -3,10 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\AnneeAcademique;
+use App\Models\Classe;
 use App\Models\Inscription;
-use App\Models\Matiere;
 use App\Models\Note;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class NoteSeeder extends Seeder
 {
@@ -23,7 +24,15 @@ class NoteSeeder extends Seeder
 
         foreach ($inscriptions as $inscription) {
             $eleve = $inscription->eleve;
-            $matieres = Matiere::where('classe_id', $inscription->classe_id)->get();
+            $classeId = $inscription->classe_id;
+
+            // Récupérer les matières DE CETTE classe pour CETTE année via classe_matiere
+            $matieres = DB::table('classe_matiere')
+                ->where('classe_id', $classeId)
+                ->where('annee_academique_id', $annee->id)
+                ->join('matieres', 'classe_matiere.matiere_id', '=', 'matieres.id')
+                ->select('matieres.id', 'matieres.nom_matiere')
+                ->get();
 
             foreach ($matieres as $matiere) {
                 // 2 devoirs par matière

@@ -1,86 +1,104 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier un Élève')
+@section('title', 'Modifier un élève')
+@section('breadcrumb', 'Scolarité / Élèves / Modification')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Modifier les Informations de l'Élève</h5>
-                <a href="{{ route('eleves.index') }}" class="btn btn-sm btn-outline-secondary">Retour</a>
+<div class="mx-auto max-w-5xl space-y-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Scolarité</p>
+            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Modifier un élève</h2>
+            <p class="mt-2 text-sm text-gray-500">Mettez à jour les informations de <span class="font-medium text-gray-700">{{ $eleve->nom }} {{ $eleve->prenom }}</span>.</p>
+        </div>
+        <a href="{{ route('eleves.index', ['date' => request()->query('date')]) }}" class="btn-secondary self-start sm:self-auto">
+            <i class="bi bi-arrow-left"></i>
+            Retour à la liste
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h4>Édition du profil</h4>
+                <p class="mt-1 text-xs text-gray-400">Modifiez les informations civiles et la classe associée à l'année en cours.</p>
             </div>
-            <div class="card-body">
-                <form action="{{ route('eleves.update', $eleve) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="matricule" class="form-label">Matricule</label>
-                            <input type="text" class="form-control @error('matricule') is-invalid @enderror" 
-                                   id="matricule" name="matricule" value="{{ old('matricule', $eleve->matricule) }}" required>
-                            @error('matricule')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="classe_id" class="form-label">Classe</label>
-                            <select class="form-select @error('classe_id') is-invalid @enderror" id="classe_id" name="classe_id" required>
-                                @foreach($classes as $classe)
-                                    <option value="{{ $classe->id }}" {{ old('classe_id', $eleve->classe_id) == $classe->id ? 'selected' : '' }}>
-                                        {{ $classe->nom_classe }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('classe_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+            @if($annee)
+                <span class="badge-blue">{{ $annee->libelle }}</span>
+            @endif
+        </div>
+        <div class="card-body">
+            <form action="{{ route('eleves.update', $eleve) }}" method="POST" class="space-y-6">
+                @csrf
+                @method('PUT')
+
+                <div class="grid gap-5 md:grid-cols-2">
+                    <div class="form-field">
+                        <label for="matricule" class="form-label">Matricule <span class="req">*</span></label>
+                        <input type="text" id="matricule" name="matricule" value="{{ old('matricule', $eleve->matricule) }}" class="form-input @error('matricule') error @enderror" required>
+                        @error('matricule')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="nom" class="form-label">Nom</label>
-                            <input type="text" class="form-control @error('nom') is-invalid @enderror" 
-                                   id="nom" name="nom" value="{{ old('nom', $eleve->nom) }}" required>
-                            @error('nom')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="prenom" class="form-label">Prénom</label>
-                            <input type="text" class="form-control @error('prenom') is-invalid @enderror" 
-                                   id="prenom" name="prenom" value="{{ old('prenom', $eleve->prenom) }}" required>
-                            @error('prenom')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+
+                    <div class="form-field">
+                        <label for="classe_id" class="form-label">Classe <span class="req">*</span></label>
+                        <select id="classe_id" name="classe_id" class="form-select @error('classe_id') error @enderror" required>
+                            @foreach($classes as $classe)
+                                <option value="{{ $classe->id }}" {{ old('classe_id', $inscription?->classe_id) == $classe->id ? 'selected' : '' }}>
+                                    {{ $classe->nom_classe }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('classe_id')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="date_naissance" class="form-label">Date de Naissance</label>
-                            <input type="date" class="form-control @error('date_naissance') is-invalid @enderror" 
-                                   id="date_naissance" name="date_naissance" value="{{ old('date_naissance', optional($eleve->date_naissance)->format('Y-m-d') ?? '') }}" required>
-                            @error('date_naissance')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="sexe" class="form-label">Sexe</label>
-                            <select class="form-select @error('sexe') is-invalid @enderror" id="sexe" name="sexe" required>
-                                <option value="M" {{ old('sexe', $eleve->sexe) == 'M' ? 'selected' : '' }}>Masculin</option>
-                                <option value="F" {{ old('sexe', $eleve->sexe) == 'F' ? 'selected' : '' }}>Féminin</option>
-                            </select>
-                            @error('sexe')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+
+                    <div class="form-field">
+                        <label for="nom" class="form-label">Nom <span class="req">*</span></label>
+                        <input type="text" id="nom" name="nom" value="{{ old('nom', $eleve->nom) }}" class="form-input @error('nom') error @enderror" required>
+                        @error('nom')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ route('eleves.index') }}" class="btn btn-outline-secondary">Annuler</a>
-                        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+
+                    <div class="form-field">
+                        <label for="prenom" class="form-label">Prénom <span class="req">*</span></label>
+                        <input type="text" id="prenom" name="prenom" value="{{ old('prenom', $eleve->prenom) }}" class="form-input @error('prenom') error @enderror" required>
+                        @error('prenom')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
-                </form>
-            </div>
+
+                    <div class="form-field">
+                        <label for="date_naissance" class="form-label">Date de naissance <span class="req">*</span></label>
+                        <input type="date" id="date_naissance" name="date_naissance" value="{{ old('date_naissance', optional($eleve->date_naissance)->format('Y-m-d') ?? '') }}" class="form-input @error('date_naissance') error @enderror" required>
+                        @error('date_naissance')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-field">
+                        <label for="sexe" class="form-label">Sexe <span class="req">*</span></label>
+                        <select id="sexe" name="sexe" class="form-select @error('sexe') error @enderror" required>
+                            <option value="M" {{ old('sexe', $eleve->sexe) == 'M' ? 'selected' : '' }}>Masculin</option>
+                            <option value="F" {{ old('sexe', $eleve->sexe) == 'F' ? 'selected' : '' }}>Féminin</option>
+                        </select>
+                        @error('sexe')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:justify-between">
+                    <a href="{{ route('eleves.index', ['date' => request()->query('date')]) }}" class="btn-secondary justify-center">Annuler</a>
+                    <button type="submit" class="btn-primary justify-center">
+                        <i class="bi bi-save"></i>
+                        Mettre à jour
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

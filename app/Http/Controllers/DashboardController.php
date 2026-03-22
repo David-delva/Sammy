@@ -14,12 +14,17 @@ class DashboardController extends Controller
     public function index()
     {
         $annee = currentAcademicYear();
-        $anneeId = $annee ? $annee->id : 'global';
+        $dateParam = request()->query('date');
+        
+        // Clé de cache incluant le paramètre date
+        $cacheKey = $dateParam 
+            ? "dashboard_stats_date_{$dateParam}"
+            : "dashboard_stats_annee_" . ($annee ? $annee->id : 'global');
 
-        $stats = Cache::remember("dashboard_stats_annee_{$anneeId}", 300, function () use ($annee) {
+        $stats = Cache::remember($cacheKey, 300, function () use ($annee, $dateParam) {
             if ($annee) {
                 $elevesIds = Inscription::where('annee_academique_id', $annee->id)->distinct('eleve_id')->pluck('eleve_id');
-                
+
                 return [
                     'total_eleves' => $elevesIds->count(),
                     'total_classes' => Classe::count(),

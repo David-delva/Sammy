@@ -1,53 +1,53 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier une Matière')
+@section('title', 'Modifier une matière')
+@section('breadcrumb', 'Administration / Matières / Modification')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h4>Modifier la Matière</h4>
-            </div>
-            <div class="card-body">
-                <form action="{{ route('matieres.update', $matiere) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="mb-3">
-                        <label for="nom_matiere" class="form-label">Nom de la Matière</label>
-                        <input type="text" class="form-control @error('nom_matiere') is-invalid @enderror" 
-                               id="nom_matiere" name="nom_matiere" value="{{ old('nom_matiere', $matiere->nom_matiere) }}" required>
-                        @error('nom_matiere')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="coefficient" class="form-label">Coefficient</label>
-                        <input type="number" class="form-control @error('coefficient') is-invalid @enderror" 
-                               id="coefficient" name="coefficient" value="{{ old('coefficient', $matiere->coefficient) }}" min="1" required>
-                        @error('coefficient')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="classe_id" class="form-label">Classe</label>
-                        <select class="form-select @error('classe_id') is-invalid @enderror" id="classe_id" name="classe_id" required>
-                            @foreach($classes as $classe)
-                                <option value="{{ $classe->id }}" {{ old('classe_id', $matiere->classe_id) == $classe->id ? 'selected' : '' }}>
-                                    {{ $classe->nom_classe ?? '—' }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('classe_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ route('matieres.index') }}" class="btn btn-outline-secondary">Annuler</a>
-                        <button type="submit" class="btn btn-primary">Mettre à jour</button>
-                    </div>
-                </form>
-            </div>
+<div class="mx-auto max-w-3xl space-y-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Administration</p>
+            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Modifier la matière</h2>
+            <p class="mt-2 text-sm text-gray-500">Mettez à jour le libellé de <span class="font-medium text-gray-700">{{ $matiere->nom_matiere }}</span>.</p>
+        </div>
+        <a href="{{ route('matieres.index') }}" class="btn-secondary self-start sm:self-auto">
+            <i class="bi bi-arrow-left"></i>
+            Retour au catalogue
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Édition</h4>
+            <span class="badge-gray">Catalogue</span>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('matieres.update', $matiere) }}" method="POST" class="space-y-6">
+                @csrf
+                @method('PUT')
+                <div class="form-field">
+                    <label for="nom_matiere" class="form-label">Nom de la matière <span class="req">*</span></label>
+                    <input type="text"
+                           id="nom_matiere"
+                           name="nom_matiere"
+                           value="{{ old('nom_matiere', $matiere->nom_matiere) }}"
+                           class="form-input @error('nom_matiere') error @enderror"
+                           required>
+                    <p class="form-hint">Le nom doit rester unique dans le catalogue.</p>
+                    @error('nom_matiere')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:justify-between">
+                    <a href="{{ route('matieres.index') }}" class="btn-secondary justify-center">Annuler</a>
+                    <button type="submit" class="btn-primary justify-center">
+                        <i class="bi bi-save"></i>
+                        Mettre à jour
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

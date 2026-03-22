@@ -17,7 +17,7 @@ class NoteController extends Controller
     {
         $annee = currentAcademicYear();
 
-        $notes = Note::with(['eleve', 'matiere.classe', 'anneeAcademique'])
+        $notes = Note::with(['eleve', 'matiere', 'anneeAcademique'])
             ->when($annee, function ($q) use ($annee) {
                 $q->where('annee_academique_id', $annee->id);
             })
@@ -45,8 +45,8 @@ class NoteController extends Controller
             return $ins->eleve;
         })->sortBy('nom');
 
-        // Récupérer toutes les matières pour le filtrage dynamique
-        $matieres = Matiere::with('classe')->orderBy('nom_matiere')->get();
+        // Récupérer toutes les matières (catalogue)
+        $matieres = Matiere::orderBy('nom_matiere')->get();
 
         return view('notes.create', compact('eleves', 'matieres', 'annee'));
     }
@@ -71,7 +71,7 @@ class NoteController extends Controller
     public function edit(Note $note)
     {
         $annee = currentAcademicYear();
-        
+
         $inscriptions = Inscription::with(['eleve', 'classe'])
             ->where('annee_academique_id', $annee->id)
             ->get();
@@ -82,7 +82,7 @@ class NoteController extends Controller
             return $ins->eleve;
         })->sortBy('nom');
 
-        $matieres = Matiere::with('classe')->orderBy('nom_matiere')->get();
+        $matieres = Matiere::orderBy('nom_matiere')->get();
 
         return view('notes.edit', compact('note', 'eleves', 'matieres', 'annee'));
     }

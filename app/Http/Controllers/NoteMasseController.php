@@ -27,8 +27,15 @@ class NoteMasseController extends Controller
         $selectedType = $request->query('type_devoir');
 
         if ($selectedClasse) {
-            $matieres = Matiere::where('classe_id', $selectedClasse)->orderBy('nom_matiere')->get();
-            
+            // Récupérer les matières DE CETTE classe pour CETTE année via classe_matiere
+            $matieres = DB::table('classe_matiere')
+                ->where('classe_id', $selectedClasse)
+                ->where('annee_academique_id', $annee->id)
+                ->join('matieres', 'classe_matiere.matiere_id', '=', 'matieres.id')
+                ->select('matieres.id', 'matieres.nom_matiere')
+                ->orderBy('matieres.nom_matiere')
+                ->get();
+
             if ($selectedMatiere && $selectedType) {
                 $eleves = Inscription::with(['eleve', 'notes' => function($q) use ($selectedMatiere, $selectedType, $annee) {
                     $q->where('matiere_id', $selectedMatiere)
@@ -48,7 +55,7 @@ class NoteMasseController extends Controller
     public function store(StoreMasseNoteRequest $request)
     {
         $annee = currentAcademicYear();
-        
+
         DB::transaction(function() use ($request, $annee) {
             foreach ($request->notes as $eleveId => $valeur) {
                 if ($valeur === null || $valeur === '') continue;

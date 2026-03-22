@@ -26,10 +26,14 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
             $service = app(AcademicYearService::class);
-            
+
+            // Mettre à jour la session si le paramètre date change
             $dateParam = request()->query('date');
             if ($dateParam) {
                 session(['academic_year_date' => $dateParam]);
+            } elseif (session()->has('academic_year_date')) {
+                // Nettoyer la session si pas de paramètre date
+                session()->forget('academic_year_date');
             }
 
             $annee = $service->forDate();
@@ -42,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
                 'currentAcademicYear'  => $annee,
                 'isCurrentAcademicYear' => $service->isCurrentYear(),
                 'academicYears'        => $years,
+                'currentAcademicLabel' => $annee ? $annee->libelle : null,
             ]);
         });
     }

@@ -14,11 +14,12 @@ class AcademicYearService
      */
     public function forDate(?string $date = null): ?AnneeAcademique
     {
-        $date = $date ?? session('academic_year_date') ?? now()->toDateString();
+        // Priorité : paramètre date explicite > session > date actuelle
+        $date = $date ?? request()->query('date') ?? session('academic_year_date') ?? now()->toDateString();
         $label = AnneeAcademique::labelForDate($date);
 
         return Cache::remember("academic_year_for_{$label}", 300, function () use ($label) {
-            return AnneeAcademique::where('libelle', $label)->first() 
+            return AnneeAcademique::where('libelle', $label)->first()
                 ?? AnneeAcademique::where('active', true)->first();
         });
     }
@@ -39,6 +40,6 @@ class AcademicYearService
      */
     public function referenceDate(): string
     {
-        return session('academic_year_date') ?? now()->toDateString();
+        return request()->query('date') ?? session('academic_year_date') ?? now()->toDateString();
     }
 }

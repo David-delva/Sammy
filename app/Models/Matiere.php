@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Matiere extends Model
@@ -13,15 +13,22 @@ class Matiere extends Model
 
     protected $fillable = [
         'nom_matiere',
-        'coefficient',
-        'classe_id',
     ];
 
-    public function classe(): BelongsTo
+    /**
+     * Classes qui enseignent cette matière
+     * (avec coefficient selon la classe et l'année)
+     */
+    public function classes(): BelongsToMany
     {
-        return $this->belongsTo(Classe::class);
+        return $this->belongsToMany(Classe::class, 'classe_matiere')
+            ->withPivot('coefficient', 'annee_academique_id')
+            ->withTimestamps();
     }
 
+    /**
+     * Notes associées à cette matière
+     */
     public function notes(): HasMany
     {
         return $this->hasMany(Note::class);

@@ -1,258 +1,297 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Gestion Scolaire')</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        /* Palette & theme */
-        :root{
-            --brand-50: #e9f2ff;
-            --brand-100: #cfe3ff;
-            --brand-500: #0d6efd; /* primary */
-            --brand-600: #0b5ed7;
-            --accent: #6f42c1;
-            --muted: #6c757d;
-            --surface: #f8fafc;
-            --card-bg: #ffffff;
-            --glass: rgba(255,255,255,0.6);
-            --shadow: 0 8px 24px rgba(13,110,253,0.06);
-        }
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Gestion Scolaire') — É.T.P.</title>
 
-        /* Page background subtle gradient */
-        body{background:linear-gradient(180deg, var(--brand-50) 0%, var(--surface) 100%);}
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-        /* Sidebar */
-        .app-sidebar{width:240px;background:linear-gradient(180deg,var(--brand-500),var(--brand-600));min-height:100vh;color:#fff;padding-top:1.25rem}
-        .app-sidebar .nav-link{color:rgba(255,255,255,0.95);transition:all .18s ease}
-        .app-sidebar .nav-link:hover{transform:translateX(6px);opacity:0.98}
-        .app-sidebar .nav-link.active{background:rgba(255,255,255,0.06);box-shadow:inset 4px 0 0 rgba(255,255,255,0.06)}
-
-        /* Topbar */
-        .app-topbar{background:#fff;border-bottom:1px solid rgba(15,23,42,0.04)}
-
-        /* Cards and surfaces */
-        .card{border:0;border-radius:0.6rem;background:var(--card-bg);box-shadow:var(--shadow);transition:transform .22s ease, box-shadow .22s ease}
-        .card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(2,6,23,0.08)}
-
-        /* Tables */
-        .table thead th{border-bottom:2px solid rgba(2,6,23,0.04);color:var(--muted)}
-        tbody tr{transition:background .18s ease, transform .18s ease}
-        tbody tr:hover{background:rgba(13,110,253,0.03);transform:translateY(-2px)}
-
-        /* Buttons */
-        .btn-primary{
-            background:linear-gradient(180deg,var(--brand-500),var(--brand-600));
-            border:none;color:#fff;box-shadow:0 6px 18px rgba(13,110,253,0.12);transition:transform .14s ease,box-shadow .14s ease}
-        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 24px 40px rgba(13,110,253,0.12)}
-        .btn-outline-secondary{border-color:rgba(2,6,23,0.06);color:var(--muted)}
-
-        /* Small UI helpers */
-        .brand-logo{font-weight:700;letter-spacing:0.2px}
-        .page-title{font-size:1.125rem;font-weight:600}
-
-        /* Animations */
-        @keyframes fadeUp { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
-        @keyframes pulse { 0% {transform:scale(1)} 50% {transform:scale(1.02)} 100% {transform:scale(1)} }
-
-        .main-content{opacity:0;transform:translateY(8px)}
-        .main-content.animate-in{animation:fadeUp .55s cubic-bezier(.2,.9,.2,1) forwards}
-
-        .reveal { opacity:0; transform: translateY(8px); transition: all .6s cubic-bezier(.2,.9,.2,1) }
-        .reveal.visible { opacity:1; transform: translateY(0) }
-
-        .count { font-variant-numeric: tabular-nums; font-weight:700 }
-
-        .card-cta{transition:transform .18s ease}
-        .card-cta:hover{transform:translateY(-4px)}
-
-        /* Focus accessibility */
-        a:focus, button:focus, input:focus{outline:3px solid rgba(13,110,253,0.12);outline-offset:2px}
-
-        /* Responsive sidebar */
-        @media (max-width: 991px){ .app-sidebar{position:fixed;left:-260px;z-index:1040;transition:all .25s} .app-sidebar.show{left:0;} }
-    </style>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
 </head>
-<body>
-    <div class="d-flex">
-        {{-- Sidebar --}}
-        <aside class="app-sidebar p-3 d-none d-lg-block">
-            <div class="d-flex align-items-center mb-4">
-                <i class="bi bi-mortarboard-fill me-2 fs-4"></i>
-                <span class="brand-logo">École Technique</span>
+<body class="flex h-full bg-slate-50" x-data="{ sidebarOpen: false }">
+    <aside
+        class="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-navy-900 transition-transform duration-200 ease-in-out lg:static lg:translate-x-0"
+        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+        <div class="flex h-16 flex-shrink-0 items-center gap-3 border-b border-white/10 px-5">
+            <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-600">
+                <i class="bi bi-mortarboard-fill text-sm text-white"></i>
             </div>
-            <nav class="nav flex-column">
-                @auth
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Tableau de bord</a>
-                    <a class="nav-link {{ request()->routeIs('eleves.*') ? 'active' : '' }}" href="{{ route('eleves.index') }}"><i class="bi bi-people-fill me-2"></i> Élèves</a>
-                    @if(auth()->user()->role === 'admin')
-                        <a class="nav-link {{ request()->routeIs('classes.*') ? 'active' : '' }}" href="{{ route('classes.index') }}"><i class="bi bi-building me-2"></i> Classes</a>
-                        <a class="nav-link {{ request()->routeIs('matieres.*') ? 'active' : '' }}" href="{{ route('matieres.index') }}"><i class="bi bi-book-fill me-2"></i> Matières</a>
-
-                            <a class="nav-link {{ request()->routeIs('annees.*') ? 'active' : '' }}" href="{{ route('annees.index') }}"><i class="bi bi-calendar-event-fill me-2"></i> Années</a>
-
-                        <a class="nav-link {{ request()->routeIs('notes.*') ? 'active' : '' }}" href="{{ route('notes.index') }}"><i class="bi bi-clipboard-data me-2"></i> Notes</a>
-                    @endif
-                @endauth
-            </nav>
-            <div class="mt-auto pt-4 text-white-50 small">© {{ date('Y') }} École Technique</div>
-        </aside>
-
-        <div class="flex-grow-1">
-            <header class="app-topbar d-flex align-items-center justify-content-between px-3 py-2">
-                <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-sm btn-outline-secondary d-lg-none" id="toggleSidebar"><i class="bi bi-list"></i></button>
-                    <h1 class="h5 mb-0 page-title">@yield('title', 'Gestion Scolaire')</h1>
-                </div>
-                <div class="d-flex align-items-center">
-                    @auth
-                        <div class="dropdown">
-                            <a class="d-flex align-items-center text-decoration-none" href="#" id="userMenu" data-bs-toggle="dropdown">
-                                <div class="me-2 text-muted">{{ auth()->user()->name }}</div>
-                                <i class="bi bi-person-circle fs-4"></i>
-                            </a>
-                        {{-- Academic year selector --}}
-                        <div class="ms-3 d-none d-md-inline-block">
-                            <select id="academicYearSelect" class="form-select form-select-sm">
-                                <option value="">Contexte: Aujourd'hui</option>
-                                @if(!empty($academicYears))
-                                    @foreach($academicYears as $y)
-                                        @php
-                                            $parts = explode('-', $y->libelle);
-                                            $startYear = $parts[0] ?? null;
-                                            $valueDate = $startYear ? $startYear . '-09-01' : '';
-                                        @endphp
-                                        <option value="{{ $valueDate }}" {{ (isset($currentAcademicLabel) && $currentAcademicLabel == $y->libelle) || (request()->query('date') && \App\Models\AnneeAcademique::labelForDate(request()->query('date')) == $y->libelle) ? 'selected' : '' }}>
-                                            {{ $y->libelle }}
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profil</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">Déconnexion</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    @endauth
-                </div>
-            </header>
-
-            <main class="p-4 main-content">
-                @if(isset($isCurrentAcademicYear) && !$isCurrentAcademicYear)
-                    <div class="alert alert-info border-0 rounded-0 mb-4 py-2 text-center shadow-sm">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Vous consultez les données de l'année <strong>{{ $currentAcademicYear->libelle ?? 'Inconnue' }}</strong>.
-                        <span class="d-none d-md-inline">Le mode modification est désactivé.</span>
-                        <a href="{{ url()->current() }}?date={{ date('Y-m-d') }}" class="alert-link ms-2">Retourner à aujourd'hui</a>
-                    </div>
-                @endif
-                <div class="container-fluid">
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
-                    @if($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
-                    @yield('content')
-                </div>
-            </main>
+            <div class="min-w-0">
+                <p class="truncate text-[13px] font-bold leading-tight text-white">École Technique</p>
+                <p class="text-[10px] leading-tight text-navy-400">& Professionnelle</p>
+            </div>
         </div>
+
+        @isset($currentAcademicLabel)
+            <div class="flex-shrink-0 border-b border-white/10 px-4 py-3">
+                <div class="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2">
+                    <span class="h-1.5 w-1.5 flex-shrink-0 animate-pulse rounded-full bg-emerald-400"></span>
+                    <span class="truncate text-[11px] font-semibold text-white/80">{{ $currentAcademicLabel }}</span>
+                </div>
+            </div>
+        @endisset
+
+        <nav class="flex-1 space-y-0.5 overflow-y-auto px-3 py-3">
+            <p class="sidebar-section-label">Navigation</p>
+
+            <a href="{{ route('dashboard') }}"
+               class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <i class="bi bi-grid-fill w-5 text-center text-base"></i>
+                <span>Tableau de bord</span>
+            </a>
+
+            <a href="{{ route('eleves.index') }}"
+               class="sidebar-link {{ request()->routeIs('eleves.*') ? 'active' : '' }}">
+                <i class="bi bi-people-fill w-5 text-center text-base"></i>
+                <span>Élèves</span>
+            </a>
+
+            <a href="{{ route('classement.index') }}"
+               class="sidebar-link {{ request()->routeIs('classement.*') ? 'active' : '' }}">
+                <i class="bi bi-trophy-fill w-5 text-center text-base"></i>
+                <span>Classement</span>
+            </a>
+
+            @auth
+                @if(auth()->user()->role === 'admin')
+                    <p class="sidebar-section-label">Administration</p>
+
+                    <a href="{{ route('classes.index') }}"
+                       class="sidebar-link {{ request()->routeIs('classes.*') ? 'active' : '' }}">
+                        <i class="bi bi-building w-5 text-center text-base"></i>
+                        <span>Classes</span>
+                    </a>
+
+                    <a href="{{ route('matieres.index') }}"
+                       class="sidebar-link {{ request()->routeIs('matieres.*') ? 'active' : '' }}">
+                        <i class="bi bi-book-fill w-5 text-center text-base"></i>
+                        <span>Matières</span>
+                    </a>
+
+                    <a href="{{ route('matieres.assigner') }}"
+                       class="sidebar-link {{ request()->routeIs('matieres.assigner*') ? 'active' : '' }}">
+                        <i class="bi bi-diagram-3-fill w-5 text-center text-base"></i>
+                        <span>Assignation</span>
+                    </a>
+
+                    <a href="{{ route('notes.index') }}"
+                       class="sidebar-link {{ request()->routeIs('notes.*') && !request()->routeIs('notes.masse.*') ? 'active' : '' }}">
+                        <i class="bi bi-clipboard-data-fill w-5 text-center text-base"></i>
+                        <span>Notes</span>
+                    </a>
+
+                    <a href="{{ route('notes.masse.index') }}"
+                       class="sidebar-link {{ request()->routeIs('notes.masse.*') ? 'active' : '' }}">
+                        <i class="bi bi-table w-5 text-center text-base"></i>
+                        <span>Saisie en masse</span>
+                    </a>
+
+                    <a href="{{ route('annees.index') }}"
+                       class="sidebar-link {{ request()->routeIs('annees.*') ? 'active' : '' }}">
+                        <i class="bi bi-calendar-event-fill w-5 text-center text-base"></i>
+                        <span>Années</span>
+                    </a>
+                @endif
+            @endauth
+        </nav>
+
+        @auth
+            <div class="flex-shrink-0 border-t border-white/10 p-3">
+                <div class="group flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-white/10">
+                    <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-600">
+                        <span class="text-xs font-bold text-white">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </span>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-[12.5px] font-semibold text-white">
+                            {{ auth()->user()->name }}
+                        </p>
+                        <p class="truncate text-[10.5px] text-navy-400">
+                            {{ ucfirst(auth()->user()->role) }}
+                        </p>
+                    </div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                                class="rounded-md p-1.5 text-navy-400 opacity-0 transition-colors group-hover:opacity-100 hover:bg-white/10 hover:text-white"
+                                title="Déconnexion">
+                            <i class="bi bi-box-arrow-right text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @endauth
+    </aside>
+
+    <div x-cloak
+         x-show="sidebarOpen"
+         @click="sidebarOpen = false"
+         class="fixed inset-0 z-40 bg-black/50 lg:hidden"
+         x-transition:enter="ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <header class="z-30 flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-100 bg-white px-4 lg:px-6">
+            <div class="flex items-center gap-3">
+                <button @click="sidebarOpen = true"
+                        class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 lg:hidden">
+                    <i class="bi bi-list text-lg"></i>
+                </button>
+
+                <div class="hidden sm:block">
+                    <h1 class="text-sm font-semibold text-gray-800">@yield('title', 'Tableau de bord')</h1>
+                    @hasSection('breadcrumb')
+                        <div class="mt-0.5 text-xs text-gray-400">@yield('breadcrumb')</div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                @isset($academicYears)
+                    @if($academicYears->count() > 0)
+                        <div class="hidden md:block">
+                            <select id="academicYearSelect"
+                                    class="h-8 cursor-pointer appearance-none rounded-lg border border-gray-200 bg-gray-50 pl-3 pr-8 text-[12.5px] font-medium text-gray-700 transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                                    style="background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 8px center">
+                                <option value="">Aujourd'hui</option>
+                                @foreach($academicYears as $y)
+                                    @php
+                                        $parts = explode('-', $y->libelle);
+                                        $valueDate = ($parts[0] ?? '') . '-09-01';
+                                    @endphp
+                                    <option value="{{ $valueDate }}"
+                                            {{ (isset($currentAcademicLabel) && $currentAcademicLabel == $y->libelle) ? 'selected' : '' }}>
+                                        {{ $y->libelle }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                @endisset
+
+                @auth
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open"
+                                class="flex h-8 items-center gap-2 rounded-lg pl-2 pr-3 text-[12.5px] font-medium text-gray-600 transition-colors hover:bg-gray-100">
+                            <div class="flex h-6 w-6 items-center justify-center rounded-full bg-brand-100">
+                                <span class="text-[10px] font-bold text-brand-700">
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                </span>
+                            </div>
+                            <span class="hidden sm:inline">{{ \Illuminate\Support\Str::words(auth()->user()->name, 1, '') }}</span>
+                            <i class="bi bi-chevron-down text-[10px] text-gray-400"></i>
+                        </button>
+
+                        <div x-cloak
+                             x-show="open"
+                             @click.outside="open = false"
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             class="absolute right-0 top-10 z-50 w-48 rounded-xl border border-gray-100 bg-white py-1 shadow-card-md">
+                            <div class="mb-1 border-b border-gray-100 px-3 py-2">
+                                <p class="truncate text-xs font-semibold text-gray-800">{{ auth()->user()->name }}</p>
+                                <p class="truncate text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
+                            </div>
+
+                            <a href="{{ route('profile.edit') }}"
+                               class="flex items-center gap-2.5 px-3 py-2 text-[13px] text-gray-700 transition-colors hover:bg-gray-50">
+                                <i class="bi bi-person w-4 text-gray-400"></i>Mon profil
+                            </a>
+
+                            <div class="mt-1 border-t border-gray-100 pt-1">
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                            class="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] text-red-600 transition-colors hover:bg-red-50">
+                                        <i class="bi bi-box-arrow-right w-4"></i>Déconnexion
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @endauth
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto">
+            @if(isset($isCurrentAcademicYear) && !$isCurrentAcademicYear && isset($currentAcademicYear))
+                <div class="mx-6 mt-4 alert-warning animate-fadein" role="alert">
+                    <i class="bi bi-exclamation-diamond-fill mt-0.5 flex-shrink-0"></i>
+                    <div class="flex-1">
+                        <strong>Mode consultation :</strong> vous visualisez l'année {{ $currentAcademicYear->libelle }}.
+                        La modification est bloquée pour préserver l'historique.
+                    </div>
+                    <a href="{{ url()->current() }}" class="btn-secondary btn-sm self-center whitespace-nowrap">
+                        Retour au présent
+                    </a>
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div class="mx-6 mt-4 alert-success animate-fadein" role="alert">
+                    <i class="bi bi-check-circle-fill flex-shrink-0 text-emerald-600"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('warning'))
+                <div class="mx-6 mt-4 alert-warning animate-fadein" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                    <span>{{ session('warning') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="mx-6 mt-4 alert-error animate-fadein" role="alert">
+                    <i class="bi bi-x-circle-fill flex-shrink-0"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
+            @if($errors->any() && !request()->routeIs('*.create') && !request()->routeIs('*.edit'))
+                <div class="mx-6 mt-4 alert-error animate-fadein" role="alert">
+                    <i class="bi bi-x-circle-fill mt-0.5 flex-shrink-0"></i>
+                    <ul class="list-none space-y-0.5">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="p-6">
+                @yield('content')
+            </div>
+        </main>
+    </div>
+
     <script>
-        // Sidebar toggle for small screens
-        document.getElementById('toggleSidebar')?.addEventListener('click', function(){
-            document.querySelector('.app-sidebar')?.classList.toggle('show');
-        });
+        document.getElementById('academicYearSelect')?.addEventListener('change', function () {
+            const url = new URL(window.location.href);
 
-        // Utilities
-        function animateCount(el, to, duration = 900) {
-            const start = 0;
-            const range = to - start;
-            const startTime = performance.now();
-            function step(now) {
-                const progress = Math.min((now - startTime) / duration, 1);
-                const value = Math.floor(start + range * progress);
-                el.textContent = value;
-                if (progress < 1) requestAnimationFrame(step);
-            }
-            requestAnimationFrame(step);
-        }
-
-        document.addEventListener('DOMContentLoaded', function(){
-            const main = document.querySelector('.main-content');
-            if(main){
-                setTimeout(()=> main.classList.add('animate-in'), 80);
+            if (this.value) {
+                url.searchParams.set('date', this.value);
+            } else {
+                url.searchParams.delete('date');
             }
 
-            // enable bootstrap tooltips
-            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(t){
-                new bootstrap.Tooltip(t);
-            });
-
-            // reveal animation on scroll
-            const observer = new IntersectionObserver((entries)=>{
-                entries.forEach(e => {
-                    if(e.isIntersecting){
-                        e.target.classList.add('visible');
-                        observer.unobserve(e.target);
-                    }
-                });
-            }, {threshold:0.08});
-
-            document.querySelectorAll('.reveal, .card').forEach(card => {
-                observer.observe(card);
-            });
-
-            // animate numbers with data-count attribute
-            document.querySelectorAll('[data-count]').forEach(el => {
-                const to = parseInt(el.getAttribute('data-count')) || parseInt(el.textContent) || 0;
-                animateCount(el, to, 1000 + Math.min(800, to * 10));
-            });
-
-            // make alerts appear as subtle toasts
-            document.querySelectorAll('.alert-dismissible').forEach(alert => {
-                alert.classList.add('reveal');
-            });
-
-            // Academic year select change handling
-            const sel = document.getElementById('academicYearSelect');
-            if(sel){
-                sel.addEventListener('change', function(){
-                    const dateVal = this.value;
-                    const url = new URL(window.location.href);
-                    if(dateVal){
-                        url.searchParams.set('date', dateVal);
-                    } else {
-                        url.searchParams.delete('date');
-                    }
-                    // navigate preserving path
-                    window.location.href = url.toString();
-                });
-            }
+            window.location.href = url.toString();
         });
     </script>
+    @stack('scripts')
 </body>
 </html>

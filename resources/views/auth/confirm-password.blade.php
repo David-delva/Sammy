@@ -1,27 +1,29 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
+    <div class="mb-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">S&eacute;curit&eacute;</p>
+        <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Confirmer votre mot de passe</h1>
+        <p class="mt-2 text-sm text-gray-500">Cette zone est prot&eacute;g&eacute;e. Saisissez votre mot de passe avant de continuer.</p>
     </div>
 
-    <form method="POST" action="{{ route('password.confirm') }}">
+    <div class="alert-info mb-6">
+        <i class="bi bi-shield-lock"></i>
+        <span>Cette &eacute;tape confirme que vous &ecirc;tes bien &agrave; l'origine de l'action demand&eacute;e.</span>
+    </div>
+
+    <form method="POST" action="{{ route('password.confirm') }}" class="space-y-5">
         @csrf
 
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="form-field">
+            <label for="password" class="form-label">Mot de passe</label>
+            <input id="password" type="password" name="password" required autocomplete="current-password" class="form-input @error('password') error @enderror">
+            @error('password')
+                <p class="form-error">{{ $message }}</p>
+            @enderror
         </div>
 
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="btn-primary w-full justify-center">
+            <i class="bi bi-check-circle"></i>
+            Confirmer
+        </button>
     </form>
 </x-guest-layout>

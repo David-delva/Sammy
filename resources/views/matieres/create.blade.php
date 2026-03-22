@@ -1,54 +1,53 @@
 @extends('layouts.app')
 
-@section('title', 'Créer une Matière')
+@section('title', 'Créer une matière')
+@section('breadcrumb', 'Administration / Matières / Création')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-6">
+<div class="mx-auto max-w-3xl space-y-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Administration</p>
+            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Créer une nouvelle matière</h2>
+            <p class="mt-2 text-sm text-gray-500">Ajoutez une matière dans le catalogue global. Vous pourrez ensuite l'assigner aux classes avec un coefficient adapté.</p>
+        </div>
+        <a href="{{ route('matieres.index') }}" class="btn-secondary self-start sm:self-auto">
+            <i class="bi bi-arrow-left"></i>
+            Retour au catalogue
+        </a>
+    </div>
+
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Créer une Nouvelle Matière</h5>
-            <a href="{{ route('matieres.index') }}" class="btn btn-sm btn-outline-secondary">Retour</a>
+        <div class="card-header">
+            <h4>Informations de la matière</h4>
+            <span class="badge-blue">Nouveau</span>
         </div>
         <div class="card-body">
-            <form action="{{ route('matieres.store') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="nom_matiere" class="form-label">Nom de la Matière</label>
-                        <input type="text" class="form-control @error('nom_matiere') is-invalid @enderror" 
-                               id="nom_matiere" name="nom_matiere" value="{{ old('nom_matiere') }}" required>
-                        @error('nom_matiere')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="coefficient" class="form-label">Coefficient</label>
-                        <input type="number" class="form-control @error('coefficient') is-invalid @enderror" 
-                               id="coefficient" name="coefficient" value="{{ old('coefficient') }}" min="1" required>
-                        @error('coefficient')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="classe_id" class="form-label">Classe</label>
-                        <select class="form-select @error('classe_id') is-invalid @enderror" id="classe_id" name="classe_id" required>
-                            <option value="">Sélectionner une classe</option>
-                            @foreach($classes as $classe)
-                                <option value="{{ $classe->id }}" {{ old('classe_id') == $classe->id ? 'selected' : '' }}>
-                                    {{ $classe->nom_classe ?? '—' }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('classe_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ route('matieres.index') }}" class="btn btn-outline-secondary">Annuler</a>
-                        <button type="submit" class="btn btn-primary">Enregistrer</button>
-                    </div>
-                </form>
-            </div>
+            <form action="{{ route('matieres.store') }}" method="POST" class="space-y-6">
+                @csrf
+                <div class="form-field">
+                    <label for="nom_matiere" class="form-label">Nom de la matière <span class="req">*</span></label>
+                    <input type="text"
+                           id="nom_matiere"
+                           name="nom_matiere"
+                           value="{{ old('nom_matiere') }}"
+                           placeholder="Ex : Mathématiques, Français, Histoire-Géo"
+                           class="form-input @error('nom_matiere') error @enderror"
+                           required>
+                    <p class="form-hint">Le nom doit être unique dans le catalogue pour éviter les doublons d'assignation.</p>
+                    @error('nom_matiere')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:justify-between">
+                    <a href="{{ route('matieres.index') }}" class="btn-secondary justify-center">Annuler</a>
+                    <button type="submit" class="btn-primary justify-center">
+                        <i class="bi bi-check2-circle"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

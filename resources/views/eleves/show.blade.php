@@ -1,96 +1,107 @@
 @extends('layouts.app')
 
-@section('title', 'Détails de l\'élève')
+@section('title', $eleve->nom . ' ' . $eleve->prenom)
+@section('breadcrumb', 'Scolarité / Élèves / Détail')
 
 @section('content')
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3">
-                <h5 class="mb-0 text-primary fw-bold">Profil de l'élève</h5>
-            </div>
-            <div class="card-body p-4 text-center">
-                <div class="mb-3">
-                    <i class="bi bi-person-circle display-1 text-secondary opacity-50"></i>
-                </div>
-                <h4 class="fw-bold mb-1">{{ $eleve->nom }} {{ $eleve->prenom }}</h4>
-                <p class="text-muted mb-3">{{ $eleve->matricule }}</p>
-                <div class="d-grid gap-2 d-md-flex">
-                    <a href="{{ route('eleves.edit', $eleve) }}" class="btn btn-outline-primary btn-sm flex-fill">
-                        <i class="bi bi-pencil me-1"></i>Modifier
-                    </a>
-                    <a href="{{ route('eleves.historique', $eleve) }}" class="btn btn-outline-info btn-sm flex-fill">
-                        <i class="bi bi-clock-history me-1"></i>Historique
-                    </a>
-                </div>
-            </div>
-            <div class="list-group list-group-flush border-top">
-                <div class="list-group-item px-4 py-3 border-0">
-                    <span class="text-muted small d-block">Classe actuelle :</span>
-                    <span class="fw-bold text-dark">
-                        {{ $eleve->resolved_classe ? $eleve->resolved_classe->nom_classe : 'Non inscrit' }}
-                    </span>
-                </div>
-                <div class="list-group-item px-4 py-3 border-0">
-                    <span class="text-muted small d-block">Date de naissance :</span>
-                    <span class="fw-bold text-dark">{{ $eleve->date_naissance->format('d/m/Y') }}</span>
-                </div>
-                <div class="list-group-item px-4 py-3 border-0">
-                    <span class="text-muted small d-block">Sexe :</span>
-                    <span class="fw-bold text-dark">{{ $eleve->sexe == 'M' ? 'Masculin' : 'Féminin' }}</span>
-                </div>
-            </div>
+<div class="space-y-6">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Profil élève</p>
+            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">{{ $eleve->nom }} {{ $eleve->prenom }}</h2>
+            <p class="mt-2 text-sm text-gray-500">Matricule {{ $eleve->matricule }} • Consultez les notes et l'état scolaire de l'année sélectionnée.</p>
+        </div>
+        <div class="flex flex-col gap-3 sm:flex-row">
+            <a href="{{ route('eleves.edit', ['eleve' => $eleve, 'date' => request()->query('date')]) }}" class="btn-secondary justify-center">
+                <i class="bi bi-pencil"></i>
+                Modifier
+            </a>
+            <a href="{{ route('eleves.historique', $eleve) }}" class="btn-secondary justify-center">
+                <i class="bi bi-clock-history"></i>
+                Historique
+            </a>
         </div>
     </div>
 
-    <div class="col-md-8 mb-4">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-primary fw-bold">Notes de l'année</h5>
-                <a href="{{ route('bulletins.pdf', $eleve->id) }}" class="btn btn-sm btn-outline-danger">
-                    <i class="bi bi-file-earmark-pdf me-1"></i>Télécharger le bulletin
+    <div class="grid gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
+        <div class="card overflow-hidden">
+            <div class="card-body text-center">
+                <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+                    <i class="bi bi-person-circle text-5xl"></i>
+                </div>
+                <h3 class="mt-5 text-xl font-semibold tracking-tight text-gray-900">{{ $eleve->nom }} {{ $eleve->prenom }}</h3>
+                <p class="mt-1 text-sm text-gray-500">{{ $eleve->matricule }}</p>
+            </div>
+            <div class="divide-y divide-gray-100 border-t border-gray-100">
+                <div class="px-5 py-4">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Classe actuelle</p>
+                    <p class="mt-2 text-sm font-semibold text-gray-900">{{ $eleve->resolved_classe ? $eleve->resolved_classe->nom_classe : 'Non inscrit' }}</p>
+                </div>
+                <div class="px-5 py-4">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Date de naissance</p>
+                    <p class="mt-2 text-sm font-semibold text-gray-900">{{ $eleve->date_naissance->format('d/m/Y') }}</p>
+                </div>
+                <div class="px-5 py-4">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Sexe</p>
+                    <p class="mt-2 text-sm font-semibold text-gray-900">{{ $eleve->sexe === 'M' ? 'Masculin' : 'Féminin' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card overflow-hidden">
+            <div class="card-header">
+                <div>
+                    <h4>Notes de l'année</h4>
+                    <p class="mt-1 text-xs text-gray-400">Toutes les évaluations enregistrées pour le contexte actif.</p>
+                </div>
+                <a href="{{ route('bulletins.pdf', $eleve->id) }}" class="btn-danger btn-sm">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                    Bulletin PDF
                 </a>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
+            <div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Matière</th>
+                            <th>Type</th>
+                            <th class="text-center">Note / 20</th>
+                            <th class="text-right">Date de saisie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($eleve->notes as $note)
                             <tr>
-                                <th class="px-4">Matière</th>
-                                <th>Type</th>
-                                <th class="text-center">Note / 20</th>
-                                <th class="text-end px-4">Date de saisie</th>
+                                <td>
+                                    <div class="font-semibold text-gray-900">{{ $note->matiere->nom_matiere }}</div>
+                                </td>
+                                <td>
+                                    <span class="{{ $note->type_devoir === 'composition' ? 'badge-purple' : 'badge-gray' }}">
+                                        {{ ucfirst($note->type_devoir) }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="text-base font-semibold {{ $note->note >= 10 ? 'text-emerald-600' : 'text-red-600' }}">
+                                        {{ number_format($note->note, 2) }}
+                                    </span>
+                                </td>
+                                <td class="text-right text-sm text-gray-400">{{ $note->created_at->format('d/m/Y') }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($eleve->notes as $note)
-                                <tr>
-                                    <td class="px-4 fw-bold">{{ $note->matiere->nom_matiere }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ $note->type_devoir == 'composition' ? 'primary' : 'secondary' }} text-uppercase" style="font-size: 0.7rem;">
-                                            {{ $note->type_devoir }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="fs-5 fw-bold {{ $note->note >= 10 ? 'text-success' : 'text-danger' }}">
-                                            {{ $note->note }}
-                                        </span>
-                                    </td>
-                                    <td class="text-end px-4 text-muted small">
-                                        {{ $note->created_at->format('d/m/Y') }}
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-5 text-muted">
-                                        <i class="bi bi-journal-x display-4 mb-2 d-block"></i>
-                                        Aucune note enregistrée pour cet élève cette année.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-6 py-12 text-center">
+                                    <div class="mx-auto flex max-w-sm flex-col items-center">
+                                        <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-gray-400">
+                                            <i class="bi bi-journal-x text-2xl"></i>
+                                        </div>
+                                        <p class="mt-4 text-sm font-medium text-gray-700">Aucune note enregistrée</p>
+                                        <p class="mt-1 text-sm text-gray-500">Les notes de cet élève apparaîtront ici dès qu'elles seront saisies.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
