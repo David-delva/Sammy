@@ -3,29 +3,32 @@
 namespace App\Services;
 
 use App\Models\AnneeAcademique;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 class AcademicYearService
 {
     /**
-     * Retourne l'année académique correspondant à une date donnée.
-     * Fallback sur l'année active si aucune date n'est fournie ou trouvée.
+     * Retourne l'annee academique correspondant a une date donnee.
+     * Fallback sur l'annee active si aucune date n'est fournie ou trouvee.
      */
     public function forDate(?string $date = null): ?AnneeAcademique
     {
-        // Priorité : paramètre date explicite > session > date actuelle
+        if (! Schema::hasTable('annee_academiques')) {
+            return null;
+        }
+
         $date = $date ?? request()->query('date') ?? session('academic_year_date') ?? now()->toDateString();
         $label = AnneeAcademique::labelForDate($date);
 
         return Cache::remember("academic_year_for_{$label}", 300, function () use ($label) {
-            return AnneeAcademique::where('libelle', $label)->first()
-                ?? AnneeAcademique::where('active', true)->first();
+            return AnneeAcademique::query()->where('libelle', $label)->first()
+                ?? AnneeAcademique::query()->where('active', true)->first();
         });
     }
 
     /**
-     * Vérifie si l'année sélectionnée est l'année académique réellement en cours.
+     * Verifie si l'annee selectionnee est l'annee academique reellement en cours.
      */
     public function isCurrentYear(): bool
     {
@@ -36,7 +39,7 @@ class AcademicYearService
     }
 
     /**
-     * Retourne la date de référence (Y-m-d).
+     * Retourne la date de reference (Y-m-d).
      */
     public function referenceDate(): string
     {

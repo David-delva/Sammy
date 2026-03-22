@@ -112,4 +112,16 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Public Registration
+    |--------------------------------------------------------------------------
+    |
+    | Public self-registration is disabled by default for this school system.
+    | Enable it explicitly only if the establishment wants open signup.
+    |
+    */
+
+    'allow_public_registration' => env('ALLOW_PUBLIC_REGISTRATION', false),
+
 ];

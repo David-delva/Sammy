@@ -16,6 +16,7 @@ class Eleve extends Model
         'nom',
         'prenom',
         'date_naissance',
+        'lieu_naissance',
         'sexe',
     ];
 
@@ -40,10 +41,10 @@ class Eleve extends Model
         return $this->hasMany(Note::class);
     }
 
-    // --- Méthodes métier ---
+    // --- MÃ©thodes mÃ©tier ---
 
     /**
-     * Retourne l'inscription correspondant à l'année académique d'une date donnée.
+     * Retourne l'inscription correspondant Ã  l'annÃ©e acadÃ©mique d'une date donnÃ©e.
      */
     public function inscriptionForDate(?string $date = null): ?Inscription
     {
@@ -56,7 +57,7 @@ class Eleve extends Model
     }
 
     /**
-     * Retourne la classe de l'élève pour une date donnée (via inscription).
+     * Retourne la classe de l'Ã©lÃ¨ve pour une date donnÃ©e (via inscription).
      */
     public function classeForDate(?string $date = null): ?Classe
     {

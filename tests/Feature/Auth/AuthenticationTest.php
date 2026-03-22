@@ -30,6 +30,22 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_test_admin_account_is_auto_verified_on_login(): void
+    {
+        $user = User::factory()->unverified()->create([
+            'email' => 'admin@ecole.com',
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => 'admin@ecole.com',
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $this->assertTrue($user->fresh()->hasVerifiedEmail());
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();

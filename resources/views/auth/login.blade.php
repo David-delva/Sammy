@@ -43,8 +43,10 @@
         </button>
     </form>
 
-    <div class="border-t border-gray-100 pt-5 text-center text-sm text-gray-500">
-        Pas encore de compte ?
-        <a href="{{ route('register') }}" class="font-medium text-brand-600 transition hover:text-brand-700 hover:underline">S'inscrire</a>
-    </div>
+    @if (Route::has('register'))
+        <div class="border-t border-gray-100 pt-5 text-center text-sm text-gray-500">
+            Pas encore de compte ?
+            <a href="{{ route('register') }}" class="font-medium text-brand-600 transition hover:text-brand-700 hover:underline">S'inscrire</a>
+        </div>
+    @endif
 </x-guest-layout>

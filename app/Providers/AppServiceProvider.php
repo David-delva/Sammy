@@ -2,11 +2,12 @@
 
 namespace App\Providers;
 
-use App\Services\AcademicYearService;
 use App\Models\AnneeAcademique;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
+use App\Services\AcademicYearService;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,25 +28,28 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function ($view) {
             $service = app(AcademicYearService::class);
 
-            // Mettre à jour la session si le paramètre date change
             $dateParam = request()->query('date');
             if ($dateParam) {
                 session(['academic_year_date' => $dateParam]);
             } elseif (session()->has('academic_year_date')) {
-                // Nettoyer la session si pas de paramètre date
                 session()->forget('academic_year_date');
             }
 
-            $annee = $service->forDate();
-            $years = Cache::remember('academic_years_list', 300, function () {
-                return AnneeAcademique::orderBy('libelle', 'desc')->get();
-            });
+            $annee = null;
+            $years = collect();
+
+            if (Schema::hasTable('annee_academiques')) {
+                $annee = $service->forDate();
+                $years = Cache::remember('academic_years_list', 300, function () {
+                    return AnneeAcademique::query()->orderBy('libelle', 'desc')->get();
+                });
+            }
 
             $view->with([
-                'currentAcademicDate'  => $service->referenceDate(),
-                'currentAcademicYear'  => $annee,
-                'isCurrentAcademicYear' => $service->isCurrentYear(),
-                'academicYears'        => $years,
+                'currentAcademicDate' => $service->referenceDate(),
+                'currentAcademicYear' => $annee,
+                'isCurrentAcademicYear' => $annee ? $service->isCurrentYear() : false,
+                'academicYears' => $years,
                 'currentAcademicLabel' => $annee ? $annee->libelle : null,
             ]);
         });

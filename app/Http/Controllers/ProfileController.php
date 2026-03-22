@@ -33,6 +33,7 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
+        $request->user()->ensureAutoVerified();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

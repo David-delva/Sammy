@@ -257,7 +257,7 @@
             </p>
             <p>
                 N&eacute;(e) le : <span class="fill w-date">{{ $dateNaissance }}</span>
-                &agrave; <span class="fill w-place"></span>
+                &agrave; <span class="fill w-place">{{ $eleve->lieu_naissance ?? 'Non renseigne' }}</span>
                 classe : <span class="fill w-class">{{ $classeLibelle }}</span>
             </p>
         </div>

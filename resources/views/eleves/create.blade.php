@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Inscrire un élève')
-@section('breadcrumb', 'Scolarité / Élèves / Inscription')
+@section('title', 'Inscrire un Ã©lÃ¨ve')
+@section('breadcrumb', 'ScolaritÃ© / Ã‰lÃ¨ves / Inscription')
 
 @section('content')
 <div class="mx-auto max-w-5xl space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Scolarité</p>
-            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Inscrire un nouvel élève</h2>
-            <p class="mt-2 text-sm text-gray-500">Créez le profil de l'élève et rattachez-le à une classe pour l'année académique active.</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">ScolaritÃ©</p>
+            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Inscrire un nouvel Ã©lÃ¨ve</h2>
+            <p class="mt-2 text-sm text-gray-500">CrÃ©ez le profil de l'Ã©lÃ¨ve et rattachez-le Ã  une classe pour l'annÃ©e acadÃ©mique active.</p>
         </div>
         <a href="{{ route('eleves.index', ['date' => request()->query('date')]) }}" class="btn-secondary self-start sm:self-auto">
             <i class="bi bi-arrow-left"></i>
-            Retour à la liste
+            Retour Ã  la liste
         </a>
     </div>
 
@@ -21,9 +21,9 @@
         <div class="alert-warning">
             <i class="bi bi-exclamation-triangle-fill"></i>
             <span>
-                Aucune année académique active.
-                <a href="{{ route('annees.create') }}" class="font-semibold underline underline-offset-2">Créez une année académique</a>
-                avant d'inscrire un élève.
+                Aucune annÃ©e acadÃ©mique active.
+                <a href="{{ route('annees.create') }}" class="font-semibold underline underline-offset-2">CrÃ©ez une annÃ©e acadÃ©mique</a>
+                avant d'inscrire un Ã©lÃ¨ve.
             </span>
         </div>
     @endif
@@ -31,8 +31,8 @@
     <div class="card">
         <div class="card-header">
             <div>
-                <h4>Informations de l'élève</h4>
-                <p class="mt-1 text-xs text-gray-400">Tous les champs marqués d'un astérisque sont obligatoires.</p>
+                <h4>Informations de l'Ã©lÃ¨ve</h4>
+                <p class="mt-1 text-xs text-gray-400">Tous les champs marquÃ©s d'un astÃ©risque sont obligatoires.</p>
             </div>
             @if($annee)
                 <span class="badge-blue">{{ $annee->libelle }}</span>
@@ -54,7 +54,7 @@
                     <div class="form-field">
                         <label for="classe_id" class="form-label">Classe <span class="req">*</span></label>
                         <select id="classe_id" name="classe_id" class="form-select @error('classe_id') error @enderror" required {{ ! $annee ? 'disabled' : '' }}>
-                            <option value="">Sélectionner une classe</option>
+                            <option value="">SÃ©lectionner une classe</option>
                             @foreach($classes as $classe)
                                 <option value="{{ $classe->id }}" {{ old('classe_id') == $classe->id ? 'selected' : '' }}>
                                     {{ $classe->nom_classe }}
@@ -75,7 +75,7 @@
                     </div>
 
                     <div class="form-field">
-                        <label for="prenom" class="form-label">Prénom <span class="req">*</span></label>
+                        <label for="prenom" class="form-label">PrÃ©nom <span class="req">*</span></label>
                         <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" class="form-input @error('prenom') error @enderror" required {{ ! $annee ? 'disabled' : '' }}>
                         @error('prenom')
                             <p class="form-error">{{ $message }}</p>
@@ -91,11 +91,19 @@
                     </div>
 
                     <div class="form-field">
+                        <label for="lieu_naissance" class="form-label">Lieu de naissance <span class="req">*</span></label>
+                        <input type="text" id="lieu_naissance" name="lieu_naissance" value="{{ old('lieu_naissance') }}" placeholder="Ex : Koulamoutou" class="form-input @error('lieu_naissance') error @enderror" required {{ ! $annee ? 'disabled' : '' }}>
+                        @error('lieu_naissance')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-field">
                         <label for="sexe" class="form-label">Sexe <span class="req">*</span></label>
                         <select id="sexe" name="sexe" class="form-select @error('sexe') error @enderror" required {{ ! $annee ? 'disabled' : '' }}>
-                            <option value="">Sélectionner</option>
+                            <option value="">SÃ©lectionner</option>
                             <option value="M" {{ old('sexe') == 'M' ? 'selected' : '' }}>Masculin</option>
-                            <option value="F" {{ old('sexe') == 'F' ? 'selected' : '' }}>Féminin</option>
+                            <option value="F" {{ old('sexe') == 'F' ? 'selected' : '' }}>FÃ©minin</option>
                         </select>
                         @error('sexe')
                             <p class="form-error">{{ $message }}</p>
@@ -114,7 +122,7 @@
                     <a href="{{ route('eleves.index', ['date' => request()->query('date')]) }}" class="btn-secondary justify-center">Annuler</a>
                     <button type="submit" class="btn-primary justify-center" {{ ! $annee ? 'disabled' : '' }}>
                         <i class="bi bi-check-circle"></i>
-                        Inscrire l'élève
+                        Inscrire l'Ã©lÃ¨ve
                     </button>
                 </div>
             </form>

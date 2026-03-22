@@ -8,16 +8,16 @@ use App\Models\AnneeAcademique;
 use App\Models\Classe;
 use App\Models\Eleve;
 use App\Models\Inscription;
+use App\Models\Note;
+use App\Services\CalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class EleveController extends Controller
 {
-    // --- Liste ---
-
     public function index()
     {
-        $date  = request()->query('date') ?? currentAcademicDate();
+        $date = request()->query('date') ?? currentAcademicDate();
         $annee = currentAcademicYear();
 
         if ($annee) {
@@ -32,115 +32,159 @@ class EleveController extends Controller
             $eleves = Eleve::orderBy('nom')->paginate(20);
         }
 
-        // Attacher la classe résolue à chaque élève
         $eleves->getCollection()->transform(function (Eleve $eleve) use ($date) {
             $eleve->resolved_classe = $eleve->classeForDate($date);
+
             return $eleve;
         });
 
         return view('eleves.index', compact('eleves', 'annee'));
     }
 
-    // --- Formulaire de création ---
-
     public function create()
     {
-        $annee   = currentAcademicYear();
+        $annee = currentAcademicYear();
         $classes = Classe::orderBy('nom_classe')->get();
 
         return view('eleves.create', compact('classes', 'annee'));
     }
 
-    // --- Enregistrement ---
-
     public function store(StoreEleveRequest $request)
     {
-        // Résoudre l'année académique active
         $annee = currentAcademicYear()
             ?? AnneeAcademique::forDate(now()->toDateString(), true);
 
         if (! $annee) {
             return back()
                 ->withInput()
-                ->withErrors(['general' => "Aucune année académique active. Veuillez en créer une d'abord."]);
+                ->withErrors(['general' => "Aucune annee academique active. Veuillez en creer une d'abord."]);
         }
 
         DB::transaction(function () use ($request, $annee) {
-            // 1. Créer l'élève (sans classe_id)
             $eleve = Eleve::create($request->only([
-                'matricule', 'nom', 'prenom', 'date_naissance', 'sexe',
+                'matricule', 'nom', 'prenom', 'date_naissance', 'lieu_naissance', 'sexe',
             ]));
 
-            // 2. Créer l'inscription liée à l'année académique
             Inscription::create([
-                'eleve_id'            => $eleve->id,
-                'classe_id'           => $request->classe_id,
+                'eleve_id' => $eleve->id,
+                'classe_id' => $request->classe_id,
                 'annee_academique_id' => $annee->id,
             ]);
         });
 
         return redirect()
             ->route('eleves.index')
-            ->with('success', "Élève inscrit avec succès pour l'année " . $annee->libelle . ".");
+            ->with('success', "Eleve inscrit avec succes pour l'annee {$annee->libelle}.");
     }
-
-    // --- Affichage ---
 
     public function show(Eleve $eleve)
     {
-        $date  = request()->query('date') ?? currentAcademicDate();
+        $date = request()->query('date') ?? currentAcademicDate();
         $annee = currentAcademicYear();
 
         $eleve->load([
-            'notes' => function ($q) use ($annee) {
+            'notes' => function ($query) use ($annee) {
                 if ($annee) {
-                    $q->where('annee_academique_id', $annee->id);
+                    $query->where('annee_academique_id', $annee->id);
                 }
-                $q->with('matiere');
+
+                $query->with('matiere')
+                    ->orderBy('semestre')
+                    ->orderBy('created_at', 'desc');
             },
         ]);
 
         $eleve->resolved_classe = $eleve->classeForDate($date);
 
-        return view('eleves.show', compact('eleve'));
-    }
+        $calculationService = app(CalculationService::class);
+        $notesCollection = $eleve->notes;
 
-    // --- Formulaire d'édition ---
+        $notesOverview = [
+            'total_notes' => $notesCollection->count(),
+            'total_matieres' => $notesCollection->pluck('matiere_id')->unique()->count(),
+            'moyenne_annuelle' => $calculationService->calculateMoyenneGenerale($eleve, $annee),
+            'moyenne_semestre_1' => $calculationService->calculateMoyenneGenerale($eleve, $annee, Note::SEMESTRE_1),
+            'moyenne_semestre_2' => $calculationService->calculateMoyenneGenerale($eleve, $annee, Note::SEMESTRE_2),
+        ];
+
+        $notesBySemestre = collect(Note::semestreOptions())
+            ->map(function (string $label, int $semestre) use ($notesCollection, $eleve, $annee, $calculationService) {
+                $semestreNotes = $notesCollection
+                    ->filter(fn (Note $note) => (int) $note->semestre === (int) $semestre)
+                    ->values();
+
+                if ($semestreNotes->isEmpty()) {
+                    return null;
+                }
+
+                $matieres = $semestreNotes
+                    ->groupBy('matiere_id')
+                    ->map(function ($matiereNotes) use ($eleve, $annee, $calculationService, $semestre) {
+                        $notes = $matiereNotes
+                            ->sortByDesc(fn (Note $note) => $note->created_at?->timestamp ?? 0)
+                            ->values();
+
+                        $matiere = $notes->first()->matiere;
+                        $moyenneDevoirs = $notes->where('type_devoir', 'devoir')->avg('note');
+                        $noteComposition = $notes->where('type_devoir', 'composition')->max('note');
+
+                        return [
+                            'matiere' => $matiere,
+                            'notes' => $notes,
+                            'total_notes' => $notes->count(),
+                            'moyenne_devoirs' => $moyenneDevoirs !== null ? round($moyenneDevoirs, 2) : null,
+                            'note_composition' => $noteComposition !== null ? round($noteComposition, 2) : null,
+                            'moyenne_matiere' => $calculationService->calculateMoyenneMatiere($eleve, $matiere, $annee, $semestre),
+                            'derniere_saisie' => $notes->first()->created_at,
+                        ];
+                    })
+                    ->sortBy(fn (array $matiereGroup) => strtolower($matiereGroup['matiere']->nom_matiere))
+                    ->values();
+
+                return [
+                    'semestre' => (int) $semestre,
+                    'label' => $label,
+                    'total_notes' => $semestreNotes->count(),
+                    'total_matieres' => $matieres->count(),
+                    'moyenne_generale' => $calculationService->calculateMoyenneGenerale($eleve, $annee, $semestre),
+                    'matieres' => $matieres,
+                ];
+            })
+            ->filter()
+            ->values();
+
+        return view('eleves.show', compact('eleve', 'annee', 'notesOverview', 'notesBySemestre'));
+    }
 
     public function edit(Eleve $eleve)
     {
-        $date       = request()->query('date') ?? currentAcademicDate();
-        $annee      = currentAcademicYear();
-        $classes    = Classe::orderBy('nom_classe')->get();
+        $date = request()->query('date') ?? currentAcademicDate();
+        $annee = currentAcademicYear();
+        $classes = Classe::orderBy('nom_classe')->get();
         $inscription = $eleve->inscriptionForDate($date);
 
         return view('eleves.edit', compact('eleve', 'classes', 'inscription', 'annee'));
     }
 
-    // --- Mise à jour ---
-
     public function update(UpdateEleveRequest $request, Eleve $eleve)
     {
-        $date  = request()->query('date') ?? currentAcademicDate();
+        $date = request()->query('date') ?? currentAcademicDate();
         $annee = currentAcademicYear();
 
         DB::transaction(function () use ($request, $eleve, $annee, $date) {
-            // 1. Mettre à jour les infos de l'élève
             $eleve->update($request->only([
-                'matricule', 'nom', 'prenom', 'date_naissance', 'sexe',
+                'matricule', 'nom', 'prenom', 'date_naissance', 'lieu_naissance', 'sexe',
             ]));
 
-            // 2. Mettre à jour l'inscription (changer de classe si besoin)
             if ($annee) {
                 $inscription = $eleve->inscriptionForDate($date);
 
                 if ($inscription) {
                     $inscription->update(['classe_id' => $request->classe_id]);
                 } else {
-                    // Créer une inscription si elle n'existe pas encore pour cette année
                     Inscription::create([
-                        'eleve_id'            => $eleve->id,
-                        'classe_id'           => $request->classe_id,
+                        'eleve_id' => $eleve->id,
+                        'classe_id' => $request->classe_id,
                         'annee_academique_id' => $annee->id,
                     ]);
                 }
@@ -149,19 +193,16 @@ class EleveController extends Controller
 
         return redirect()
             ->route('eleves.index')
-            ->with('success', 'Élève modifié avec succès.');
+            ->with('success', 'Eleve modifie avec succes.');
     }
-
-    // --- Suppression ---
 
     public function destroy(Eleve $eleve)
     {
-        // La suppression cascade sur inscriptions et notes (FK onDelete cascade)
         $eleve->delete();
 
         return redirect()
             ->route('eleves.index')
-            ->with('success', 'Élève supprimé avec succès.');
+            ->with('success', 'Eleve supprime avec succes.');
     }
 
     public function historique(Eleve $eleve)
@@ -169,14 +210,16 @@ class EleveController extends Controller
         $historique = Inscription::with(['classe', 'anneeAcademique'])
             ->where('eleve_id', $eleve->id)
             ->get()
-            ->map(function ($ins) use ($eleve) {
-                $calculationService = app(\App\Services\CalculationService::class);
+            ->map(function ($inscription) use ($eleve) {
+                $calculationService = app(CalculationService::class);
+
                 return [
-                    'annee' => $ins->anneeAcademique,
-                    'classe' => $ins->classe,
-                    'moyenne_generale' => $calculationService->calculateMoyenneGenerale($eleve, $ins->anneeAcademique),
+                    'annee' => $inscription->anneeAcademique,
+                    'classe' => $inscription->classe,
+                    'moyenne_generale' => $calculationService->calculateMoyenneGenerale($eleve, $inscription->anneeAcademique),
                 ];
-            })->sortByDesc(fn($item) => $item['annee']->libelle);
+            })
+            ->sortByDesc(fn ($item) => $item['annee']->libelle);
 
         return view('eleves.historique', compact('eleve', 'historique'));
     }
