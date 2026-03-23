@@ -19,9 +19,13 @@ class EleveController extends Controller
     {
         $date = request()->query('date') ?? currentAcademicDate();
         $annee = currentAcademicYear();
+        $classeFilter = request()->query('classe');
 
         if ($annee) {
             $eleveIds = Inscription::where('annee_academique_id', $annee->id)
+                ->when($classeFilter, function ($query) use ($classeFilter) {
+                    return $query->where('classe_id', $classeFilter);
+                })
                 ->distinct('eleve_id')
                 ->pluck('eleve_id');
 
@@ -38,7 +42,9 @@ class EleveController extends Controller
             return $eleve;
         });
 
-        return view('eleves.index', compact('eleves', 'annee'));
+        $classes = Classe::orderBy('nom_classe')->get();
+
+        return view('eleves.index', compact('eleves', 'annee', 'classes', 'classeFilter'));
     }
 
     public function create()

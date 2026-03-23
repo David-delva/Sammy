@@ -18,16 +18,50 @@ class NoteController extends Controller
         $selectedSemestre = in_array((int) $request->query('semestre'), array_keys(Note::semestreOptions()), true)
             ? (int) $request->query('semestre')
             : null;
+        $selectedClasse = $request->query('classe');
+        $selectedMatiere = $request->query('matiere');
+        $selectedType = $request->query('type_devoir');
+        $search = $request->query('search');
 
-        $notes = Note::with(['eleve', 'matiere', 'anneeAcademique'])
+        $notes = Note::with(['eleve', 'matiere', 'anneeAcademique', 'eleve.inscriptions'])
             ->when($annee, fn ($query) => $query->where('annee_academique_id', $annee->id))
             ->when($selectedSemestre, fn ($query) => $query->where('semestre', $selectedSemestre))
+            ->when($selectedClasse, function ($query) use ($selectedClasse, $annee) {
+                return $query->whereHas('eleve.inscriptions', function ($q) use ($selectedClasse, $annee) {
+                    $q->where('classe_id', $selectedClasse)
+                      ->where('annee_academique_id', $annee?->id);
+                });
+            })
+            ->when($selectedMatiere, fn ($query) => $query->where('matiere_id', $selectedMatiere))
+            ->when($selectedType, fn ($query) => $query->where('type_devoir', $selectedType))
+            ->when($search, function ($query) use ($search) {
+                return $query->whereHas('eleve', function ($q) use ($search) {
+                    $q->where('nom', 'like', "%{$search}%")
+                      ->orWhere('prenom', 'like', "%{$search}%")
+                      ->orWhere('matricule', 'like', "%{$search}%");
+                })
+                ->orWhereHas('matiere', function ($q) use ($search) {
+                    $q->where('nom_matiere', 'like', "%{$search}%");
+                });
+            })
             ->orderByDesc('semestre')
             ->latest()
             ->paginate(30)
             ->withQueryString();
 
-        return view('notes.index', compact('notes', 'selectedSemestre'));
+        $classes = \App\Models\Classe::orderBy('nom_classe')->get();
+        $matieres = \App\Models\Matiere::orderBy('nom_matiere')->get();
+
+        return view('notes.index', compact(
+            'notes', 
+            'selectedSemestre', 
+            'selectedClasse', 
+            'selectedMatiere', 
+            'selectedType',
+            'search',
+            'classes',
+            'matieres'
+        ));
     }
 
     public function create()

@@ -38,11 +38,13 @@ Route::middleware(['auth', 'verified', 'role:admin,secretariat'])->group(functio
             Route::resource('classes', ClasseController::class)->parameters([
                 'classes' => 'classe',
             ]);
-            Route::resource('matieres', MatiereController::class);
-
+            
+            // Routes personnalisées pour l'assignation (doivent être avant le resource)
             Route::get('/matieres/assigner', [MatiereController::class, 'assignerIndex'])->name('matieres.assigner');
             Route::get('/matieres/assigner/classe', [MatiereController::class, 'assignerClasse'])->name('matieres.assigner.classe');
             Route::post('/matieres/assigner', [MatiereController::class, 'assignerSauvegarder'])->name('matieres.assigner.store');
+            
+            Route::resource('matieres', MatiereController::class);
 
             Route::resource('notes', NoteController::class);
             Route::get('/notes-masse', [App\Http\Controllers\NoteMasseController::class, 'index'])->name('notes.masse.index');

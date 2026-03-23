@@ -20,21 +20,41 @@ class EleveSeeder extends Seeder
             return;
         }
 
-        $noms = ['DIALLO', 'TRAORE', 'KONE', 'CAMARA', 'TOURE', 'SYLLA', 'BAH', 'SOW'];
-        $prenoms = ['Mamadou', 'Fatoumata', 'Ibrahima', 'Aissatou', 'Ousmane', 'Mariama', 'Abdoulaye', 'Kadiatou'];
-        $lieux = ['Libreville', 'Franceville', 'Mouila', 'Lambarene', 'Port-Gentil', 'Oyem', 'Koulamoutou', 'Makokou'];
+        $noms = [
+            'DIALLO', 'TRAORE', 'KONE', 'CAMARA', 'TOURE', 'SYLLA', 
+            'BAH', 'SOW', 'BARRY', 'DIALLO', 'KONATE', 'COULIBALY',
+            'OUEDRAOGO', 'SANOGO', 'COULIBALY', 'DEMBELE', 'FOFANA',
+            'KOUAME', 'ADU', 'MENSAH', 'OKORO', 'NKAMAH', 'MBEMBA'
+        ];
+        
+        $prenoms = [
+            'Mamadou', 'Fatoumata', 'Ibrahima', 'Aissatou', 'Ousmane', 
+            'Mariama', 'Abdoulaye', 'Kadiatou', 'Seydou', 'Aminata',
+            'Boubacar', 'Ramatou', 'Moussa', 'Fatou', 'Idrissa',
+            'Awa', 'Cheikh', 'Mariam', 'Amadou', 'Salimata'
+        ];
+        
+        $lieux = [
+            'Libreville', 'Franceville', 'Mouila', 'Lambarene', 
+            'Port-Gentil', 'Oyem', 'Koulamoutou', 'Makokou',
+            'Bitam', 'Moanda', 'Tchibanga', 'Lastoursville'
+        ];
 
-        $matricule = 1000;
+        $matricule = 2025001;
 
         foreach ($classes as $classe) {
-            for ($i = 0; $i < 5; $i++) {
+            for ($i = 0; $i < 8; $i++) {
+                $nom = $noms[array_rand($noms)];
+                $prenom = $prenoms[array_rand($prenoms)];
+                $sexe = ['M', 'F'][rand(0, 1)];
+                
                 $eleve = Eleve::create([
-                    'matricule' => 'EL' . $matricule++,
-                    'nom' => $noms[array_rand($noms)],
-                    'prenom' => $prenoms[array_rand($prenoms)],
-                    'date_naissance' => now()->subYears(rand(12, 16))->format('Y-m-d'),
+                    'matricule' => 'E-' . $matricule++,
+                    'nom' => $nom,
+                    'prenom' => $prenom,
+                    'date_naissance' => now()->subYears(rand(10, 18))->format('Y-m-d'),
                     'lieu_naissance' => $lieux[array_rand($lieux)],
-                    'sexe' => ['M', 'F'][rand(0, 1)],
+                    'sexe' => $sexe,
                 ]);
 
                 Inscription::create([

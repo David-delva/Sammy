@@ -56,21 +56,6 @@
     <div class="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(320px,1fr)]">
         <div class="card">
             <div class="card-header">
-                <div>
-                    <h4>Aperçu de l'activité</h4>
-                    <p class="mt-1 text-xs text-gray-400">Vue rapide des grands volumes de gestion.</p>
-                </div>
-                <span class="badge-purple">{{ $currentAcademicLabel ?? 'En cours' }}</span>
-            </div>
-            <div class="card-body">
-                <div class="relative h-[260px]">
-                    <canvas id="classesChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
                 <h4>Actions rapides</h4>
                 <span class="badge-gray">Raccourcis</span>
             </div>
@@ -103,39 +88,7 @@
         </div>
     </div>
 
-    <div class="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-        <div class="card">
-            <div class="card-header">
-                <h4>Répartition des notes</h4>
-                <span class="badge-gray">Vue rapide</span>
-            </div>
-            <div class="card-body flex flex-col items-center">
-                <div class="relative h-[200px] w-[200px]">
-                    <canvas id="donutChart"></canvas>
-                    <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="text-2xl font-semibold tracking-tight text-gray-900">{{ $stats['total_notes'] }}</span>
-                        <span class="text-xs uppercase tracking-[0.2em] text-gray-400">notes</span>
-                    </div>
-                </div>
-                <div class="mt-6 w-full space-y-3 text-sm">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2 text-gray-600">
-                            <span class="h-2.5 w-2.5 rounded-full bg-brand-600"></span>
-                            <span>Devoirs</span>
-                        </div>
-                        <span class="font-semibold text-gray-900">{{ round($stats['total_notes'] * 0.65) }}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2 text-gray-600">
-                            <span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span>
-                            <span>Compositions</span>
-                        </div>
-                        <span class="font-semibold text-gray-900">{{ round($stats['total_notes'] * 0.35) }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+    <div class="grid gap-6 xl:grid-cols-2">
         <div class="card">
             <div class="card-header">
                 <h4>Résumé du compte</h4>
@@ -172,60 +125,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     Chart.defaults.font.family = 'Inter, ui-sans-serif, system-ui, sans-serif';
     Chart.defaults.color = '#94a3b8';
-
-    const ctxBar = document.getElementById('classesChart');
-    if (ctxBar) {
-        new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: ['Classes', 'Élèves', 'Matières', 'Notes'],
-                datasets: [{
-                    data: [{{ $stats['total_classes'] }}, {{ $stats['total_eleves'] }}, {{ $stats['total_matieres'] }}, {{ $stats['total_notes'] }}],
-                    backgroundColor: ['rgba(26, 86, 219, 0.82)', 'rgba(59, 130, 246, 0.82)', 'rgba(16, 185, 129, 0.82)', 'rgba(245, 158, 11, 0.82)'],
-                    borderRadius: 12,
-                    borderSkipped: false,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(148, 163, 184, 0.16)' },
-                        border: { display: false }
-                    },
-                    x: {
-                        grid: { display: false },
-                        border: { display: false }
-                    }
-                }
-            }
-        });
-    }
-
-    const ctxDonut = document.getElementById('donutChart');
-    if (ctxDonut) {
-        new Chart(ctxDonut, {
-            type: 'doughnut',
-            data: {
-                labels: ['Devoirs', 'Compositions'],
-                datasets: [{
-                    data: [65, 35],
-                    backgroundColor: ['#1a56db', '#f59e0b'],
-                    borderWidth: 0,
-                    hoverOffset: 4,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '80%',
-                plugins: { legend: { display: false } }
-            }
-        });
-    }
 
     document.querySelectorAll('[data-count]').forEach(el => {
         const target = Number(el.dataset.count || 0);

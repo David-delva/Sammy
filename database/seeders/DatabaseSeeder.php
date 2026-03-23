@@ -16,70 +16,112 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // â”€â”€ Utilisateurs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ─── Utilisateurs ──────────────────────────────────────
         User::create([
-            'name'     => 'Admin SystÃ¨me',
+            'name'     => 'Admin Système',
             'email'    => 'admin@ecole.com',
             'password' => Hash::make('password'),
             'role'     => 'admin',
+            'email_verified_at' => now(),
         ]);
 
         User::create([
-            'name'     => 'Service SecrÃ©tariat',
+            'name'     => 'Service Secrétariat',
             'email'    => 'secretariat@ecole.com',
             'password' => Hash::make('password'),
             'role'     => 'secretariat',
+            'email_verified_at' => now(),
         ]);
 
-        // â”€â”€ AnnÃ©e acadÃ©mique â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ─── Année académique ──────────────────────────────────
         $annee = AnneeAcademique::create([
             'libelle' => '2025-2026',
             'active'  => true,
         ]);
 
-        // â”€â”€ Classes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        $classe6A = Classe::create(['nom_classe' => '6Ã¨me A']);
-        $classe5B = Classe::create(['nom_classe' => '5Ã¨me B']);
+        // ─── Classes ───────────────────────────────────────────
+        $classe6A = Classe::create(['nom_classe' => '6ème A']);
+        $classe6B = Classe::create(['nom_classe' => '6ème B']);
+        $classe5A = Classe::create(['nom_classe' => '5ème A']);
+        $classe5B = Classe::create(['nom_classe' => '5ème B']);
+        $classe4A = Classe::create(['nom_classe' => '4ème A']);
+        $classe3A = Classe::create(['nom_classe' => '3ème A']);
 
-        // â”€â”€ MatiÃ¨res (catalogue global) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        $math  = Matiere::create(['nom_matiere' => 'MathÃ©matiques']);
-        $fran  = Matiere::create(['nom_matiere' => 'FranÃ§ais']);
+        // ─── Matières (catalogue global) ───────────────────────
+        $math  = Matiere::create(['nom_matiere' => 'Mathématiques']);
+        $fran  = Matiere::create(['nom_matiere' => 'Français']);
         $phys  = Matiere::create(['nom_matiere' => 'Sciences Physiques']);
+        $svt   = Matiere::create(['nom_matiere' => 'SVT']);
         $angl  = Matiere::create(['nom_matiere' => 'Anglais']);
-        $hist  = Matiere::create(['nom_matiere' => 'Histoire-GÃ©o']);
+        $hist  = Matiere::create(['nom_matiere' => 'Histoire-Géo']);
+        $eps   = Matiere::create(['nom_matiere' => 'EPS']);
+        $info  = Matiere::create(['nom_matiere' => 'Informatique']);
+        $philo = Matiere::create(['nom_matiere' => 'Philosophie']);
 
-        // â”€â”€ Liaisons classe Ã— matiÃ¨re Ã— annÃ©e avec coefficients â”€â”€
+        // ─── Liaisons classe × matière × année avec coefficients ─
         DB::table('classe_matiere')->insert([
-            // 6Ã¨me A
+            // 6ème A
             ['classe_id' => $classe6A->id, 'matiere_id' => $math->id,  'annee_academique_id' => $annee->id, 'coefficient' => 4, 'created_at' => now(), 'updated_at' => now()],
             ['classe_id' => $classe6A->id, 'matiere_id' => $fran->id,  'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
             ['classe_id' => $classe6A->id, 'matiere_id' => $phys->id,  'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe6A->id, 'matiere_id' => $svt->id,   'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe6A->id, 'matiere_id' => $angl->id,  'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
             ['classe_id' => $classe6A->id, 'matiere_id' => $hist->id,  'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
-            
-            // 5Ã¨me B (mÃªme matiÃ¨re Maths, coefficient diffÃ©rent)
+            ['classe_id' => $classe6A->id, 'matiere_id' => $eps->id,   'annee_academique_id' => $annee->id, 'coefficient' => 1, 'created_at' => now(), 'updated_at' => now()],
+
+            // 6ème B
+            ['classe_id' => $classe6B->id, 'matiere_id' => $math->id,  'annee_academique_id' => $annee->id, 'coefficient' => 4, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe6B->id, 'matiere_id' => $fran->id,  'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe6B->id, 'matiere_id' => $phys->id,  'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe6B->id, 'matiere_id' => $svt->id,   'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe6B->id, 'matiere_id' => $angl->id,  'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe6B->id, 'matiere_id' => $hist->id,  'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe6B->id, 'matiere_id' => $eps->id,   'annee_academique_id' => $annee->id, 'coefficient' => 1, 'created_at' => now(), 'updated_at' => now()],
+
+            // 5ème A
+            ['classe_id' => $classe5A->id, 'matiere_id' => $math->id,  'annee_academique_id' => $annee->id, 'coefficient' => 5, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe5A->id, 'matiere_id' => $fran->id,  'annee_academique_id' => $annee->id, 'coefficient' => 4, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe5A->id, 'matiere_id' => $phys->id,  'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe5A->id, 'matiere_id' => $svt->id,   'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe5A->id, 'matiere_id' => $angl->id,  'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe5A->id, 'matiere_id' => $hist->id,  'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe5A->id, 'matiere_id' => $eps->id,   'annee_academique_id' => $annee->id, 'coefficient' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe5A->id, 'matiere_id' => $info->id,  'annee_academique_id' => $annee->id, 'coefficient' => 1, 'created_at' => now(), 'updated_at' => now()],
+
+            // 5ème B
             ['classe_id' => $classe5B->id, 'matiere_id' => $math->id,  'annee_academique_id' => $annee->id, 'coefficient' => 5, 'created_at' => now(), 'updated_at' => now()],
             ['classe_id' => $classe5B->id, 'matiere_id' => $fran->id,  'annee_academique_id' => $annee->id, 'coefficient' => 4, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe5B->id, 'matiere_id' => $phys->id,  'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe5B->id, 'matiere_id' => $svt->id,   'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
             ['classe_id' => $classe5B->id, 'matiere_id' => $angl->id,  'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
-            ['classe_id' => $classe5B->id, 'matiere_id' => $phys->id,  'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe5B->id, 'matiere_id' => $hist->id,  'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe5B->id, 'matiere_id' => $eps->id,   'annee_academique_id' => $annee->id, 'coefficient' => 1, 'created_at' => now(), 'updated_at' => now()],
+
+            // 4ème A
+            ['classe_id' => $classe4A->id, 'matiere_id' => $math->id,  'annee_academique_id' => $annee->id, 'coefficient' => 5, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe4A->id, 'matiere_id' => $fran->id,  'annee_academique_id' => $annee->id, 'coefficient' => 4, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe4A->id, 'matiere_id' => $phys->id,  'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe4A->id, 'matiere_id' => $svt->id,   'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe4A->id, 'matiere_id' => $angl->id,  'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe4A->id, 'matiere_id' => $hist->id,  'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe4A->id, 'matiere_id' => $eps->id,   'annee_academique_id' => $annee->id, 'coefficient' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe4A->id, 'matiere_id' => $info->id,  'annee_academique_id' => $annee->id, 'coefficient' => 1, 'created_at' => now(), 'updated_at' => now()],
+
+            // 3ème A
+            ['classe_id' => $classe3A->id, 'matiere_id' => $math->id,  'annee_academique_id' => $annee->id, 'coefficient' => 6, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe3A->id, 'matiere_id' => $fran->id,  'annee_academique_id' => $annee->id, 'coefficient' => 5, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe3A->id, 'matiere_id' => $phys->id,  'annee_academique_id' => $annee->id, 'coefficient' => 4, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe3A->id, 'matiere_id' => $svt->id,   'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe3A->id, 'matiere_id' => $angl->id,  'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe3A->id, 'matiere_id' => $hist->id,  'annee_academique_id' => $annee->id, 'coefficient' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe3A->id, 'matiere_id' => $eps->id,   'annee_academique_id' => $annee->id, 'coefficient' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['classe_id' => $classe3A->id, 'matiere_id' => $philo->id, 'annee_academique_id' => $annee->id, 'coefficient' => 2, 'created_at' => now(), 'updated_at' => now()],
         ]);
 
-        // â”€â”€ Ã‰lÃ¨ve de test â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        $eleve = Eleve::create([
-            'matricule'      => 'E-2025-001',
-            'nom'            => 'Dupont',
-            'prenom'         => 'Jean',
-            'date_naissance' => '2010-05-15',
-            'sexe'           => 'M',
-        ]);
+        // ─── Élèves ────────────────────────────────────────────
+        $this->call(EleveSeeder::class);
 
-        // â”€â”€ Inscription â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        Inscription::create([
-            'eleve_id'            => $eleve->id,
-            'classe_id'           => $classe6A->id,
-            'annee_academique_id' => $annee->id,
-        ]);
-
-        // Appeler NoteSeeder pour gÃ©nÃ©rer des notes cohÃ©rentes
+        // ─── Notes ─────────────────────────────────────────────
         $this->call(NoteSeeder::class);
     }
 }

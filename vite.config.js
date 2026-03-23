@@ -8,4 +8,8 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        origin: 'https://ebony-incurious-unfeigningly.ngrok-free.dev',
+        cors: true,
+    },
 });
