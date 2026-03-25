@@ -26,7 +26,7 @@
                 {{ \Carbon\Carbon::now()->translatedFormat('l j F Y') }}
             </p>
         </div>
-        @if(auth()->user()->role === 'admin')
+        @if(auth()->user()->role === 'admin' || auth()->user()->role === 'secretariat')
             <a href="{{ route('notes.masse.index') }}" class="btn-primary self-start lg:self-auto">
                 <i class="bi bi-table"></i>
                 Saisie en masse
@@ -65,7 +65,7 @@
                     <span>Inscrire un élève</span>
                 </a>
 
-                @if(auth()->user()->role === 'admin')
+                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'secretariat')
                     <a href="{{ route('notes.masse.index') }}" class="flex items-center gap-3 rounded-xl border border-gray-200 bg-slate-50 px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700">
                         <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><i class="bi bi-table"></i></span>
                         <span>Saisie en masse</span>

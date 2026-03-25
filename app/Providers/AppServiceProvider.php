@@ -29,10 +29,12 @@ class AppServiceProvider extends ServiceProvider
             $service = app(AcademicYearService::class);
 
             $dateParam = request()->query('date');
-            if ($dateParam) {
-                session(['academic_year_date' => $dateParam]);
-            } elseif (session()->has('academic_year_date')) {
+            
+            // If on dashboard or no date param, clear the session
+            if (request()->routeIs('dashboard') && ! $dateParam) {
                 session()->forget('academic_year_date');
+            } elseif ($dateParam) {
+                session(['academic_year_date' => $dateParam]);
             }
 
             $annee = null;
@@ -40,9 +42,7 @@ class AppServiceProvider extends ServiceProvider
 
             if (Schema::hasTable('annee_academiques')) {
                 $annee = $service->forDate();
-                $years = Cache::remember('academic_years_list', 300, function () {
-                    return AnneeAcademique::query()->orderBy('libelle', 'desc')->get();
-                });
+                $years = AnneeAcademique::query()->orderBy('libelle', 'desc')->get();
             }
 
             $view->with([

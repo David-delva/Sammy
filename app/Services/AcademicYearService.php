@@ -3,14 +3,13 @@
 namespace App\Services;
 
 use App\Models\AnneeAcademique;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
 class AcademicYearService
 {
     /**
      * Retourne l'annee academique correspondant a une date donnee.
-     * Fallback sur l'annee active si aucune date n'est fournie ou trouvee.
+     * Fallback sur l'annee active si aucune annee n'existe pour cette date.
      */
     public function forDate(?string $date = null): ?AnneeAcademique
     {
@@ -18,17 +17,25 @@ class AcademicYearService
             return null;
         }
 
-        $date = $date ?? request()->query('date') ?? session('academic_year_date') ?? now()->toDateString();
-        $label = AnneeAcademique::labelForDate($date);
+        $date = $date ?? $this->selectedDate() ?? now()->toDateString();
 
-        return Cache::remember("academic_year_for_{$label}", 300, function () use ($label) {
-            return AnneeAcademique::query()->where('libelle', $label)->first()
-                ?? AnneeAcademique::query()->where('active', true)->first();
-        });
+        return AnneeAcademique::forDate($date, false) ?? $this->activeYear();
     }
 
     /**
-     * Verifie si l'annee selectionnee est l'annee academique reellement en cours.
+     * Retourne l'annee academique active.
+     */
+    public function activeYear(): ?AnneeAcademique
+    {
+        if (! Schema::hasTable('annee_academiques')) {
+            return null;
+        }
+
+        return AnneeAcademique::query()->where('active', true)->first();
+    }
+
+    /**
+     * Verifie si l'annee selectionnee correspond a l'annee issue du calendrier actuel.
      */
     public function isCurrentYear(): bool
     {
@@ -43,6 +50,19 @@ class AcademicYearService
      */
     public function referenceDate(): string
     {
-        return request()->query('date') ?? session('academic_year_date') ?? now()->toDateString();
+        return $this->selectedDate() ?? now()->toDateString();
+    }
+
+    protected function selectedDate(): ?string
+    {
+        $date = request()->query('date');
+
+        if (filled($date)) {
+            return $date;
+        }
+
+        $sessionDate = session('academic_year_date');
+
+        return filled($sessionDate) ? $sessionDate : null;
     }
 }

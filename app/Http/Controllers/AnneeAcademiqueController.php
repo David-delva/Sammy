@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\AnneeAcademique;
+use Illuminate\Support\Facades\Cache;
 
 class AnneeAcademiqueController extends Controller
 {
@@ -35,6 +36,10 @@ class AnneeAcademiqueController extends Controller
 
         AnneeAcademique::create($validated);
 
+        // Clear all academic year related caches
+        Cache::forget('academic_years_list');
+        Cache::flush();
+
         return redirect()->route('annees.index')->with('success', 'Année académique créée.');
     }
 
@@ -59,12 +64,21 @@ class AnneeAcademiqueController extends Controller
 
         $annee->update($validated);
 
+        // Clear all academic year related caches
+        Cache::forget('academic_years_list');
+        Cache::flush();
+
         return redirect()->route('annees.index')->with('success', 'Année académique mise à jour.');
     }
 
     public function destroy(AnneeAcademique $annee)
     {
         $annee->delete();
+
+        // Clear all academic year related caches
+        Cache::forget('academic_years_list');
+        Cache::flush();
+
         return redirect()->route('annees.index')->with('success', 'Année académique supprimée.');
     }
 }

@@ -24,12 +24,20 @@
                     <x-nav-link :href="route('classement.index')" :active="request()->routeIs('classement.*')">
                         {{ __('Classement') }}
                     </x-nav-link>
-                    @if(auth()->user()->role === 'admin')
+                    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'secretariat')
                         <x-nav-link :href="route('matieres.index')" :active="request()->routeIs('matieres.*')">
                             {{ __('Matières') }}
                         </x-nav-link>
                         <x-nav-link :href="route('notes.index')" :active="request()->routeIs('notes.*')">
                             {{ __('Notes') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('notes.masse.index')" :active="request()->routeIs('notes.masse.*')">
+                            {{ __('Saisie en masse') }}
+                        </x-nav-link>
+                    @endif
+                    @if(auth()->user()->role === 'admin')
+                        <x-nav-link :href="route('annees.index')" :active="request()->routeIs('annees.*')">
+                            {{ __('Années') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -93,12 +101,23 @@
             <x-responsive-nav-link :href="route('eleves.index')" :active="request()->routeIs('eleves.*')">
                 {{ __('Élèves') }}
             </x-responsive-nav-link>
-            @if(auth()->user()->role === 'admin')
+            <x-responsive-nav-link :href="route('classement.index')" :active="request()->routeIs('classement.*')">
+                {{ __('Classement') }}
+            </x-responsive-nav-link>
+            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'secretariat')
                 <x-responsive-nav-link :href="route('matieres.index')" :active="request()->routeIs('matieres.*')">
                     {{ __('Matières') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('notes.index')" :active="request()->routeIs('notes.*')">
                     {{ __('Notes') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('notes.masse.index')" :active="request()->routeIs('notes.masse.*')">
+                    {{ __('Saisie en masse') }}
+                </x-responsive-nav-link>
+            @endif
+            @if(auth()->user()->role === 'admin')
+                <x-responsive-nav-link :href="route('annees.index')" :active="request()->routeIs('annees.*')">
+                    {{ __('Années') }}
                 </x-responsive-nav-link>
             @endif
         </div>
@@ -126,14 +145,6 @@
                     </x-responsive-nav-link>
                 </form>
             </div>
-            @if(auth()->user()->role === 'admin')
-                <div class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('notes.masse.index') ? 'active' : '' }}" href="{{ route('notes.masse.index') }}">
-                        <i class="bi bi-table me-2"></i>
-                        <span>Saisie en masse</span>
-                    </a>
-                </div>
-            @endif
         </div>
     </div>
 </nav>

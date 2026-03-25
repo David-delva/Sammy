@@ -35,13 +35,24 @@ class BusinessAccessTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_secretariat_cannot_access_admin_only_routes(): void
+    public function test_verified_secretariat_can_access_class_management_routes(): void
     {
         $user = User::factory()->create([
             'role' => 'secretariat',
         ]);
 
         $response = $this->actingAs($user)->get(route('classes.index'));
+
+        $response->assertOk();
+    }
+
+    public function test_secretariat_cannot_access_admin_only_routes(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'secretariat',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('annees.index'));
 
         $response->assertForbidden();
     }
@@ -52,7 +63,7 @@ class BusinessAccessTest extends TestCase
             'role' => 'admin',
         ]);
 
-        $response = $this->actingAs($user)->get(route('classes.index'));
+        $response = $this->actingAs($user)->get(route('annees.index'));
 
         $response->assertOk();
     }

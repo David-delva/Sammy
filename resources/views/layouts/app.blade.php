@@ -57,7 +57,7 @@
             </a>
 
             @auth
-                @if(auth()->user()->role === 'admin')
+                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'secretariat')
                     <p class="sidebar-section-label">Administration</p>
 
                     <a href="{{ route('classes.index') }}"
@@ -89,7 +89,9 @@
                         <i class="bi bi-table w-5 text-center text-base"></i>
                         <span>Saisie en masse</span>
                     </a>
+                @endif
 
+                @if(auth()->user()->role === 'admin')
                     <a href="{{ route('annees.index') }}"
                        class="sidebar-link {{ request()->routeIs('annees.*') ? 'active' : '' }}">
                         <i class="bi bi-calendar-event-fill w-5 text-center text-base"></i>
@@ -235,9 +237,9 @@
                         <strong>Mode consultation :</strong> vous visualisez l'année {{ $currentAcademicYear->libelle }}.
                         La modification est bloquée pour préserver l'historique.
                     </div>
-                    <a href="{{ url()->current() }}" class="btn-secondary btn-sm self-center whitespace-nowrap">
+                    <button onclick="window.location.href='{{ route('academic-year.reset') }}'" class="btn-secondary btn-sm self-center whitespace-nowrap" style="cursor: pointer;">
                         Retour au présent
-                    </a>
+                    </button>
                 </div>
             @endif
 

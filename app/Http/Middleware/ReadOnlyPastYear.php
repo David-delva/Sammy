@@ -13,9 +13,8 @@ class ReadOnlyPastYear
     {
         $service = app(AcademicYearService::class);
 
-        // Si ce n'est pas l'année en cours et qu'on tente une écriture
-        if (!$service->isCurrentYear() && !$request->isMethod('GET')) {
-            return back()->with('error', "Action impossible : Vous êtes en mode consultation sur une année passée ou future.");
+        if (! $service->isCurrentYear() && ! $request->isMethod('GET')) {
+            return back()->with('error', "Action impossible : vous etes en mode consultation sur une annee differente de l'annee en cours.");
         }
 
         return $next($request);
