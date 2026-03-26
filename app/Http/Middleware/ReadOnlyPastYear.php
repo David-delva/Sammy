@@ -11,6 +11,10 @@ class ReadOnlyPastYear
 {
     public function handle(Request $request, Closure $next): Response
     {
+        if ($request->user()?->role === 'admin') {
+            return $next($request);
+        }
+
         $service = app(AcademicYearService::class);
 
         if (! $service->isCurrentYear() && ! $request->isMethod('GET')) {

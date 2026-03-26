@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EleveController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\NoteMasseController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -65,38 +66,41 @@ Route::middleware(['auth', 'verified', 'role:admin,secretariat'])->group(functio
     })->name('academic-year.reset');
 
     Route::middleware(['readonly'])->group(function () {
-        Route::get('/eleves/{eleve}/historique', [EleveController::class, 'historique'])->name('eleves.historique');
-        Route::resource('eleves', EleveController::class)->parameters([
-            'eleves' => 'eleve',
-        ]);
-        Route::get('/bulletin/pdf/{id}', [BulletinController::class, 'generatePdf'])->name('bulletins.pdf');
+        Route::middleware(['role:admin'])->group(function () {
+            Route::resource('eleves', EleveController::class)->except(['index', 'show'])->parameters([
+                'eleves' => 'eleve',
+            ]);
 
-        Route::get('/classement', [App\Http\Controllers\ClassementController::class, 'index'])->name('classement.index');
-        Route::get('/classement/pdf/{classe_id}', [App\Http\Controllers\ClassementController::class, 'exportPdf'])->name('classement.pdf');
-        Route::get('/classes/{classe}/liste-pdf', [App\Http\Controllers\ListeClasseController::class, 'generatePdf'])->name('classes.liste.pdf');
-
-        // Admin et Secretariat peuvent gerer : Classes, Matieres, Assignation, Notes, Saisie en masse
-        Route::middleware(['role:admin,secretariat'])->group(function () {
-            Route::resource('classes', ClasseController::class)->parameters([
+            Route::resource('classes', ClasseController::class)->except(['index', 'show'])->parameters([
                 'classes' => 'classe',
             ]);
 
-            // Routes personnalisees pour l'assignation (doivent etre avant le resource)
             Route::get('/matieres/assigner', [MatiereController::class, 'assignerIndex'])->name('matieres.assigner');
             Route::get('/matieres/assigner/classe', [MatiereController::class, 'assignerClasse'])->name('matieres.assigner.classe');
             Route::post('/matieres/assigner', [MatiereController::class, 'assignerSauvegarder'])->name('matieres.assigner.store');
 
-            Route::resource('matieres', MatiereController::class);
-
-            Route::resource('notes', NoteController::class);
-            Route::get('/notes-masse', [App\Http\Controllers\NoteMasseController::class, 'index'])->name('notes.masse.index');
-            Route::post('/notes-masse', [App\Http\Controllers\NoteMasseController::class, 'store'])->name('notes.masse.store');
-        });
-
-        // Admin uniquement
-        Route::middleware(['role:admin'])->group(function () {
+            Route::resource('matieres', MatiereController::class)->except(['index', 'show']);
+            Route::resource('notes', NoteController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
+            Route::get('/notes-masse', [NoteMasseController::class, 'index'])->name('notes.masse.index');
+            Route::post('/notes-masse', [NoteMasseController::class, 'store'])->name('notes.masse.store');
             Route::resource('annees', AnneeAcademiqueController::class);
         });
+
+        Route::get('/eleves/{eleve}/historique', [EleveController::class, 'historique'])->name('eleves.historique');
+        Route::resource('eleves', EleveController::class)->only(['index', 'show'])->parameters([
+            'eleves' => 'eleve',
+        ]);
+
+        Route::get('/bulletin/pdf/{id}', [BulletinController::class, 'generatePdf'])->name('bulletins.pdf');
+        Route::get('/classement', [App\Http\Controllers\ClassementController::class, 'index'])->name('classement.index');
+        Route::get('/classement/pdf/{classe_id}', [App\Http\Controllers\ClassementController::class, 'exportPdf'])->name('classement.pdf');
+        Route::get('/classes/{classe}/liste-pdf', [App\Http\Controllers\ListeClasseController::class, 'generatePdf'])->name('classes.liste.pdf');
+
+        Route::resource('classes', ClasseController::class)->only(['index', 'show'])->parameters([
+            'classes' => 'classe',
+        ]);
+        Route::resource('matieres', MatiereController::class)->only(['index', 'show']);
+        Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');
     });
 });
 

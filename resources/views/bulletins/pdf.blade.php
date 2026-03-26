@@ -243,7 +243,7 @@
                         <div class="head">REPUBLIQUE GABONAISE</div>
                         <div class="subhead">Union - Travail - Justice</div>
                     </div>
-                    <div class="school-year">Annee scolaire : {{ $annee->libelle }}</div>
+                    <div class="school-year">Année scolaire : {{ $annee->libelle }}</div>
                 </td>
             </tr>
         </table>
@@ -257,7 +257,7 @@
             </p>
             <p>
                 N&eacute;(e) le : <span class="fill w-date">{{ $dateNaissance }}</span>
-                &agrave; <span class="fill w-place">{{ $eleve->lieu_naissance ?? 'Non renseigne' }}</span>
+                &agrave; <span class="fill w-place">{{ $eleve->lieu_naissance ?? 'Non renseigné' }}</span>
                 classe : <span class="fill w-class">{{ $classeLibelle }}</span>
             </p>
         </div>

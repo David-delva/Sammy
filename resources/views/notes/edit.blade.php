@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
 @section('title', 'Modifier la note')
-@section('breadcrumb', 'Evaluations / Notes / Modification')
+@section('breadcrumb', 'Évaluations / Notes / Modification')
 
 @section('content')
 <div class="mx-auto max-w-4xl space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Evaluations</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Évaluations</p>
             <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Modifier la note</h2>
-            <p class="mt-2 text-sm text-gray-500">Ajustez l'eleve, la matiere, la valeur, le semestre ou le type d'evaluation.</p>
+            <p class="mt-2 text-sm text-gray-500">Ajustez l'élève, la matière, la valeur, le semestre ou le type d'évaluation.</p>
         </div>
         <a href="{{ route('notes.index', ['date' => request()->query('date'), 'semestre' => request()->query('semestre')]) }}" class="btn-secondary self-start sm:self-auto">
             <i class="bi bi-arrow-left"></i>
@@ -33,7 +33,7 @@
                 @method('PUT')
 
                 <div class="form-field">
-                    <label for="eleve_id" class="form-label">Eleve <span class="req">*</span></label>
+                    <label for="eleve_id" class="form-label">Élève <span class="req">*</span></label>
                     <select id="eleve_id" name="eleve_id" class="form-select @error('eleve_id') error @enderror" required>
                         @foreach($eleves as $eleve)
                             <option value="{{ $eleve->id }}" data-classe="{{ $eleve->resolved_classe_id }}" {{ old('eleve_id', $note->eleve_id) == $eleve->id ? 'selected' : '' }}>
@@ -47,7 +47,7 @@
                 </div>
 
                 <div class="form-field">
-                    <label for="matiere_id" class="form-label">Matiere <span class="req">*</span></label>
+                    <label for="matiere_id" class="form-label">Matière <span class="req">*</span></label>
                     <select id="matiere_id" name="matiere_id" class="form-select @error('matiere_id') error @enderror" required>
                         @foreach($matieres as $matiere)
                             <option value="{{ $matiere->id }}" {{ old('matiere_id', $note->matiere_id) == $matiere->id ? 'selected' : '' }}>
@@ -82,7 +82,7 @@
                     </div>
 
                     <div class="form-field">
-                        <label for="type_devoir" class="form-label">Type d'evaluation <span class="req">*</span></label>
+                        <label for="type_devoir" class="form-label">Type d'évaluation <span class="req">*</span></label>
                         <select id="type_devoir" name="type_devoir" class="form-select @error('type_devoir') error @enderror" required>
                             <option value="devoir" {{ old('type_devoir', $note->type_devoir) == 'devoir' ? 'selected' : '' }}>Devoir</option>
                             <option value="composition" {{ old('type_devoir', $note->type_devoir) == 'composition' ? 'selected' : '' }}>Composition</option>

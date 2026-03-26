@@ -24,10 +24,12 @@
                 @endif.
             </p>
         </div>
-        <a href="{{ route('eleves.create', ['date' => request()->query('date')]) }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 px-5 py-2.5 text-sm font-semibold text-bleue-50 shadow-md shadow-brand-500/25 transition-all hover:from-brand-700 hover:to-brand-800 hover:shadow-lg hover:shadow-brand-500/30 sm:self-auto">
+        @if($canManageAcademicData)
+        <a href="{{ route('eleves.create', ['date' => request()->query('date')]) }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 px-5 py-2.5 text-sm font-semibold text-blue-50 shadow-md shadow-brand-500/25 transition-all hover:from-brand-700 hover:to-brand-800 hover:shadow-lg hover:shadow-brand-500/30 sm:self-auto">
             <i class="bi bi-person-plus"></i>
             Inscrire un élève
         </a>
+        @endif
     </div>
 
     <!-- Carte : Liste des élèves -->
@@ -100,6 +102,7 @@
                             <i class="bi bi-eye"></i>
                             Détails
                         </a>
+                        @if($canManageAcademicData)
                         <a href="{{ route('eleves.edit', ['eleve' => $eleve, 'date' => request()->query('date')]) }}" class="flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all hover:border-gray-300 hover:bg-gray-50 inline-flex">
                             <i class="bi bi-pencil"></i>
                             Modifier
@@ -112,6 +115,7 @@
                                 Supprimer
                             </button>
                         </form>
+                        @endif
                     </div>
                 </div>
             @empty
@@ -163,6 +167,7 @@
                                         <i class="bi bi-eye"></i>
                                         Détails
                                     </a>
+                                    @if($canManageAcademicData)
                                     <a href="{{ route('eleves.edit', ['eleve' => $eleve, 'date' => request()->query('date')]) }}" class="btn-secondary btn-sm">
                                         <i class="bi bi-pencil"></i>
                                         Modifier
@@ -175,6 +180,7 @@
                                             Supprimer
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -203,3 +209,4 @@
     </div>
 </div>
 @endsection
+

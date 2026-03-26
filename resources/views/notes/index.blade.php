@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Notes')
-@section('breadcrumb', 'Evaluations / Notes')
+@section('breadcrumb', 'Évaluations / Notes')
 
 @section('content')
 <div class="space-y-8">
@@ -16,7 +16,7 @@
                     <i class="bi bi-clipboard-data-fill text-2xl text-white"></i>
                 </div>
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-200">Evaluations</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-200">Évaluations</p>
                     <h2 class="mt-1 text-2xl font-bold tracking-tight text-indigo-500 sm:text-3xl">Notes & Résultats</h2>
                     <p class="mt-2 max-w-xl text-sm text-indigo-100">
                         Suivez les notes enregistrées
@@ -26,6 +26,7 @@
                     </p>
                 </div>
             </div>
+            @if($canManageAcademicData)
             <div class="flex flex-col gap-3 sm:flex-row">
                 <a href="{{ route('notes.masse.index', ['date' => request()->query('date'), 'semestre' => $selectedSemestre]) }}" class="group inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-indigo-500 backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-lg hover:shadow-black/10">
                     <i class="bi bi-table transition-transform group-hover:scale-110"></i>
@@ -38,6 +39,7 @@
                     <span class="sm:hidden">+</span>
                 </a>
             </div>
+            @endif
         </div>
     </div>
 
@@ -233,6 +235,7 @@
                             </div>
                         </div>
                     </div>
+                    @if($canManageAcademicData)
                     <div class="mt-4 flex gap-2 border-t border-gray-100 pt-3">
                         <a href="{{ route('notes.edit', ['note' => $note, 'date' => request()->query('date'), 'semestre' => $selectedSemestre]) }}" class="flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-2.5 text-xs font-bold text-gray-700 transition-all hover:from-gray-100 hover:to-gray-200 inline-flex">
                             <i class="bi bi-pencil-square"></i>
@@ -247,6 +250,7 @@
                             </button>
                         </form>
                     </div>
+                    @endif
                 </div>
             @empty
                 <div class="flex flex-col items-center justify-center px-6 py-16">
@@ -312,6 +316,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4">
+                                @if($canManageAcademicData)
                                 <div class="flex justify-end gap-2">
                                     <a href="{{ route('notes.edit', ['note' => $note, 'date' => request()->query('date'), 'semestre' => $selectedSemestre]) }}" class="group inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-700 transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600">
                                         <i class="bi bi-pencil-square transition-transform group-hover:scale-110"></i>
@@ -326,6 +331,7 @@
                                         </button>
                                     </form>
                                 </div>
+                                @endif
                             </td>
                         </tr>
                     @empty
@@ -360,3 +366,4 @@ function toggleFilters() {
 }
 </script>
 @endsection
+

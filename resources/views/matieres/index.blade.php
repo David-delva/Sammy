@@ -18,6 +18,7 @@
             </p>
         </div>
 
+        @if($canManageAcademicData)
         <div class="flex flex-col gap-3 sm:flex-row">
             <a href="{{ route('matieres.assigner') }}" class="btn-secondary justify-center">
                 <i class="bi bi-diagram-3"></i>
@@ -28,6 +29,7 @@
                 Nouvelle matière
             </a>
         </div>
+        @endif
     </div>
 
     <div class="card overflow-hidden">
@@ -56,6 +58,7 @@
                             </td>
                             <td>
                                 <div class="flex justify-end gap-2">
+                                    @if($canManageAcademicData)
                                     <a href="{{ route('matieres.edit', $matiere) }}" class="btn-secondary btn-sm" title="Modifier">
                                         <i class="bi bi-pencil"></i>
                                         Modifier
@@ -68,6 +71,7 @@
                                             Supprimer
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

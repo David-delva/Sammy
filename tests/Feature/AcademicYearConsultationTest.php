@@ -21,12 +21,12 @@ class AcademicYearConsultationTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_current_calendar_year_remains_writable_without_consultation_selection(): void
+    public function test_admin_can_write_in_current_calendar_year_without_consultation_selection(): void
     {
         Carbon::setTestNow('2026-03-26 10:00:00');
 
         $user = User::factory()->create([
-            'role' => 'secretariat',
+            'role' => 'admin',
         ]);
 
         $currentYear = AnneeAcademique::create([
@@ -68,12 +68,12 @@ class AcademicYearConsultationTest extends TestCase
         ]);
     }
 
-    public function test_selected_year_outside_the_current_calendar_year_is_read_only(): void
+    public function test_admin_can_write_in_selected_year_outside_the_current_calendar_year(): void
     {
         Carbon::setTestNow('2026-03-26 10:00:00');
 
         $user = User::factory()->create([
-            'role' => 'secretariat',
+            'role' => 'admin',
         ]);
 
         AnneeAcademique::create([
@@ -92,9 +92,8 @@ class AcademicYearConsultationTest extends TestCase
 
         $response = $this->actingAs($user)
             ->withSession(['academic_year_date' => '2026-09-01'])
-            ->from(route('eleves.create'))
             ->post(route('eleves.store'), [
-                'matricule' => 'E-READONLY-001',
+                'matricule' => 'E-FUTURE-001',
                 'nom' => 'Barry',
                 'prenom' => 'Mariam',
                 'date_naissance' => '2011-06-10',
@@ -103,13 +102,19 @@ class AcademicYearConsultationTest extends TestCase
                 'classe_id' => $classe->id,
             ]);
 
-        $response->assertRedirect(route('eleves.create'));
-        $response->assertSessionHas('error', "Action impossible : vous etes en mode consultation sur une annee differente de l'annee en cours.");
+        $response->assertRedirect(route('eleves.index'));
 
-        $this->assertDatabaseMissing('eleves', [
-            'matricule' => 'E-READONLY-001',
+        $this->assertDatabaseHas('eleves', [
+            'matricule' => 'E-FUTURE-001',
         ]);
-        $this->assertSame('2026-2027', $futureYear->libelle);
+
+        $eleve = Eleve::query()->where('matricule', 'E-FUTURE-001')->firstOrFail();
+
+        $this->assertDatabaseHas('inscriptions', [
+            'eleve_id' => $eleve->id,
+            'classe_id' => $classe->id,
+            'annee_academique_id' => $futureYear->id,
+        ]);
     }
 
     public function test_reset_academic_year_clears_session_and_removes_date_from_redirect(): void

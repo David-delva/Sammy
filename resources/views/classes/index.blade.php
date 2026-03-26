@@ -17,10 +17,12 @@
             </p>
         </div>
 
+        @if($canManageAcademicData)
         <a href="{{ route('classes.create', ['date' => request()->query('date')]) }}" class="btn-primary self-start lg:self-auto">
             <i class="bi bi-plus-lg text-sm"></i>
             Nouvelle classe
         </a>
+        @endif
     </div>
 
     <div class="card overflow-hidden">
@@ -57,6 +59,7 @@
                                         <i class="bi bi-printer"></i>
                                         Feuille d'appel
                                     </a>
+                                    @if($canManageAcademicData)
                                     <a href="{{ route('classes.edit', ['classe' => $classe, 'date' => request()->query('date')]) }}" class="btn-secondary btn-sm" title="Modifier">
                                         <i class="bi bi-pencil"></i>
                                         Modifier
@@ -69,6 +72,7 @@
                                             Supprimer
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

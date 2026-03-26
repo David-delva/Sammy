@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Gestion Scolaire') — É.T.P.</title>
+<title>@yield('title', 'Gestion Scolaire') - É.T.P.</title>
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -72,11 +72,13 @@
                         <span>Matières</span>
                     </a>
 
+                    @if($canManageAcademicData)
                     <a href="{{ route('matieres.assigner') }}"
                        class="sidebar-link {{ request()->routeIs('matieres.assigner*') ? 'active' : '' }}">
                         <i class="bi bi-diagram-3-fill w-5 text-center text-base"></i>
                         <span>Assignation</span>
                     </a>
+                    @endif
 
                     <a href="{{ route('notes.index') }}"
                        class="sidebar-link {{ request()->routeIs('notes.*') && !request()->routeIs('notes.masse.*') ? 'active' : '' }}">
@@ -84,11 +86,13 @@
                         <span>Notes</span>
                     </a>
 
+                    @if($canManageAcademicData)
                     <a href="{{ route('notes.masse.index') }}"
                        class="sidebar-link {{ request()->routeIs('notes.masse.*') ? 'active' : '' }}">
                         <i class="bi bi-table w-5 text-center text-base"></i>
                         <span>Saisie en masse</span>
                     </a>
+                    @endif
                 @endif
 
                 @if(auth()->user()->role === 'admin')
@@ -235,7 +239,11 @@
                     <i class="bi bi-exclamation-diamond-fill mt-0.5 flex-shrink-0"></i>
                     <div class="flex-1">
                         <strong>Mode consultation :</strong> vous visualisez l'année {{ $currentAcademicYear->libelle }}.
-                        La modification est bloquée pour préserver l'historique.
+                        @if($canManageAcademicData)
+                            En tant qu'administrateur, les modifications restent autorisées.
+                        @else
+                            La modification est bloquée pour préserver l'historique.
+                        @endif
                     </div>
                     <button onclick="window.location.href='{{ route('academic-year.reset') }}'" class="btn-secondary btn-sm self-center whitespace-nowrap" style="cursor: pointer;">
                         Retour au présent
@@ -297,3 +305,4 @@
     @stack('scripts')
 </body>
 </html>
+

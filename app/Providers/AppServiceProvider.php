@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Models\AnneeAcademique;
 use App\Services\AcademicYearService;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -29,8 +28,7 @@ class AppServiceProvider extends ServiceProvider
             $service = app(AcademicYearService::class);
 
             $dateParam = request()->query('date');
-            
-            // If on dashboard or no date param, clear the session
+
             if (request()->routeIs('dashboard') && ! $dateParam) {
                 session()->forget('academic_year_date');
             } elseif ($dateParam) {
@@ -51,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
                 'isCurrentAcademicYear' => $annee ? $service->isCurrentYear() : false,
                 'academicYears' => $years,
                 'currentAcademicLabel' => $annee ? $annee->libelle : null,
+                'canManageAcademicData' => auth()->check() && auth()->user()->role === 'admin',
             ]);
         });
     }

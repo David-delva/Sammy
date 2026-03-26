@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
 @section('title', 'Saisie en masse')
-@section('breadcrumb', 'Evaluations / Notes / Saisie en masse')
+@section('breadcrumb', 'Évaluations / Notes / Saisie en masse')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Evaluations</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Évaluations</p>
             <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Saisie en masse</h2>
             <p class="mt-2 max-w-3xl text-sm text-gray-500">
-                Saisissez rapidement les notes par classe, matiere et semestre
+                Saisissez rapidement les notes par classe, matière et semestre
                 @if(isset($annee) && $annee)
                     pour <span class="font-medium text-gray-700">{{ $annee->libelle }}</span>
                 @endif.
@@ -32,7 +32,7 @@
                 <div class="form-field">
                     <label class="form-label" for="classe_id">1. Classe</label>
                     <select id="classe_id" name="classe_id" class="form-select" onchange="document.getElementById('filterForm').submit()">
-                        <option value="">Selectionner</option>
+                        <option value="">Sélectionner</option>
                         @foreach($classes as $c)
                             <option value="{{ $c->id }}" {{ $selectedClasse == $c->id ? 'selected' : '' }}>{{ $c->nom_classe }}</option>
                         @endforeach
@@ -40,9 +40,9 @@
                 </div>
 
                 <div class="form-field">
-                    <label class="form-label" for="matiere_id">2. Matiere</label>
+                    <label class="form-label" for="matiere_id">2. Matière</label>
                     <select id="matiere_id" name="matiere_id" class="form-select" {{ !$selectedClasse ? 'disabled' : '' }} onchange="document.getElementById('filterForm').submit()">
-                        <option value="">Selectionner</option>
+                        <option value="">Sélectionner</option>
                         @foreach($matieres as $m)
                             <option value="{{ $m->id }}" {{ $selectedMatiere == $m->id ? 'selected' : '' }}>{{ $m->nom_matiere }}</option>
                         @endforeach
@@ -52,7 +52,7 @@
                 <div class="form-field">
                     <label class="form-label" for="type_devoir">3. Type</label>
                     <select id="type_devoir" name="type_devoir" class="form-select" {{ !$selectedMatiere ? 'disabled' : '' }} onchange="document.getElementById('filterForm').submit()">
-                        <option value="">Selectionner</option>
+                        <option value="">Sélectionner</option>
                         <option value="devoir" {{ $selectedType == 'devoir' ? 'selected' : '' }}>Devoir</option>
                         <option value="composition" {{ $selectedType == 'composition' ? 'selected' : '' }}>Composition</option>
                     </select>
@@ -61,7 +61,7 @@
                 <div class="form-field">
                     <label class="form-label" for="semestre">4. Semestre</label>
                     <select id="semestre" name="semestre" class="form-select" {{ !$selectedType ? 'disabled' : '' }} onchange="document.getElementById('filterForm').submit()">
-                        <option value="">Selectionner</option>
+                        <option value="">Sélectionner</option>
                         @foreach(\App\Models\Note::semestreOptions() as $value => $label)
                             <option value="{{ $value }}" {{ (string) $selectedSemestre === (string) $value ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
@@ -79,8 +79,8 @@
         <div class="card overflow-hidden">
             <div class="card-header">
                 <div>
-                    <h4>Liste des eleves</h4>
-                    <p class="mt-1 text-xs text-gray-400">{{ $eleves->count() }} eleve(s) a renseigner pour {{ \App\Models\Note::semestreOptions()[$selectedSemestre] }}</p>
+                    <h4>Liste des élèves</h4>
+                    <p class="mt-1 text-xs text-gray-400">{{ $eleves->count() }} élève(s) à renseigner pour {{ \App\Models\Note::semestreOptions()[$selectedSemestre] }}</p>
                 </div>
                 <div class="flex flex-col gap-2 sm:flex-row">
                     <button type="button" class="btn-secondary btn-sm justify-center" onclick="remplirAbsents()">
@@ -160,7 +160,7 @@
     @elseif($selectedSemestre)
         <div class="alert-info">
             <i class="bi bi-info-circle-fill"></i>
-            <span>Aucun eleve inscrit dans cette classe pour l'annee selectionnee.</span>
+            <span>Aucun élève inscrit dans cette classe pour l'année sélectionnée.</span>
         </div>
     @endif
 </div>

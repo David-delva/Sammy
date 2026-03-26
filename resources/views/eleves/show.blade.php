@@ -11,15 +11,17 @@
 <div class="space-y-6">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Profil eleve</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Profil élève</p>
             <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">{{ $eleve->nom }} {{ $eleve->prenom }}</h2>
-            <p class="mt-2 text-sm text-gray-500">Matricule {{ $eleve->matricule }} - Consultez les notes et l'etat scolaire de l'annee selectionnee.</p>
+            <p class="mt-2 text-sm text-gray-500">Matricule {{ $eleve->matricule }} - Consultez les notes et l'état scolaire de l'année sélectionnée.</p>
         </div>
         <div class="flex flex-col gap-3 sm:flex-row">
+            @if($canManageAcademicData)
             <a href="{{ route('eleves.edit', ['eleve' => $eleve, 'date' => request()->query('date')]) }}" class="btn-secondary justify-center">
                 <i class="bi bi-pencil"></i>
                 Modifier
             </a>
+            @endif
             <a href="{{ route('eleves.historique', ['eleve' => $eleve, 'date' => request()->query('date')]) }}" class="btn-secondary justify-center">
                 <i class="bi bi-clock-history"></i>
                 Historique
@@ -47,11 +49,11 @@
                 </div>
                 <div class="px-5 py-4">
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Lieu de naissance</p>
-                    <p class="mt-2 text-sm font-semibold text-gray-900">{{ $eleve->lieu_naissance ?: 'Non renseigne' }}</p>
+                    <p class="mt-2 text-sm font-semibold text-gray-900">{{ $eleve->lieu_naissance ?: 'Non renseigné' }}</p>
                 </div>
                 <div class="px-5 py-4">
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Sexe</p>
-                    <p class="mt-2 text-sm font-semibold text-gray-900">{{ $eleve->sexe === 'M' ? 'Masculin' : 'Feminin' }}</p>
+                    <p class="mt-2 text-sm font-semibold text-gray-900">{{ $eleve->sexe === 'M' ? 'Masculin' : 'Féminin' }}</p>
                 </div>
             </div>
         </div>
@@ -60,12 +62,12 @@
             <div class="card-header">
                 <div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <h4>Notes de l'annee</h4>
+                        <h4>Notes de l'année</h4>
                         @if($annee)
                             <span class="badge-blue">{{ $annee->libelle }}</span>
                         @endif
                     </div>
-                    <p class="mt-1 text-xs text-gray-400">Evaluations organisees par semestre puis par matiere pour le contexte actif.</p>
+                    <p class="mt-1 text-xs text-gray-400">Évaluations organisées par semestre puis par matière pour le contexte actif.</p>
                 </div>
                 <div class="flex flex-col gap-2 sm:flex-row">
                     <a href="{{ route('bulletins.pdf', ['id' => $eleve->id, 'semestre' => 1, 'date' => request()->query('date')]) }}" class="btn-danger btn-sm">
@@ -81,7 +83,7 @@
 
             <div class="grid gap-4 border-b border-gray-100 bg-slate-50/70 px-5 py-5 sm:grid-cols-2 xl:grid-cols-5">
                 <div class="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Evaluations</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Évaluations</p>
                     <p class="mt-2 text-2xl font-semibold text-gray-900">{{ $notesOverview['total_notes'] }}</p>
                     <p class="mt-1 text-xs text-gray-500">Notes enregistrees</p>
                 </div>
@@ -115,10 +117,10 @@
                                 <div>
                                     <div class="flex flex-wrap items-center gap-2">
                                         <span class="{{ $semestreGroup['semestre'] === 2 ? 'badge-yellow' : 'badge-blue' }}">{{ $semestreGroup['label'] }}</span>
-                                        <span class="badge-gray">{{ $semestreGroup['total_notes'] }} evaluation(s)</span>
-                                        <span class="badge-purple">{{ $semestreGroup['total_matieres'] }} matiere(s)</span>
+                                        <span class="badge-gray">{{ $semestreGroup['total_notes'] }} évaluation(s)</span>
+                                        <span class="badge-purple">{{ $semestreGroup['total_matieres'] }} matière(s)</span>
                                     </div>
-                                    <p class="mt-3 text-sm text-gray-500">Les evaluations sont regroupees par matiere pour faciliter la lecture du semestre.</p>
+                                    <p class="mt-3 text-sm text-gray-500">Les évaluations sont regroupées par matière pour faciliter la lecture du semestre.</p>
                                 </div>
                                 <div class="rounded-xl border border-gray-100 bg-white px-4 py-3 text-right shadow-sm">
                                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Moyenne du semestre</p>
@@ -133,10 +135,10 @@
                                             <div>
                                                 <div class="flex flex-wrap items-center gap-2">
                                                     <h5 class="text-base font-semibold text-gray-900">{{ $matiereGroup['matiere']->nom_matiere }}</h5>
-                                                    <span class="badge-gray">{{ $matiereGroup['total_notes'] }} evaluation(s)</span>
+                                                    <span class="badge-gray">{{ $matiereGroup['total_notes'] }} évaluation(s)</span>
                                                 </div>
                                                 <p class="mt-2 text-sm text-gray-500">
-                                                    Derniere saisie le {{ $matiereGroup['derniere_saisie'] ? $matiereGroup['derniere_saisie']->format('d/m/Y') : '--' }}.
+                                                    Dernière saisie le {{ $matiereGroup['derniere_saisie'] ? $matiereGroup['derniere_saisie']->format('d/m/Y') : '--' }}.
                                                 </p>
                                             </div>
 
@@ -150,7 +152,7 @@
                                                     <p class="mt-2 text-lg font-semibold text-gray-900">{{ $formatNote($matiereGroup['note_composition']) }}</p>
                                                 </div>
                                                 <div class="rounded-xl border border-gray-100 bg-white p-3 shadow-sm">
-                                                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Moy. matiere</p>
+                                                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Moy. matière</p>
                                                     <p class="mt-2 text-lg font-semibold {{ $matiereGroup['moyenne_matiere'] === null ? 'text-gray-400' : ($matiereGroup['moyenne_matiere'] >= 10 ? 'text-emerald-600' : 'text-red-600') }}">{{ $formatNote($matiereGroup['moyenne_matiere']) }}</p>
                                                 </div>
                                             </div>
@@ -199,7 +201,7 @@
                             <i class="bi bi-journal-x text-2xl"></i>
                         </div>
                         <p class="mt-4 text-sm font-medium text-gray-700">Aucune note enregistree</p>
-                        <p class="mt-1 text-sm text-gray-500">Les notes de cet eleve apparaitront ici des qu'elles seront saisies.</p>
+                        <p class="mt-1 text-sm text-gray-500">Les notes de cet élève apparaîtront ici dès qu'elles seront saisies.</p>
                     </div>
                 </div>
             @endif
@@ -207,3 +209,4 @@
     </div>
 </div>
 @endsection
+

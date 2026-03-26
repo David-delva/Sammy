@@ -46,15 +46,17 @@ class BusinessAccessTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_secretariat_cannot_access_admin_only_routes(): void
+    public function test_secretariat_cannot_access_write_screens(): void
     {
         $user = User::factory()->create([
             'role' => 'secretariat',
         ]);
 
-        $response = $this->actingAs($user)->get(route('annees.index'));
+        $this->actingAs($user);
 
-        $response->assertForbidden();
+        foreach (['eleves.create', 'classes.create', 'matieres.create', 'matieres.assigner', 'notes.create', 'notes.masse.index', 'annees.index'] as $routeName) {
+            $this->get(route($routeName))->assertForbidden();
+        }
     }
 
     public function test_admin_can_access_admin_only_routes(): void
@@ -63,21 +65,49 @@ class BusinessAccessTest extends TestCase
             'role' => 'admin',
         ]);
 
-        $response = $this->actingAs($user)->get(route('annees.index'));
+        $this->createCurrentAcademicYear();
+        $this->actingAs($user);
 
-        $response->assertOk();
+        foreach (['eleves.create', 'classes.create', 'matieres.create', 'matieres.assigner', 'notes.create', 'notes.masse.index', 'annees.index'] as $routeName) {
+            $this->get(route($routeName))->assertOk();
+        }
     }
 
-    public function test_verified_secretariat_can_create_a_student_with_birthplace(): void
+    public function test_secretariat_cannot_create_a_student(): void
     {
         $user = User::factory()->create([
             'role' => 'secretariat',
         ]);
 
-        $annee = AnneeAcademique::create([
-            'libelle' => AnneeAcademique::labelForDate(),
-            'active' => true,
+        $this->createCurrentAcademicYear();
+        $classe = Classe::create([
+            'nom_classe' => '6eme A',
         ]);
+
+        $response = $this->actingAs($user)->post(route('eleves.store'), [
+            'matricule' => 'E-FORBIDDEN-001',
+            'nom' => 'Diallo',
+            'prenom' => 'Aminata',
+            'date_naissance' => '2011-02-15',
+            'lieu_naissance' => 'Koulamoutou',
+            'sexe' => 'F',
+            'classe_id' => $classe->id,
+        ]);
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseMissing('eleves', [
+            'matricule' => 'E-FORBIDDEN-001',
+        ]);
+    }
+
+    public function test_admin_can_create_a_student_with_birthplace(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'admin',
+        ]);
+
+        $annee = $this->createCurrentAcademicYear();
 
         $classe = Classe::create([
             'nom_classe' => '6eme A',
@@ -106,6 +136,14 @@ class BusinessAccessTest extends TestCase
             'eleve_id' => $eleve->id,
             'classe_id' => $classe->id,
             'annee_academique_id' => $annee->id,
+        ]);
+    }
+
+    private function createCurrentAcademicYear(): AnneeAcademique
+    {
+        return AnneeAcademique::create([
+            'libelle' => AnneeAcademique::labelForDate(),
+            'active' => true,
         ]);
     }
 }
