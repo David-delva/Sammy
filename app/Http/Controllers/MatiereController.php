@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Classe;
 use App\Models\Matiere;
 use App\Services\AcademicCacheService;
+use App\Services\AcademicPerformanceProjector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -12,6 +13,7 @@ class MatiereController extends Controller
 {
     public function __construct(
         private readonly AcademicCacheService $academicCache,
+        private readonly AcademicPerformanceProjector $projector,
     ) {}
 
     public function index()
@@ -146,6 +148,7 @@ class MatiereController extends Controller
             }
         });
 
+        $this->projector->rebuildClassYear($classe->id, $annee->id);
         $this->academicCache->bust();
 
         return redirect()

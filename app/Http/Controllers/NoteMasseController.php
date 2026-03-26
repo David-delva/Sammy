@@ -7,6 +7,7 @@ use App\Models\Classe;
 use App\Models\Inscription;
 use App\Models\Note;
 use App\Services\AcademicCacheService;
+use App\Services\AcademicPerformanceProjector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,6 +15,7 @@ class NoteMasseController extends Controller
 {
     public function __construct(
         private readonly AcademicCacheService $academicCache,
+        private readonly AcademicPerformanceProjector $projector,
     ) {}
 
     public function index(Request $request)
@@ -76,27 +78,33 @@ class NoteMasseController extends Controller
     public function store(StoreMasseNoteRequest $request)
     {
         $annee = currentAcademicYear();
+        $impactedEleves = [];
 
-        DB::transaction(function () use ($request, $annee) {
-            foreach ($request->notes as $eleveId => $valeur) {
-                if ($valeur === null || $valeur === '') {
-                    continue;
+        DB::transaction(function () use ($request, $annee, &$impactedEleves) {
+            Note::withoutEvents(function () use ($request, $annee, &$impactedEleves) {
+                foreach ($request->notes as $eleveId => $valeur) {
+                    if ($valeur === null || $valeur === '') {
+                        continue;
+                    }
+
+                    Note::updateOrCreate(
+                        [
+                            'eleve_id' => $eleveId,
+                            'matiere_id' => $request->matiere_id,
+                            'type_devoir' => $request->type_devoir,
+                            'annee_academique_id' => $annee->id,
+                            'semestre' => (int) $request->semestre,
+                        ],
+                        ['note' => $valeur]
+                    );
+
+                    $impactedEleves[] = (int) $eleveId;
+                    $this->forgetNoteCaches((int) $eleveId, (int) $request->matiere_id, $annee->id);
                 }
-
-                Note::updateOrCreate(
-                    [
-                        'eleve_id' => $eleveId,
-                        'matiere_id' => $request->matiere_id,
-                        'type_devoir' => $request->type_devoir,
-                        'annee_academique_id' => $annee->id,
-                        'semestre' => (int) $request->semestre,
-                    ],
-                    ['note' => $valeur]
-                );
-
-                $this->forgetNoteCaches((int) $eleveId, (int) $request->matiere_id, $annee->id);
-            }
+            });
         });
+
+        $this->projector->rebuildStudentsForYear($impactedEleves, $annee->id);
 
         return redirect()->back()->with('success', 'Les notes ont été enregistrées avec succès.');
     }

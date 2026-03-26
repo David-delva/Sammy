@@ -1,92 +1,132 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', $classe->nom_classe)
-@section('breadcrumb', 'Administration / Classes / Détail')
+@section('breadcrumb', 'Administration / Classes / Detail')
 
 @section('content')
 <div class="space-y-6">
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Classe</p>
-            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">{{ $classe->nom_classe }}</h2>
-            <p class="mt-2 text-sm text-gray-500">
-                @if(request()->query('date'))
-                    Vue de l'année <span class="font-medium text-gray-700">{{ \App\Models\AnneeAcademique::labelForDate(request()->query('date')) }}</span>
-                @else
-                    Vue synthétique des élèves et des matières associées.
-                @endif
-            </p>
-        </div>
+    <section class="page-hero" data-reveal>
+        <div class="page-hero-grid">
+            <div>
+                <p class="page-kicker">Classe</p>
+                <h2 class="page-title">{{ $classe->nom_classe }} centralise eleves, matieres et acces rapides.</h2>
+                <p class="page-lead">
+                    Consultez la composition de la classe et les matieres rattachees dans une vue qui reste agreable a parcourir sur mobile comme sur grand ecran.
+                </p>
 
-        <a href="{{ route('classes.index', ['date' => request()->query('date')]) }}" class="btn-secondary self-start lg:self-auto">
-            <i class="bi bi-arrow-left"></i>
-            Retour aux classes
-        </a>
-    </div>
+                <div class="hero-badges">
+                    <span class="hero-badge"><i class="bi bi-people"></i>{{ $classe->eleves->count() }} eleve(s)</span>
+                    <span class="hero-badge"><i class="bi bi-book"></i>{{ $classe->matieres->count() }} matiere(s)</span>
+                    @if(request()->query('date'))
+                        <span class="hero-badge"><i class="bi bi-calendar2-week"></i>{{ \App\Models\AnneeAcademique::labelForDate(request()->query('date')) }}</span>
+                    @endif
+                </div>
+
+                <div class="hero-actions">
+                    <a href="{{ route('classes.index', ['date' => request()->query('date')]) }}" class="btn-secondary justify-center sm:w-auto">
+                        <i class="bi bi-arrow-left"></i>
+                        Retour aux classes
+                    </a>
+                </div>
+            </div>
+
+            <aside class="hero-panel" data-tilt>
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.28em] text-white/45">Vue synthese</p>
+                    <h3 class="mt-3 text-2xl font-semibold tracking-tight text-white">Deux panneaux pour lire l'effectif et le programme de la classe.</h3>
+                    <p class="mt-3 text-sm leading-7 text-white/70">Les cartes internes conservent la meme structure visuelle que le reste du tableau de bord administratif.</p>
+                </div>
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-[22px] border border-white/10 bg-white/8 px-4 py-4">
+                        <p class="text-xs uppercase tracking-[0.22em] text-white/45">Effectif</p>
+                        <p class="mt-2 text-2xl font-semibold text-white">{{ $classe->eleves->count() }}</p>
+                        <p class="mt-1 text-sm text-white/65">inscrit(s)</p>
+                    </div>
+                    <div class="rounded-[22px] border border-white/10 bg-white/8 px-4 py-4">
+                        <p class="text-xs uppercase tracking-[0.22em] text-white/45">Programme</p>
+                        <p class="mt-2 text-2xl font-semibold text-white">{{ $classe->matieres->count() }}</p>
+                        <p class="mt-1 text-sm text-white/65">matiere(s)</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
 
     <div class="grid gap-6 xl:grid-cols-2">
-        <div class="card overflow-hidden">
+        <section class="card overflow-hidden">
             <div class="card-header">
-                <h4>Élèves</h4>
+                <div>
+                    <h4>Eleves</h4>
+                    <p class="text-xs text-slate-500">Liste des profils actuellement rattaches a cette classe.</p>
+                </div>
                 <span class="badge-blue">{{ $classe->eleves->count() }} inscrit(s)</span>
             </div>
+
             @if($classe->eleves->isEmpty())
-                <div class="card-body text-center">
-                    <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-gray-400">
-                        <i class="bi bi-people text-2xl"></i>
+                <div class="card-body">
+                    <div class="empty-state">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                            <i class="bi bi-people text-2xl"></i>
+                        </div>
+                        <p class="mt-5 text-sm font-semibold text-slate-900">Aucun eleve pour cette classe</p>
+                        <p class="mt-2 text-sm text-slate-500">Les futurs inscrits apparaitront ici automatiquement.</p>
                     </div>
-                    <p class="mt-4 text-sm font-medium text-gray-700">Aucun élève pour cette classe</p>
-                    <p class="mt-1 text-sm text-gray-500">Les futurs inscrits apparaîtront ici automatiquement.</p>
                 </div>
             @else
-                <div class="divide-y divide-gray-100">
+                <div class="mobile-list">
                     @foreach($classe->eleves as $eleve)
-                        <div class="flex items-center justify-between gap-3 px-5 py-4">
+                        <article class="mobile-list-item sm:flex sm:items-center sm:justify-between">
                             <div>
-                                <p class="font-semibold text-gray-900">{{ $eleve->nom }} {{ $eleve->prenom }}</p>
-                                <p class="mt-1 text-xs text-gray-400">{{ $eleve->matricule ?? 'Matricule non renseigné' }}</p>
+                                <p class="font-semibold text-slate-900">{{ $eleve->nom }} {{ $eleve->prenom }}</p>
+                                <p class="mt-1 text-xs text-slate-500">{{ $eleve->matricule ?? 'Matricule non renseigne' }}</p>
                             </div>
-                            <a href="{{ route('eleves.show', $eleve) }}" class="btn-secondary btn-sm">
+                            <a href="{{ route('eleves.show', $eleve) }}" class="btn-secondary btn-sm mt-3 sm:mt-0">
                                 <i class="bi bi-eye"></i>
                                 Profil
                             </a>
-                        </div>
+                        </article>
                     @endforeach
                 </div>
             @endif
-        </div>
+        </section>
 
-        <div class="card overflow-hidden">
+        <section class="card overflow-hidden">
             <div class="card-header">
-                <h4>Matières</h4>
-                <span class="badge-purple">{{ $classe->matieres->count() }} matière(s)</span>
+                <div>
+                    <h4>Matieres</h4>
+                    <p class="text-xs text-slate-500">Programme associe a la classe avec indication du coefficient quand il existe.</p>
+                </div>
+                <span class="badge-purple">{{ $classe->matieres->count() }} matiere(s)</span>
             </div>
+
             @if($classe->matieres->isEmpty())
-                <div class="card-body text-center">
-                    <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-gray-400">
-                        <i class="bi bi-book text-2xl"></i>
+                <div class="card-body">
+                    <div class="empty-state">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                            <i class="bi bi-book text-2xl"></i>
+                        </div>
+                        <p class="mt-5 text-sm font-semibold text-slate-900">Aucune matiere associee</p>
+                        <p class="mt-2 text-sm text-slate-500">Utilisez le module d'assignation pour relier les matieres a cette classe.</p>
                     </div>
-                    <p class="mt-4 text-sm font-medium text-gray-700">Aucune matière associée</p>
-                    <p class="mt-1 text-sm text-gray-500">Utilisez le module d'assignation pour relier les matières à cette classe.</p>
                 </div>
             @else
-                <div class="divide-y divide-gray-100">
+                <div class="mobile-list">
                     @foreach($classe->matieres as $matiere)
-                        <div class="flex items-center justify-between gap-3 px-5 py-4">
+                        <article class="mobile-list-item sm:flex sm:items-center sm:justify-between">
                             <div>
-                                <p class="font-semibold text-gray-900">{{ $matiere->nom_matiere ?? $matiere->nom }}</p>
-                                <p class="mt-1 text-xs text-gray-400">Matière du programme</p>
+                                <p class="font-semibold text-slate-900">{{ $matiere->nom_matiere ?? $matiere->nom }}</p>
+                                <p class="mt-1 text-xs text-slate-500">Matiere du programme</p>
                             </div>
                             @if(isset($matiere->pivot->coefficient))
-                                <span class="badge-gray">Coef. {{ $matiere->pivot->coefficient }}</span>
+                                <span class="badge-gray mt-3 sm:mt-0">Coef. {{ $matiere->pivot->coefficient }}</span>
                             @else
-                                <span class="badge-gray">Sans coefficient</span>
+                                <span class="badge-gray mt-3 sm:mt-0">Sans coefficient</span>
                             @endif
-                        </div>
+                        </article>
                     @endforeach
                 </div>
             @endif
-        </div>
+        </section>
     </div>
 </div>
 @endsection

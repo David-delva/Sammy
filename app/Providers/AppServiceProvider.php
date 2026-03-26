@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 use App\Models\AnneeAcademique;
+use App\Models\Inscription;
+use App\Models\Note;
+use App\Observers\InscriptionObserver;
+use App\Observers\NoteObserver;
 use App\Services\AcademicYearService;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -12,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(AcademicYearService::class, function ($app) {
+        $this->app->singleton(AcademicYearService::class, function () {
             return new AcademicYearService;
         });
 
@@ -24,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Note::observe(NoteObserver::class);
+        Inscription::observe(InscriptionObserver::class);
+
         View::composer('*', function ($view) {
             $service = app(AcademicYearService::class);
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\AcademicResult;
 use App\Models\AnneeAcademique;
 use App\Models\Classe;
 use App\Models\Eleve;
@@ -11,6 +12,7 @@ use App\Models\Note;
 use App\Services\AcademicCacheService;
 use App\Services\CalculationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class CalculationServiceTest extends TestCase
@@ -130,20 +132,94 @@ class CalculationServiceTest extends TestCase
         $this->assertSame('15,00', $bulletin['lignes'][0]['moyenne']);
     }
 
-    public function test_moyenne_matiere_est_recalculee_quand_la_version_du_cache_academique_change(): void
+    public function test_calculations_materialize_projection_rows_on_demand(): void
+    {
+        $this->createNote($this->matiere, Note::SEMESTRE_1, 'devoir', 14.0);
+        $this->createNote($this->matiere, Note::SEMESTRE_1, 'composition', 16.0);
+
+        $this->assertEquals(15.0, $this->service->calculateMoyenneGenerale($this->eleve, $this->annee, Note::SEMESTRE_1));
+
+        $this->assertDatabaseHas('academic_results', [
+            'eleve_id' => $this->eleve->id,
+            'annee_academique_id' => $this->annee->id,
+            'period' => AcademicResult::PERIOD_SEMESTRE_1,
+            'moyenne_generale' => 15.0,
+        ]);
+
+        $this->assertDatabaseHas('academic_subject_results', [
+            'eleve_id' => $this->eleve->id,
+            'annee_academique_id' => $this->annee->id,
+            'matiere_id' => $this->matiere->id,
+            'period' => AcademicResult::PERIOD_SEMESTRE_1,
+            'moyenne_matiere' => 15.0,
+        ]);
+    }
+
+    public function test_get_classement_for_class_returns_ranked_materialized_results(): void
+    {
+        $secondEleve = Eleve::create([
+            'matricule' => 'TST-002',
+            'nom' => 'Barry',
+            'prenom' => 'Mariam',
+            'date_naissance' => '2010-03-03',
+            'sexe' => 'F',
+        ]);
+
+        Inscription::create([
+            'eleve_id' => $secondEleve->id,
+            'classe_id' => $this->classe->id,
+            'annee_academique_id' => $this->annee->id,
+        ]);
+
+        $this->createNote($this->matiere, Note::SEMESTRE_1, 'devoir', 16.0);
+        $this->createNote($this->matiere, Note::SEMESTRE_1, 'composition', 18.0);
+
+        Note::create([
+            'eleve_id' => $secondEleve->id,
+            'matiere_id' => $this->matiere->id,
+            'annee_academique_id' => $this->annee->id,
+            'note' => 12.0,
+            'type_devoir' => 'devoir',
+            'semestre' => Note::SEMESTRE_1,
+        ]);
+
+        Note::create([
+            'eleve_id' => $secondEleve->id,
+            'matiere_id' => $this->matiere->id,
+            'annee_academique_id' => $this->annee->id,
+            'note' => 12.0,
+            'type_devoir' => 'composition',
+            'semestre' => Note::SEMESTRE_1,
+        ]);
+
+        $classement = $this->service->getClassementForClass($this->classe, $this->annee, Note::SEMESTRE_1);
+
+        $this->assertCount(2, $classement);
+        $this->assertSame($this->eleve->id, $classement[0]['eleve']->id);
+        $this->assertSame(17.0, $classement[0]['moyenne']);
+        $this->assertSame(1, $classement[0]['rang']);
+        $this->assertSame($secondEleve->id, $classement[1]['eleve']->id);
+        $this->assertSame(12.0, $classement[1]['moyenne']);
+        $this->assertSame(2, $classement[1]['rang']);
+    }
+
+    public function test_moyenne_matiere_est_rechargee_apres_un_bust_de_version_du_cache(): void
     {
         $this->createNote($this->matiere, Note::SEMESTRE_1, 'devoir', 14.0);
         $this->createNote($this->matiere, Note::SEMESTRE_1, 'composition', 16.0);
 
         $this->assertEquals(15.0, $this->service->calculateMoyenneMatiere($this->eleve, $this->matiere, $this->annee, Note::SEMESTRE_1));
 
-        Note::query()
+        DB::table('academic_subject_results')
             ->where('eleve_id', $this->eleve->id)
             ->where('matiere_id', $this->matiere->id)
             ->where('annee_academique_id', $this->annee->id)
-            ->where('type_devoir', 'composition')
-            ->where('semestre', Note::SEMESTRE_1)
-            ->update(['note' => 20.0]);
+            ->where('period', AcademicResult::PERIOD_SEMESTRE_1)
+            ->update([
+                'note_composition' => 20.0,
+                'moyenne_matiere' => 17.0,
+                'moy_x_coef' => 68.0,
+            ]);
 
         $this->assertEquals(15.0, $this->service->calculateMoyenneMatiere($this->eleve, $this->matiere, $this->annee, Note::SEMESTRE_1));
 
