@@ -21,7 +21,7 @@ class AcademicYearCacheInvalidationTest extends TestCase
 
         $academicCache = app(AcademicCacheService::class);
         $initialVersion = $academicCache->version();
-        $unrelatedCacheKey = 'unrelated:cache:' . uniqid('', true);
+        $unrelatedCacheKey = 'unrelated:cache:'.uniqid('', true);
 
         Cache::forever($unrelatedCacheKey, 'keep-me');
 

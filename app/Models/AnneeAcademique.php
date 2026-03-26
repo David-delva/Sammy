@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AnneeAcademique extends Model
 {
@@ -29,6 +29,7 @@ class AnneeAcademique extends Model
         // Academic year starts in September: if month >= 9, start is this year, else previous year
         $startYear = $d->month >= 9 ? $d->year : $d->year - 1;
         $endYear = $startYear + 1;
+
         return sprintf('%d-%d', $startYear, $endYear);
     }
 
@@ -42,7 +43,7 @@ class AnneeAcademique extends Model
         $query = self::where('libelle', $label);
         $instance = $query->first();
 
-        if (!$instance && $createIfMissing) {
+        if (! $instance && $createIfMissing) {
             $instance = self::create(['libelle' => $label, 'active' => false]);
         }
 

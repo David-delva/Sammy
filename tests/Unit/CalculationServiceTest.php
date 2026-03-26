@@ -18,9 +18,13 @@ class CalculationServiceTest extends TestCase
     use RefreshDatabase;
 
     private CalculationService $service;
+
     private AnneeAcademique $annee;
+
     private Classe $classe;
+
     private Eleve $eleve;
+
     private Matiere $matiere;
 
     protected function setUp(): void

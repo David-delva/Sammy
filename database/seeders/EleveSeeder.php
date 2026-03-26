@@ -21,23 +21,23 @@ class EleveSeeder extends Seeder
         }
 
         $noms = [
-            'DIALLO', 'TRAORE', 'KONE', 'CAMARA', 'TOURE', 'SYLLA', 
+            'DIALLO', 'TRAORE', 'KONE', 'CAMARA', 'TOURE', 'SYLLA',
             'BAH', 'SOW', 'BARRY', 'DIALLO', 'KONATE', 'COULIBALY',
             'OUEDRAOGO', 'SANOGO', 'COULIBALY', 'DEMBELE', 'FOFANA',
-            'KOUAME', 'ADU', 'MENSAH', 'OKORO', 'NKAMAH', 'MBEMBA'
+            'KOUAME', 'ADU', 'MENSAH', 'OKORO', 'NKAMAH', 'MBEMBA',
         ];
-        
+
         $prenoms = [
-            'Mamadou', 'Fatoumata', 'Ibrahima', 'Aissatou', 'Ousmane', 
+            'Mamadou', 'Fatoumata', 'Ibrahima', 'Aissatou', 'Ousmane',
             'Mariama', 'Abdoulaye', 'Kadiatou', 'Seydou', 'Aminata',
             'Boubacar', 'Ramatou', 'Moussa', 'Fatou', 'Idrissa',
-            'Awa', 'Cheikh', 'Mariam', 'Amadou', 'Salimata'
+            'Awa', 'Cheikh', 'Mariam', 'Amadou', 'Salimata',
         ];
-        
+
         $lieux = [
-            'Libreville', 'Franceville', 'Mouila', 'Lambarene', 
+            'Libreville', 'Franceville', 'Mouila', 'Lambarene',
             'Port-Gentil', 'Oyem', 'Koulamoutou', 'Makokou',
-            'Bitam', 'Moanda', 'Tchibanga', 'Lastoursville'
+            'Bitam', 'Moanda', 'Tchibanga', 'Lastoursville',
         ];
 
         $matricule = 2025001;
@@ -47,9 +47,9 @@ class EleveSeeder extends Seeder
                 $nom = $noms[array_rand($noms)];
                 $prenom = $prenoms[array_rand($prenoms)];
                 $sexe = ['M', 'F'][rand(0, 1)];
-                
+
                 $eleve = Eleve::create([
-                    'matricule' => 'E-' . $matricule++,
+                    'matricule' => 'E-'.$matricule++,
                     'nom' => $nom,
                     'prenom' => $prenom,
                     'date_naissance' => now()->subYears(rand(10, 18))->format('Y-m-d'),

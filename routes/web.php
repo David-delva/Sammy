@@ -54,12 +54,12 @@ Route::middleware(['auth', 'verified', 'role:admin,secretariat'])->group(functio
 
         $redirectTo = $redirectPath;
         if ($query !== []) {
-            $redirectTo .= '?' . http_build_query($query);
+            $redirectTo .= '?'.http_build_query($query);
         }
 
         $fragment = parse_url($previousUrl, PHP_URL_FRAGMENT);
         if ($fragment) {
-            $redirectTo .= '#' . $fragment;
+            $redirectTo .= '#'.$fragment;
         }
 
         return redirect($redirectTo);

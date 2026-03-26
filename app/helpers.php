@@ -21,6 +21,7 @@ if (! function_exists('currentAcademicLabel')) {
     function currentAcademicLabel(): ?string
     {
         $y = currentAcademicYear();
+
         return $y ? $y->libelle : null;
     }
 }

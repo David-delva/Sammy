@@ -10,10 +10,10 @@ class ClasseSeeder extends Seeder
     public function run(): void
     {
         $classes = [
-            '6ème A', '6ème B', 
-            '5ème A', '5ème B', 
-            '4ème A', '4ème B', 
-            '3ème A', '3ème B'
+            '6ème A', '6ème B',
+            '5ème A', '5ème B',
+            '4ème A', '4ème B',
+            '3ème A', '3ème B',
         ];
 
         foreach ($classes as $classe) {

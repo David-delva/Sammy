@@ -51,7 +51,7 @@ class Eleve extends Model
         $label = AnneeAcademique::labelForDate($date);
 
         return $this->inscriptions()
-            ->whereHas('anneeAcademique', fn($q) => $q->where('libelle', $label))
+            ->whereHas('anneeAcademique', fn ($q) => $q->where('libelle', $label))
             ->latest('created_at')
             ->first();
     }

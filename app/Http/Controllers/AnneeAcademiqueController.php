@@ -10,12 +10,12 @@ class AnneeAcademiqueController extends Controller
 {
     public function __construct(
         private readonly AcademicCacheService $academicCache,
-    ) {
-    }
+    ) {}
 
     public function index()
     {
         $annees = AnneeAcademique::orderBy('libelle', 'desc')->get();
+
         return view('annees.index', compact('annees'));
     }
 
@@ -52,7 +52,7 @@ class AnneeAcademiqueController extends Controller
     public function update(Request $request, AnneeAcademique $annee)
     {
         $validated = $request->validate([
-            'libelle' => ['required', 'string', 'max:9', 'unique:annee_academiques,libelle,' . $annee->id],
+            'libelle' => ['required', 'string', 'max:9', 'unique:annee_academiques,libelle,'.$annee->id],
             'active' => ['sometimes', 'boolean'],
         ]);
 

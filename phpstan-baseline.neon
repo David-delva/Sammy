@@ -1,0 +1,157 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Property App\\Models\\Classe\:\:\$eleves_count is not writable\.$#'
+			identifier: assign.propertyReadOnly
+			count: 1
+			path: app/Http/Controllers/ClasseController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Eleve\:\:\$resolved_classe\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$libelle\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$matiere\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Anonymous function should return array\{semestre\: int, label\: string, total_notes\: int\<0, max\>, total_matieres\: int\<0, max\>, moyenne_generale\: float\|null, matieres\: Illuminate\\Support\\Collection\<int, array\{matiere\: mixed, notes\: Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>, total_notes\: int, moyenne_devoirs\: float\|null, note_composition\: float\|null, moyenne_matiere\: float\|null, derniere_saisie\: mixed\}\>\}\|null but returns array\{semestre\: int, label\: string, total_notes\: int\<0, max\>, total_matieres\: int\<0, max\>, moyenne_generale\: float\|null, matieres\: Illuminate\\Support\\Collection\<int, array\{matiere\: mixed, notes\: Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>, total_notes\: int, moyenne_devoirs\: float\|null, note_composition\: float\|null, moyenne_matiere\: float\|null, derniere_saisie\: mixed\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),array\<string, mixed\>\>\:\:sortBy\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:filter\(\) expects \(callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: bool\)\|null, Closure\(App\\Models\\Note\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:sortByDesc\(\) expects array\<array\{string, string\}\|\(callable\(Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\)\: mixed\)\|\(callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: mixed\)\|string\>\|\(callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: mixed\)\|string, Closure\(App\\Models\\Note\)\: \(float\|int\|string\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Parameter \#2 \$annee of method App\\Services\\CalculationService\:\:calculateMoyenneGenerale\(\) expects App\\Models\\AnneeAcademique\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>timestamp" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/EleveController.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/MatiereController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$nom_classe\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/NoteController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$resolved_classe_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/NoteController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$resolved_classe_nom\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/NoteController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/NoteController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$nom\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/NoteMasseController.php
+
+		-
+			message: '#^Method App\\Models\\Eleve\:\:classeForDate\(\) should return App\\Models\\Classe\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Eleve.php
+
+		-
+			message: '#^Method App\\Models\\Eleve\:\:inscriptionForDate\(\) should return App\\Models\\Inscription\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Eleve.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$classe\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/CalculationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$classe_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/CalculationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/CalculationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$nom_matiere\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/CalculationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$pivot\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/CalculationService.php

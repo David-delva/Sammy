@@ -11,6 +11,7 @@ class Note extends Model
     use HasFactory;
 
     public const SEMESTRE_1 = 1;
+
     public const SEMESTRE_2 = 2;
 
     protected $fillable = [
@@ -37,7 +38,7 @@ class Note extends Model
 
     public function getSemestreLabelAttribute(): string
     {
-        return self::semestreOptions()[$this->semestre] ?? 'Semestre ' . $this->semestre;
+        return self::semestreOptions()[$this->semestre] ?? 'Semestre '.$this->semestre;
     }
 
     public function eleve(): BelongsTo

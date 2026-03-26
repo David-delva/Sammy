@@ -1,47 +1,157 @@
-name: Tests
+name: CI
 
 on:
   push:
     branches:
+      - main
       - master
       - '*.x'
   pull_request:
   schedule:
     - cron: '0 0 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  tests:
+  quality:
+    name: Quality
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: true
-      matrix:
-        php: [8.2, 8.3, 8.4]
-
-    name: PHP ${{ matrix.php }}
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          php-version: '8.2'
+          extensions: bcmath, dom, curl, libxml, mbstring, pcntl, pdo, pdo_mysql, pdo_sqlite, sqlite3, zip
+          coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Prepare application
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+          php artisan config:clear --ansi
+
+      - name: Check code style
+        run: composer format:check --ansi
+
+      - name: Run static analysis
+        run: composer analyse --ansi
+
+      - name: Build frontend assets
+        run: npm run build
+
+  tests:
+    name: Tests (${{ matrix.database }})
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - database: sqlite
+            db_connection: sqlite
+            db_database: database/database.sqlite
+            db_host: ''
+            db_port: ''
+            db_username: ''
+            db_password: ''
+          - database: mysql
+            db_connection: mysql
+            db_database: ges_ci
+            db_host: 127.0.0.1
+            db_port: '3306'
+            db_username: ges
+            db_password: secret
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: ges_ci
+          MYSQL_USER: ges
+          MYSQL_PASSWORD: secret
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      APP_ENV: testing
+      APP_MAINTENANCE_DRIVER: file
+      BCRYPT_ROUNDS: '4'
+      BROADCAST_CONNECTION: 'null'
+      CACHE_STORE: array
+      MAIL_MAILER: array
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: array
+      PULSE_ENABLED: 'false'
+      TELESCOPE_ENABLED: 'false'
+      NIGHTWATCH_ENABLED: 'false'
+      DB_CONNECTION: ${{ matrix.db_connection }}
+      DB_DATABASE: ${{ matrix.db_database }}
+      DB_HOST: ${{ matrix.db_host }}
+      DB_PORT: ${{ matrix.db_port }}
+      DB_USERNAME: ${{ matrix.db_username }}
+      DB_PASSWORD: ${{ matrix.db_password }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: bcmath, dom, curl, libxml, mbstring, pcntl, pdo, pdo_mysql, pdo_sqlite, sqlite3, zip
           coverage: none
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
-      - name: Copy environment file
-        run: cp .env.example .env
+      - name: Prepare application
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+          php artisan config:clear --ansi
 
-      - name: Generate app key
-        run: php artisan key:generate
+      - name: Prepare SQLite database
+        if: matrix.database == 'sqlite'
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
 
-      - name: Execute tests
-        run: php artisan test
+      - name: Wait for MySQL
+        if: matrix.database == 'mysql'
+        run: |
+          php -r "for ($i = 0; $i < 30; $i++) { try { new PDO('mysql:host=127.0.0.1;port=3306;dbname=ges_ci', 'ges', 'secret'); exit(0); } catch (Throwable $e) { sleep(2); } } fwrite(STDERR, 'MySQL did not become ready in time.' . PHP_EOL); exit(1);"
+
+      - name: Execute test suite
+        run: composer test --ansi

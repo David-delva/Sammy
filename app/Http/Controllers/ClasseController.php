@@ -23,8 +23,9 @@ class ClasseController extends Controller
         if ($annee) {
             $classeIds = \App\Models\Inscription::where('annee_academique_id', $annee->id)->distinct('classe_id')->pluck('classe_id');
             $classes = Classe::whereIn('id', $classeIds)->paginate(20);
-            $classes->getCollection()->transform(function($c) use ($annee) {
+            $classes->getCollection()->transform(function ($c) use ($annee) {
                 $c->eleves_count = \App\Models\Inscription::where('annee_academique_id', $annee->id)->where('classe_id', $c->id)->count();
+
                 return $c;
             });
         } else {
@@ -46,12 +47,14 @@ class ClasseController extends Controller
         ]);
 
         Classe::create($validated);
+
         return redirect()->route('classes.index')->with('success', 'Classe créée avec succès.');
     }
 
     public function show(Classe $classe)
     {
         $classe->load(['eleves', 'matieres']);
+
         return view('classes.show', compact('classe'));
     }
 
@@ -63,16 +66,18 @@ class ClasseController extends Controller
     public function update(Request $request, Classe $classe)
     {
         $validated = $request->validate([
-            'nom_classe' => 'required|string|unique:classes,nom_classe,' . $classe->id . '|max:255',
+            'nom_classe' => 'required|string|unique:classes,nom_classe,'.$classe->id.'|max:255',
         ]);
 
         $classe->update($validated);
+
         return redirect()->route('classes.index')->with('success', 'Classe modifiée avec succès.');
     }
 
     public function destroy(Classe $classe)
     {
         $classe->delete();
+
         return redirect()->route('classes.index')->with('success', 'Classe supprimée avec succès.');
     }
 }

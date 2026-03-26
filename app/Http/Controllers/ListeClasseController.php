@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Classe;
 use App\Models\Inscription;
-use App\Models\Matiere;
-use App\Models\AnneeAcademique;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ListeClasseController extends Controller
@@ -15,7 +12,7 @@ class ListeClasseController extends Controller
     public function generatePdf(Classe $classe)
     {
         $annee = currentAcademicYear();
-        if (!$annee) {
+        if (! $annee) {
             return back()->with('error', 'Aucune année académique active.');
         }
 
@@ -24,7 +21,7 @@ class ListeClasseController extends Controller
             ->where('annee_academique_id', $annee->id)
             ->with('eleve')
             ->get()
-            ->map(fn($ins) => $ins->eleve)
+            ->map(fn ($ins) => $ins->eleve)
             ->sortBy('nom');
 
         // Récupérer les matières de la classe AVEC coefficients via classe_matiere

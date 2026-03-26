@@ -20,11 +20,13 @@ class ClassementController extends Controller
     public function index(Request $request)
     {
         $annee = currentAcademicYear();
-        if (!$annee) return redirect()->route('annees.index')->with('error', 'Aucune année active.');
+        if (! $annee) {
+            return redirect()->route('annees.index')->with('error', 'Aucune année active.');
+        }
 
         $classes = Classe::orderBy('nom_classe')->get();
         $selectedClasseId = $request->query('classe_id');
-        
+
         $classement = collect();
         $classe = null;
 
@@ -41,7 +43,7 @@ class ClassementController extends Controller
                     $classement->push([
                         'eleve' => $ins->eleve,
                         'moyenne' => $moyenne,
-                        'mention' => $this->calculationService->getMention($moyenne)
+                        'mention' => $this->calculationService->getMention($moyenne),
                     ]);
                 }
             }
@@ -63,6 +65,7 @@ class ClassementController extends Controller
                 }
                 $lastMoyenne = $item['moyenne'];
                 $item['rang'] = $currentRank;
+
                 return $item;
             });
         }
@@ -74,7 +77,7 @@ class ClassementController extends Controller
     {
         $annee = currentAcademicYear();
         $classe = Classe::findOrFail($classe_id);
-        
+
         $inscriptions = Inscription::where('classe_id', $classe_id)
             ->where('annee_academique_id', $annee->id)
             ->with('eleve')
@@ -87,7 +90,7 @@ class ClassementController extends Controller
                 $classement->push([
                     'eleve' => $ins->eleve,
                     'moyenne' => $moyenne,
-                    'mention' => $this->calculationService->getMention($moyenne)
+                    'mention' => $this->calculationService->getMention($moyenne),
                 ]);
             }
         }
@@ -106,6 +109,7 @@ class ClassementController extends Controller
             }
             $lastMoyenne = $item['moyenne'];
             $item['rang'] = $currentRank;
+
             return $item;
         });
 

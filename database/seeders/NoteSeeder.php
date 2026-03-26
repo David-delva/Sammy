@@ -69,9 +69,9 @@ class NoteSeeder extends Seeder
         $notesMoyennes = [8, 8.5, 9, 9.5, 16.5, 17, 17.5];
         $notesFaibles = [5, 5.5, 6, 6.5, 7, 7.5];
         $notesExcellent = [18, 18.5, 19, 19.5, 20];
-        
+
         $rand = rand(1, 100);
-        
+
         if ($rand <= 50) {
             // 50% de notes entre 10 et 16
             return $notesBonnes[array_rand($notesBonnes)];

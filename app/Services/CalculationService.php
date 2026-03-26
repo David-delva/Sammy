@@ -12,8 +12,7 @@ class CalculationService
 {
     public function __construct(
         private readonly AcademicCacheService $academicCache,
-    ) {
-    }
+    ) {}
 
     public function calculateMoyenneMatiere(Eleve $eleve, Matiere $matiere, ?AnneeAcademique $annee = null, ?int $semestre = null): ?float
     {

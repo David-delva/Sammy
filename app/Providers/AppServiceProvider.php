@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(AcademicYearService::class, function ($app) {
-            return new AcademicYearService();
+            return new AcademicYearService;
         });
 
         $helpers = app_path('helpers.php');

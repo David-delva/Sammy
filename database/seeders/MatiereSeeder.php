@@ -21,7 +21,7 @@ class MatiereSeeder extends Seeder
             'Philosophie',
             'Arts Plastiques',
             'Musique',
-            'Technologie'
+            'Technologie',
         ];
 
         foreach ($matieres as $matiere) {

@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\AnneeAcademique;
 use App\Models\Classe;
-use App\Models\Eleve;
-use App\Models\Inscription;
 use App\Models\Matiere;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -18,25 +16,25 @@ class DatabaseSeeder extends Seeder
     {
         // ─── Utilisateurs ──────────────────────────────────────
         User::create([
-            'name'     => 'Admin Système',
-            'email'    => 'admin@ecole.com',
+            'name' => 'Admin Système',
+            'email' => 'admin@ecole.com',
             'password' => Hash::make('password'),
-            'role'     => 'admin',
+            'role' => 'admin',
             'email_verified_at' => now(),
         ]);
 
         User::create([
-            'name'     => 'Service Secrétariat',
-            'email'    => 'secretariat@ecole.com',
+            'name' => 'Service Secrétariat',
+            'email' => 'secretariat@ecole.com',
             'password' => Hash::make('password'),
-            'role'     => 'secretariat',
+            'role' => 'secretariat',
             'email_verified_at' => now(),
         ]);
 
         // ─── Année académique ──────────────────────────────────
         $annee = AnneeAcademique::create([
             'libelle' => '2025-2026',
-            'active'  => true,
+            'active' => true,
         ]);
 
         // ─── Classes ───────────────────────────────────────────
@@ -48,14 +46,14 @@ class DatabaseSeeder extends Seeder
         $classe3A = Classe::create(['nom_classe' => '3ème A']);
 
         // ─── Matières (catalogue global) ───────────────────────
-        $math  = Matiere::create(['nom_matiere' => 'Mathématiques']);
-        $fran  = Matiere::create(['nom_matiere' => 'Français']);
-        $phys  = Matiere::create(['nom_matiere' => 'Sciences Physiques']);
-        $svt   = Matiere::create(['nom_matiere' => 'SVT']);
-        $angl  = Matiere::create(['nom_matiere' => 'Anglais']);
-        $hist  = Matiere::create(['nom_matiere' => 'Histoire-Géo']);
-        $eps   = Matiere::create(['nom_matiere' => 'EPS']);
-        $info  = Matiere::create(['nom_matiere' => 'Informatique']);
+        $math = Matiere::create(['nom_matiere' => 'Mathématiques']);
+        $fran = Matiere::create(['nom_matiere' => 'Français']);
+        $phys = Matiere::create(['nom_matiere' => 'Sciences Physiques']);
+        $svt = Matiere::create(['nom_matiere' => 'SVT']);
+        $angl = Matiere::create(['nom_matiere' => 'Anglais']);
+        $hist = Matiere::create(['nom_matiere' => 'Histoire-Géo']);
+        $eps = Matiere::create(['nom_matiere' => 'EPS']);
+        $info = Matiere::create(['nom_matiere' => 'Informatique']);
         $philo = Matiere::create(['nom_matiere' => 'Philosophie']);
 
         // ─── Liaisons classe × matière × année avec coefficients ─

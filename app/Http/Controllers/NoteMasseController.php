@@ -14,8 +14,7 @@ class NoteMasseController extends Controller
 {
     public function __construct(
         private readonly AcademicCacheService $academicCache,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request)
     {

@@ -11,14 +11,14 @@ return new class extends Migration
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('eleve_id')
-                  ->constrained('eleves')
-                  ->onDelete('cascade');
+                ->constrained('eleves')
+                ->onDelete('cascade');
             $table->foreignId('matiere_id')
-                  ->constrained('matieres')
-                  ->onDelete('cascade');
+                ->constrained('matieres')
+                ->onDelete('cascade');
             $table->foreignId('annee_academique_id')
-                  ->constrained('annee_academiques')
-                  ->onDelete('cascade');
+                ->constrained('annee_academiques')
+                ->onDelete('cascade');
             $table->decimal('note', 4, 2);
             $table->enum('type_devoir', ['devoir', 'composition']);
             $table->timestamps();
@@ -36,4 +36,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('notes');
     }
-}; 
+};

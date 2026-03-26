@@ -16,7 +16,7 @@ class AcademicCacheService
 
     public function scopedKey(string $key): string
     {
-        return 'academic:v' . $this->version() . ':' . $key;
+        return 'academic:v'.$this->version().':'.$key;
     }
 
     public function remember(string $key, int $ttl, Closure $callback): mixed
@@ -42,16 +42,16 @@ class AcademicCacheService
     {
         return $dateParam
             ? "dashboard_stats:date:{$dateParam}"
-            : 'dashboard_stats:annee:' . ($academicYearId ?? 'global');
+            : 'dashboard_stats:annee:'.($academicYearId ?? 'global');
     }
 
     public function noteAverageKey(int $eleveId, int $matiereId, int $anneeId, ?int $semestre = null): string
     {
-        return "moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$anneeId}" . $this->cacheSuffix($semestre);
+        return "moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$anneeId}".$this->cacheSuffix($semestre);
     }
 
     private function cacheSuffix(?int $semestre): string
     {
-        return $semestre === null ? ':annuel' : ':semestre:' . $semestre;
+        return $semestre === null ? ':annuel' : ':semestre:'.$semestre;
     }
 }

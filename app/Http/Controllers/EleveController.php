@@ -10,7 +10,6 @@ use App\Models\Eleve;
 use App\Models\Inscription;
 use App\Models\Note;
 use App\Services\CalculationService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class EleveController extends Controller

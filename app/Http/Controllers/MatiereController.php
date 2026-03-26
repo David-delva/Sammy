@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AnneeAcademique;
 use App\Models\Classe;
 use App\Models\Matiere;
 use App\Services\AcademicCacheService;
@@ -13,8 +12,7 @@ class MatiereController extends Controller
 {
     public function __construct(
         private readonly AcademicCacheService $academicCache,
-    ) {
-    }
+    ) {}
 
     public function index()
     {
@@ -46,6 +44,7 @@ class MatiereController extends Controller
     public function show(Matiere $matiere)
     {
         $matiere->load('classes');
+
         return view('matieres.show', compact('matiere'));
     }
 

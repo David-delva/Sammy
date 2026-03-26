@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('classe_matiere', function (Blueprint $table) {
             $table->id();
             $table->foreignId('classe_id')
-                  ->constrained('classes')
-                  ->onDelete('cascade');
+                ->constrained('classes')
+                ->onDelete('cascade');
             $table->foreignId('matiere_id')
-                  ->constrained('matieres')
-                  ->onDelete('cascade');
+                ->constrained('matieres')
+                ->onDelete('cascade');
             $table->foreignId('annee_academique_id')
-                  ->constrained('annee_academiques')
-                  ->onDelete('cascade');
+                ->constrained('annee_academiques')
+                ->onDelete('cascade');
             $table->unsignedTinyInteger('coefficient')->default(1);
             $table->timestamps();
 

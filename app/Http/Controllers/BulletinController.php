@@ -9,9 +9,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class BulletinController extends Controller
 {
-    public function __construct(protected CalculationService $calculationService)
-    {
-    }
+    public function __construct(protected CalculationService $calculationService) {}
 
     public function generatePdf($id)
     {
