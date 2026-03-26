@@ -6,11 +6,15 @@ use App\Models\AnneeAcademique;
 use App\Models\Eleve;
 use App\Models\Matiere;
 use App\Models\Note;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CalculationService
 {
+    public function __construct(
+        private readonly AcademicCacheService $academicCache,
+    ) {
+    }
+
     public function calculateMoyenneMatiere(Eleve $eleve, Matiere $matiere, ?AnneeAcademique $annee = null, ?int $semestre = null): ?float
     {
         $annee = $annee ?? currentAcademicYear();
@@ -20,32 +24,34 @@ class CalculationService
             return null;
         }
 
-        $cacheKey = "moyenne:eleve:{$eleve->id}:matiere:{$matiere->id}:annee:{$annee->id}{$this->cacheSuffix($semestre)}";
+        return $this->academicCache->remember(
+            $this->academicCache->noteAverageKey($eleve->id, $matiere->id, $annee->id, $semestre),
+            300,
+            function () use ($eleve, $matiere, $annee, $semestre) {
+                $notes = DB::table('notes')
+                    ->where('eleve_id', $eleve->id)
+                    ->where('matiere_id', $matiere->id)
+                    ->where('annee_academique_id', $annee->id)
+                    ->when($semestre !== null, fn ($query) => $query->where('semestre', $semestre))
+                    ->get();
 
-        return Cache::remember($cacheKey, 300, function () use ($eleve, $matiere, $annee, $semestre) {
-            $notes = DB::table('notes')
-                ->where('eleve_id', $eleve->id)
-                ->where('matiere_id', $matiere->id)
-                ->where('annee_academique_id', $annee->id)
-                ->when($semestre !== null, fn ($query) => $query->where('semestre', $semestre))
-                ->get();
+                if ($notes->isEmpty()) {
+                    return null;
+                }
 
-            if ($notes->isEmpty()) {
-                return null;
+                $moyenneDevoirs = $notes->where('type_devoir', 'devoir')->avg('note');
+                $noteComposition = $notes->where('type_devoir', 'composition')->max('note');
+
+                if ($moyenneDevoirs === null && $noteComposition === null) {
+                    return null;
+                }
+
+                $baseDevoirs = $moyenneDevoirs ?? 0;
+                $baseComposition = $noteComposition ?? $moyenneDevoirs ?? 0;
+
+                return round(($baseDevoirs + $baseComposition) / 2, 2);
             }
-
-            $moyenneDevoirs = $notes->where('type_devoir', 'devoir')->avg('note');
-            $noteComposition = $notes->where('type_devoir', 'composition')->max('note');
-
-            if ($moyenneDevoirs === null && $noteComposition === null) {
-                return null;
-            }
-
-            $baseDevoirs = $moyenneDevoirs ?? 0;
-            $baseComposition = $noteComposition ?? $moyenneDevoirs ?? 0;
-
-            return round(($baseDevoirs + $baseComposition) / 2, 2);
-        });
+        );
     }
 
     public function calculateMoyenneGenerale(Eleve $eleve, ?AnneeAcademique $annee = null, ?int $semestre = null): ?float
@@ -286,10 +292,5 @@ class CalculationService
         return in_array($semestre, [Note::SEMESTRE_1, Note::SEMESTRE_2], true)
             ? $semestre
             : null;
-    }
-
-    protected function cacheSuffix(?int $semestre): string
-    {
-        return $semestre === null ? ':annuel' : ':semestre:' . $semestre;
     }
 }

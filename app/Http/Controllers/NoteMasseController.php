@@ -4,20 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMasseNoteRequest;
 use App\Models\Classe;
-use App\Models\Note;
 use App\Models\Inscription;
+use App\Models\Note;
+use App\Services\AcademicCacheService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class NoteMasseController extends Controller
 {
+    public function __construct(
+        private readonly AcademicCacheService $academicCache,
+    ) {
+    }
+
     public function index(Request $request)
     {
         $annee = currentAcademicYear();
 
         if (! $annee) {
-            return redirect()->route('annees.index')->with('error', 'Creez une annee active.');
+            return redirect()->route('annees.index')->with('error', 'Créez une année active.');
         }
 
         $classes = Classe::orderBy('nom_classe')->get();
@@ -94,22 +99,15 @@ class NoteMasseController extends Controller
             }
         });
 
-        return redirect()->back()->with('success', 'Les notes ont ete enregistrees avec succes.');
+        return redirect()->back()->with('success', 'Les notes ont été enregistrées avec succès.');
     }
 
     protected function forgetNoteCaches(int $eleveId, int $matiereId, int $anneeId): void
     {
-        $keys = [
-            "moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$anneeId}:annuel",
-            "moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$anneeId}:semestre:1",
-            "moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$anneeId}:semestre:2",
-            "moyenne_generale:eleve:{$eleveId}:annee:{$anneeId}:annuel",
-            "moyenne_generale:eleve:{$eleveId}:annee:{$anneeId}:semestre:1",
-            "moyenne_generale:eleve:{$eleveId}:annee:{$anneeId}:semestre:2",
-        ];
-
-        foreach ($keys as $key) {
-            Cache::forget($key);
+        foreach ([null, Note::SEMESTRE_1, Note::SEMESTRE_2] as $semestre) {
+            $this->academicCache->forget(
+                $this->academicCache->noteAverageKey($eleveId, $matiereId, $anneeId, $semestre)
+            );
         }
     }
 }

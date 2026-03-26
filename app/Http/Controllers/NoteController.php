@@ -7,11 +7,16 @@ use App\Http\Requests\UpdateNoteRequest;
 use App\Models\Inscription;
 use App\Models\Matiere;
 use App\Models\Note;
+use App\Services\AcademicCacheService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class NoteController extends Controller
 {
+    public function __construct(
+        private readonly AcademicCacheService $academicCache,
+    ) {
+    }
+
     public function index(Request $request)
     {
         $annee = currentAcademicYear();
@@ -29,7 +34,7 @@ class NoteController extends Controller
             ->when($selectedClasse, function ($query) use ($selectedClasse, $annee) {
                 return $query->whereHas('eleve.inscriptions', function ($q) use ($selectedClasse, $annee) {
                     $q->where('classe_id', $selectedClasse)
-                      ->where('annee_academique_id', $annee?->id);
+                        ->where('annee_academique_id', $annee?->id);
                 });
             })
             ->when($selectedMatiere, fn ($query) => $query->where('matiere_id', $selectedMatiere))
@@ -37,12 +42,12 @@ class NoteController extends Controller
             ->when($search, function ($query) use ($search) {
                 return $query->whereHas('eleve', function ($q) use ($search) {
                     $q->where('nom', 'like', "%{$search}%")
-                      ->orWhere('prenom', 'like', "%{$search}%")
-                      ->orWhere('matricule', 'like', "%{$search}%");
+                        ->orWhere('prenom', 'like', "%{$search}%")
+                        ->orWhere('matricule', 'like', "%{$search}%");
                 })
-                ->orWhereHas('matiere', function ($q) use ($search) {
-                    $q->where('nom_matiere', 'like', "%{$search}%");
-                });
+                    ->orWhereHas('matiere', function ($q) use ($search) {
+                        $q->where('nom_matiere', 'like', "%{$search}%");
+                    });
             })
             ->orderByDesc('semestre')
             ->latest()
@@ -53,10 +58,10 @@ class NoteController extends Controller
         $matieres = \App\Models\Matiere::orderBy('nom_matiere')->get();
 
         return view('notes.index', compact(
-            'notes', 
-            'selectedSemestre', 
-            'selectedClasse', 
-            'selectedMatiere', 
+            'notes',
+            'selectedSemestre',
+            'selectedClasse',
+            'selectedMatiere',
             'selectedType',
             'search',
             'classes',
@@ -69,7 +74,7 @@ class NoteController extends Controller
         $annee = currentAcademicYear();
 
         if (! $annee) {
-            return back()->with('error', "Aucune annee academique active. Veuillez en creer une.");
+            return back()->with('error', 'Aucune année académique active. Veuillez en créer une.');
         }
 
         $inscriptions = Inscription::with(['eleve', 'classe'])
@@ -93,7 +98,7 @@ class NoteController extends Controller
         $annee = currentAcademicYear();
 
         if (! $annee) {
-            return back()->with('error', "Pas d'annee active.");
+            return back()->with('error', "Pas d'année active.");
         }
 
         $data = $request->validated();
@@ -102,7 +107,8 @@ class NoteController extends Controller
         Note::create($data);
         $this->forgetNoteCaches($data['eleve_id'], $data['matiere_id'], $annee->id);
 
-        return redirect()->route('notes.index', ['date' => request()->query('date'), 'semestre' => request()->query('semestre')])->with('success', 'Note ajoutee avec succes.');
+        return redirect()->route('notes.index', ['date' => request()->query('date'), 'semestre' => request()->query('semestre')])
+            ->with('success', 'Note ajoutée avec succès.');
     }
 
     public function edit(Note $note)
@@ -136,7 +142,8 @@ class NoteController extends Controller
         $this->forgetNoteCaches($oldEleveId, $oldMatiereId, $anneeId);
         $this->forgetNoteCaches($note->eleve_id, $note->matiere_id, $anneeId);
 
-        return redirect()->route('notes.index', ['date' => request()->query('date'), 'semestre' => request()->query('semestre')])->with('success', 'Note mise a jour.');
+        return redirect()->route('notes.index', ['date' => request()->query('date'), 'semestre' => request()->query('semestre')])
+            ->with('success', 'Note mise à jour.');
     }
 
     public function destroy(Note $note)
@@ -148,22 +155,16 @@ class NoteController extends Controller
         $note->delete();
         $this->forgetNoteCaches($eleveId, $matiereId, $anneeId);
 
-        return redirect()->route('notes.index', ['date' => request()->query('date'), 'semestre' => request()->query('semestre')])->with('success', 'Note supprimee.');
+        return redirect()->route('notes.index', ['date' => request()->query('date'), 'semestre' => request()->query('semestre')])
+            ->with('success', 'Note supprimée.');
     }
 
     protected function forgetNoteCaches(int $eleveId, int $matiereId, int $anneeId): void
     {
-        $keys = [
-            "moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$anneeId}:annuel",
-            "moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$anneeId}:semestre:1",
-            "moyenne:eleve:{$eleveId}:matiere:{$matiereId}:annee:{$anneeId}:semestre:2",
-            "moyenne_generale:eleve:{$eleveId}:annee:{$anneeId}:annuel",
-            "moyenne_generale:eleve:{$eleveId}:annee:{$anneeId}:semestre:1",
-            "moyenne_generale:eleve:{$eleveId}:annee:{$anneeId}:semestre:2",
-        ];
-
-        foreach ($keys as $key) {
-            Cache::forget($key);
+        foreach ([null, Note::SEMESTRE_1, Note::SEMESTRE_2] as $semestre) {
+            $this->academicCache->forget(
+                $this->academicCache->noteAverageKey($eleveId, $matiereId, $anneeId, $semestre)
+            );
         }
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Eleve;
 use App\Models\Inscription;
 use App\Models\Matiere;
 use App\Models\Note;
+use App\Services\AcademicCacheService;
 use App\Services\CalculationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -123,6 +124,28 @@ class CalculationServiceTest extends TestCase
         $this->assertEquals(13.67, $bulletin['moyenne_annuelle']);
         $this->assertCount(2, $bulletin['lignes']);
         $this->assertSame('15,00', $bulletin['lignes'][0]['moyenne']);
+    }
+
+    public function test_moyenne_matiere_est_recalculee_quand_la_version_du_cache_academique_change(): void
+    {
+        $this->createNote($this->matiere, Note::SEMESTRE_1, 'devoir', 14.0);
+        $this->createNote($this->matiere, Note::SEMESTRE_1, 'composition', 16.0);
+
+        $this->assertEquals(15.0, $this->service->calculateMoyenneMatiere($this->eleve, $this->matiere, $this->annee, Note::SEMESTRE_1));
+
+        Note::query()
+            ->where('eleve_id', $this->eleve->id)
+            ->where('matiere_id', $this->matiere->id)
+            ->where('annee_academique_id', $this->annee->id)
+            ->where('type_devoir', 'composition')
+            ->where('semestre', Note::SEMESTRE_1)
+            ->update(['note' => 20.0]);
+
+        $this->assertEquals(15.0, $this->service->calculateMoyenneMatiere($this->eleve, $this->matiere, $this->annee, Note::SEMESTRE_1));
+
+        app(AcademicCacheService::class)->bust();
+
+        $this->assertEquals(17.0, $this->service->calculateMoyenneMatiere($this->eleve, $this->matiere, $this->annee, Note::SEMESTRE_1));
     }
 
     private function createNote(Matiere $matiere, int $semestre, string $type, float $note): void

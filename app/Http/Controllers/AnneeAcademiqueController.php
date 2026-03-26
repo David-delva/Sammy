@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\AnneeAcademique;
-use Illuminate\Support\Facades\Cache;
+use App\Services\AcademicCacheService;
+use Illuminate\Http\Request;
 
 class AnneeAcademiqueController extends Controller
 {
+    public function __construct(
+        private readonly AcademicCacheService $academicCache,
+    ) {
+    }
+
     public function index()
     {
         $annees = AnneeAcademique::orderBy('libelle', 'desc')->get();
@@ -26,7 +31,6 @@ class AnneeAcademiqueController extends Controller
             'active' => ['sometimes', 'boolean'],
         ]);
 
-        // If active, unset previous active year
         if ($request->boolean('active')) {
             AnneeAcademique::where('active', true)->update(['active' => false]);
             $validated['active'] = true;
@@ -35,10 +39,7 @@ class AnneeAcademiqueController extends Controller
         }
 
         AnneeAcademique::create($validated);
-
-        // Clear all academic year related caches
-        Cache::forget('academic_years_list');
-        Cache::flush();
+        $this->invalidateAcademicCaches();
 
         return redirect()->route('annees.index')->with('success', 'Année académique créée.');
     }
@@ -63,10 +64,7 @@ class AnneeAcademiqueController extends Controller
         }
 
         $annee->update($validated);
-
-        // Clear all academic year related caches
-        Cache::forget('academic_years_list');
-        Cache::flush();
+        $this->invalidateAcademicCaches();
 
         return redirect()->route('annees.index')->with('success', 'Année académique mise à jour.');
     }
@@ -74,11 +72,13 @@ class AnneeAcademiqueController extends Controller
     public function destroy(AnneeAcademique $annee)
     {
         $annee->delete();
-
-        // Clear all academic year related caches
-        Cache::forget('academic_years_list');
-        Cache::flush();
+        $this->invalidateAcademicCaches();
 
         return redirect()->route('annees.index')->with('success', 'Année académique supprimée.');
+    }
+
+    private function invalidateAcademicCaches(): void
+    {
+        $this->academicCache->bust();
     }
 }

@@ -5,23 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\AnneeAcademique;
 use App\Models\Classe;
 use App\Models\Matiere;
+use App\Services\AcademicCacheService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class MatiereController extends Controller
 {
-    // ─── Liste : matières du catalogue avec leurs liaisons ────
+    public function __construct(
+        private readonly AcademicCacheService $academicCache,
+    ) {
+    }
 
     public function index()
     {
-        $annee    = currentAcademicYear();
+        $annee = currentAcademicYear();
         $matieres = Matiere::withCount('classes')->orderBy('nom_matiere')->paginate(20);
 
         return view('matieres.index', compact('matieres', 'annee'));
     }
-
-    // ─── Catalogue seul ───────────────────────────────────────
 
     public function create()
     {
@@ -73,53 +74,46 @@ class MatiereController extends Controller
             ->with('success', 'Matière supprimée.');
     }
 
-    // ─── Gestion des liaisons Classe × Matière × Année ────────
-
     public function assignerIndex()
     {
-        $annee   = currentAcademicYear();
+        $annee = currentAcademicYear();
         $classes = Classe::orderBy('nom_classe')->get();
 
         return view('matieres.assigner', compact('annee', 'classes'));
     }
 
-    /**
-     * Affiche les matières assignées à une classe pour une année.
-     */
     public function assignerClasse(Request $request)
     {
         $request->validate([
             'classe_id' => 'required|exists:classes,id',
         ]);
 
-        $annee   = currentAcademicYear();
-        $classe  = Classe::findOrFail($request->classe_id);
+        $annee = currentAcademicYear();
+        $classe = Classe::findOrFail($request->classe_id);
         $classes = Classe::orderBy('nom_classe')->get();
 
-        // Matières déjà assignées à cette classe cette année
         $matieresAssignees = $annee
             ? $classe->matieresForAnnee($annee->id)->get()->keyBy('id')
             : collect();
 
-        // Tout le catalogue
         $toutesLesMatieres = Matiere::orderBy('nom_matiere')->get();
 
         return view('matieres.assigner', compact(
-            'annee', 'classes', 'classe',
-            'matieresAssignees', 'toutesLesMatieres'
+            'annee',
+            'classes',
+            'classe',
+            'matieresAssignees',
+            'toutesLesMatieres'
         ));
     }
 
-    /**
-     * Sauvegarde les liaisons (ajouter / modifier coefficient / retirer).
-     */
     public function assignerSauvegarder(Request $request)
     {
         $request->validate([
-            'classe_id'      => 'required|exists:classes,id',
-            'matieres'       => 'array',
-            'matieres.*.id'  => 'required|exists:matieres,id',
-            'matieres.*.coef'=> 'required|integer|min:1|max:20',
+            'classe_id' => 'required|exists:classes,id',
+            'matieres' => 'array',
+            'matieres.*.id' => 'required|exists:matieres,id',
+            'matieres.*.coef' => 'required|integer|min:1|max:20',
         ]);
 
         $annee = currentAcademicYear();
@@ -131,22 +125,20 @@ class MatiereController extends Controller
         $classe = Classe::findOrFail($request->classe_id);
 
         DB::transaction(function () use ($request, $classe, $annee) {
-            // Supprimer toutes les liaisons existantes pour cette classe/année
             DB::table('classe_matiere')
                 ->where('classe_id', $classe->id)
                 ->where('annee_academique_id', $annee->id)
                 ->delete();
 
-            // Réinsérer les liaisons cochées avec leurs coefficients
             $lignes = [];
             foreach ($request->matieres ?? [] as $item) {
                 $lignes[] = [
-                    'classe_id'           => $classe->id,
-                    'matiere_id'          => $item['id'],
+                    'classe_id' => $classe->id,
+                    'matiere_id' => $item['id'],
                     'annee_academique_id' => $annee->id,
-                    'coefficient'         => $item['coef'],
-                    'created_at'          => now(),
-                    'updated_at'          => now(),
+                    'coefficient' => $item['coef'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
             }
 
@@ -155,8 +147,7 @@ class MatiereController extends Controller
             }
         });
 
-        // Invalider le cache des moyennes pour cette classe
-        Cache::forget("dashboard:stats:{$annee->id}");
+        $this->academicCache->bust();
 
         return redirect()
             ->route('matieres.assigner.classe', ['classe_id' => $classe->id])
