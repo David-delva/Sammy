@@ -135,4 +135,18 @@ class AcademicYearConsultationTest extends TestCase
         $response->assertRedirect(route('eleves.index', ['classe' => $classe->id]));
         $response->assertSessionMissing('academic_year_date');
     }
+
+    public function test_invalid_date_query_is_cleared_instead_of_being_persisted(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'secretariat',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->withSession(['academic_year_date' => '2025-09-01'])
+            ->get(route('eleves.index', ['date' => 'not-a-date']));
+
+        $response->assertOk();
+        $response->assertSessionMissing('academic_year_date');
+    }
 }

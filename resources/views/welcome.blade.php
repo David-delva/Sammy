@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr" class="h-full scroll-smooth">
 <head>
     <meta charset="UTF-8">
@@ -16,7 +16,7 @@
     </div>
 
     <div class="relative isolate overflow-hidden">
-        <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(26,86,219,0.14),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(15,45,86,0.18),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_100%)]"></div>
+        <div class="institution-public-backdrop -z-10"></div>
 
         <header class="border-b border-white/60 bg-white/72 backdrop-blur-xl">
             <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-8">

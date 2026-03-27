@@ -7,6 +7,7 @@ use App\Models\Inscription;
 use App\Models\Note;
 use App\Observers\InscriptionObserver;
 use App\Observers\NoteObserver;
+use App\Services\AcademicWriteAccessService;
 use App\Services\AcademicYearService;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -33,13 +34,17 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('*', function ($view) {
             $service = app(AcademicYearService::class);
+            $writeAccess = app(AcademicWriteAccessService::class);
 
-            $dateParam = request()->query('date');
+            $hasDateParam = request()->has('date');
+            $dateParam = $service->sanitizeDate(request()->query('date'));
 
-            if (request()->routeIs('dashboard') && ! $dateParam) {
+            if (request()->routeIs('dashboard') && ! $hasDateParam) {
                 session()->forget('academic_year_date');
-            } elseif ($dateParam) {
+            } elseif ($hasDateParam && $dateParam) {
                 session(['academic_year_date' => $dateParam]);
+            } elseif ($hasDateParam) {
+                session()->forget('academic_year_date');
             }
 
             $annee = null;
@@ -56,7 +61,7 @@ class AppServiceProvider extends ServiceProvider
                 'isCurrentAcademicYear' => $annee ? $service->isCurrentYear() : false,
                 'academicYears' => $years,
                 'currentAcademicLabel' => $annee ? $annee->libelle : null,
-                'canManageAcademicData' => auth()->check() && auth()->user()->role === 'admin',
+                'canManageAcademicData' => auth()->check() && $writeAccess->canManageSelectedYear(auth()->user()),
             ]);
         });
     }

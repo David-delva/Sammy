@@ -23,7 +23,7 @@ class NoteMasseController extends Controller
         $annee = currentAcademicYear();
 
         if (! $annee) {
-            return redirect()->route('annees.index')->with('error', 'Créez une année active.');
+            return redirect()->route('annees.index')->with('error', 'Creez une annee active.');
         }
 
         $classes = Classe::orderBy('nom_classe')->get();
@@ -83,13 +83,15 @@ class NoteMasseController extends Controller
         DB::transaction(function () use ($request, $annee, &$impactedEleves) {
             Note::withoutEvents(function () use ($request, $annee, &$impactedEleves) {
                 foreach ($request->notes as $eleveId => $valeur) {
-                    if ($valeur === null || $valeur === '') {
+                    $studentId = (int) $eleveId;
+
+                    if ($studentId <= 0 || $valeur === null || $valeur === '') {
                         continue;
                     }
 
                     Note::updateOrCreate(
                         [
-                            'eleve_id' => $eleveId,
+                            'eleve_id' => $studentId,
                             'matiere_id' => $request->matiere_id,
                             'type_devoir' => $request->type_devoir,
                             'annee_academique_id' => $annee->id,
@@ -98,15 +100,15 @@ class NoteMasseController extends Controller
                         ['note' => $valeur]
                     );
 
-                    $impactedEleves[] = (int) $eleveId;
-                    $this->forgetNoteCaches((int) $eleveId, (int) $request->matiere_id, $annee->id);
+                    $impactedEleves[] = $studentId;
+                    $this->forgetNoteCaches($studentId, (int) $request->matiere_id, $annee->id);
                 }
             });
         });
 
         $this->projector->rebuildStudentsForYear($impactedEleves, $annee->id);
 
-        return redirect()->back()->with('success', 'Les notes ont été enregistrées avec succès.');
+        return redirect()->back()->with('success', 'Les notes ont ete enregistrees avec succes.');
     }
 
     protected function forgetNoteCaches(int $eleveId, int $matiereId, int $anneeId): void

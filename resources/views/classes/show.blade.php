@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', $classe->nom_classe)
 @section('breadcrumb', 'Administration / Classes / Detail')
@@ -17,8 +17,8 @@
                 <div class="hero-badges">
                     <span class="hero-badge"><i class="bi bi-people"></i>{{ $classe->eleves->count() }} eleve(s)</span>
                     <span class="hero-badge"><i class="bi bi-book"></i>{{ $classe->matieres->count() }} matiere(s)</span>
-                    @if(request()->query('date'))
-                        <span class="hero-badge"><i class="bi bi-calendar2-week"></i>{{ \App\Models\AnneeAcademique::labelForDate(request()->query('date')) }}</span>
+                    @if(isset($annee) && $annee)
+                        <span class="hero-badge"><i class="bi bi-calendar2-week"></i>{{ $annee->libelle }}</span>
                     @endif
                 </div>
 

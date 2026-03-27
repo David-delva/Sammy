@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 <head>
     <meta charset="utf-8">
@@ -12,17 +12,17 @@
 </head>
 <body class="min-h-screen text-slate-900 antialiased">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div class="absolute -left-16 top-12 h-64 w-64 rounded-full bg-brand-300/20 blur-3xl animate-float-slow"></div>
+        <div class="absolute -left-16 top-12 h-64 w-64 rounded-full bg-brand-300/25 blur-3xl animate-float-slow"></div>
         <div class="absolute right-0 top-24 h-80 w-80 rounded-full bg-emerald-200/20 blur-3xl animate-float-delayed"></div>
         <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-navy-900/10 blur-3xl animate-float-slow"></div>
     </div>
 
     <div class="relative isolate min-h-screen overflow-hidden px-4 py-6 sm:px-6 lg:px-8">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(26,86,219,0.12),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(15,45,86,0.14),_transparent_32%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_100%)]"></div>
+        <div class="institution-public-backdrop"></div>
 
         <div class="relative mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-7xl items-center">
-            <div class="grid w-full overflow-hidden rounded-[34px] border border-white/75 bg-white/82 shadow-[0_34px_90px_rgba(15,45,86,0.14)] backdrop-blur xl:grid-cols-[1.06fr_0.94fr]">
-                <aside class="hidden min-h-[760px] flex-col justify-between overflow-hidden bg-[linear-gradient(180deg,#0f2d56_0%,#0a1f3d_100%)] p-10 text-white xl:flex">
+            <div class="institution-public-frame grid w-full overflow-hidden xl:grid-cols-[1.06fr_0.94fr]">
+                <aside class="institution-public-aside hidden min-h-[760px] flex-col justify-between overflow-hidden p-10 text-white xl:flex">
                     <div>
                         <div class="flex items-center gap-3">
                             <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 shadow-lg shadow-black/10">
@@ -35,7 +35,7 @@
                         </div>
 
                         <div class="mt-16 space-y-5">
-                            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-brand-100">Espace securise</p>
+                            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-premium-200">Espace securise</p>
                             <h2 class="text-4xl leading-tight tracking-tight" style="font-family: 'Source Serif 4', ui-serif, Georgia, serif;">Un acces moderne pour piloter classes, notes et parcours scolaires.</h2>
                             <p class="max-w-md text-base leading-7 text-white/72">Toutes les operations essentielles de l'etablissement restent reunies dans une interface fluide, mobile et plus vivante.</p>
                         </div>
@@ -43,7 +43,7 @@
                         <div class="mt-12 grid gap-4">
                             <div class="rounded-[26px] border border-white/10 bg-white/6 px-5 py-5 backdrop-blur-sm" data-tilt>
                                 <div class="flex items-start gap-3">
-                                    <span class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-brand-100">
+                                    <span class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-premium-200">
                                         <i class="bi bi-lightning-charge-fill"></i>
                                     </span>
                                     <div>
@@ -55,7 +55,7 @@
 
                             <div class="rounded-[26px] border border-white/10 bg-white/6 px-5 py-5 backdrop-blur-sm" data-tilt>
                                 <div class="flex items-start gap-3">
-                                    <span class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-emerald-200">
+                                    <span class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-premium-200">
                                         <i class="bi bi-phone"></i>
                                     </span>
                                     <div>

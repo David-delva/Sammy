@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicResult;
 use App\Models\Classe;
-use App\Models\Eleve;
 use App\Models\Inscription;
 use App\Models\Matiere;
 use App\Models\Note;
 use App\Services\AcademicCacheService;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -25,25 +26,41 @@ class DashboardController extends Controller
             300,
             function () use ($annee) {
                 if ($annee) {
-                    $elevesIds = Inscription::where('annee_academique_id', $annee->id)
-                        ->distinct('eleve_id')
-                        ->pluck('eleve_id');
+                    $moyenneGenerale = AcademicResult::query()
+                        ->where('annee_academique_id', $annee->id)
+                        ->where('period', AcademicResult::PERIOD_ANNUAL)
+                        ->whereNotNull('moyenne_generale')
+                        ->avg('moyenne_generale');
 
                     return [
-                        'total_eleves' => $elevesIds->count(),
-                        'total_classes' => Classe::count(),
-                        'total_matieres' => Matiere::count(),
+                        'total_eleves' => Inscription::query()
+                            ->where('annee_academique_id', $annee->id)
+                            ->distinct()
+                            ->count('eleve_id'),
+                        'total_classes' => Inscription::query()
+                            ->where('annee_academique_id', $annee->id)
+                            ->distinct()
+                            ->count('classe_id'),
+                        'total_matieres' => DB::table('classe_matiere')
+                            ->where('annee_academique_id', $annee->id)
+                            ->distinct()
+                            ->count('matiere_id'),
                         'total_notes' => Note::where('annee_academique_id', $annee->id)->count(),
-                        'moyenne_generale' => round(Note::where('annee_academique_id', $annee->id)->avg('note'), 2),
+                        'moyenne_generale' => $moyenneGenerale !== null ? round((float) $moyenneGenerale, 2) : null,
                     ];
                 }
 
+                $moyenneGenerale = AcademicResult::query()
+                    ->where('period', AcademicResult::PERIOD_ANNUAL)
+                    ->whereNotNull('moyenne_generale')
+                    ->avg('moyenne_generale');
+
                 return [
-                    'total_eleves' => Eleve::count(),
-                    'total_classes' => Classe::count(),
-                    'total_matieres' => Matiere::count(),
+                    'total_eleves' => Inscription::query()->distinct()->count('eleve_id'),
+                    'total_classes' => Classe::query()->count(),
+                    'total_matieres' => Matiere::query()->count(),
                     'total_notes' => Note::count(),
-                    'moyenne_generale' => round(Note::avg('note'), 2),
+                    'moyenne_generale' => $moyenneGenerale !== null ? round((float) $moyenneGenerale, 2) : null,
                 ];
             }
         );

@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Tableau de bord')
 @section('breadcrumb', 'Vue d\'ensemble')
@@ -9,7 +9,7 @@
     $kpis = [
         ['label' => 'Classes actives', 'value' => $stats['total_classes'], 'icon' => 'bi-building', 'tone' => 'bg-blue-100 text-blue-700'],
         ['label' => 'Eleves inscrits', 'value' => $stats['total_eleves'], 'icon' => 'bi-people-fill', 'tone' => 'bg-brand-100 text-brand-700'],
-        ['label' => 'Matieres', 'value' => $stats['total_matieres'], 'icon' => 'bi-book-fill', 'tone' => 'bg-emerald-100 text-emerald-700'],
+        ['label' => 'Matieres actives', 'value' => $stats['total_matieres'], 'icon' => 'bi-book-fill', 'tone' => 'bg-emerald-100 text-emerald-700'],
         ['label' => 'Notes saisies', 'value' => $stats['total_notes'], 'icon' => 'bi-clipboard-data-fill', 'tone' => 'bg-amber-100 text-amber-700'],
     ];
 
@@ -183,3 +183,4 @@
     </section>
 </div>
 @endsection
+

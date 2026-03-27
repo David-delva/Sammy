@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Modifier la note')
 @section('breadcrumb', 'Evaluations / Notes / Modification')
@@ -82,16 +82,11 @@
 
                     <div class="form-field xl:col-span-2">
                         <label for="matiere_id" class="form-label">Matiere <span class="req">*</span></label>
-                        <select id="matiere_id" name="matiere_id" class="form-select @error('matiere_id') error @enderror" required>
-                            @foreach($matieres as $matiere)
-                                <option value="{{ $matiere->id }}" {{ old('matiere_id', $note->matiere_id) == $matiere->id ? 'selected' : '' }}>
-                                    {{ $matiere->nom_matiere }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <select id="matiere_id" name="matiere_id" class="form-select @error('matiere_id') error @enderror" required disabled></select>
                         @error('matiere_id')
                             <p class="form-error">{{ $message }}</p>
                         @enderror
+                        <p class="form-hint">La liste des matieres est limitee au programme de la classe rattachee a l'eleve pour l'annee concernee.</p>
                     </div>
 
                     <div class="form-field">
@@ -138,3 +133,38 @@
     </section>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const eleveSelect = document.getElementById('eleve_id');
+    const matiereSelect = document.getElementById('matiere_id');
+    const matieresByClasse = @json($matieresByClasse);
+    const selectedMatiereId = @json((string) old('matiere_id', $note->matiere_id));
+
+    function populateMatieres() {
+        const selectedOption = eleveSelect.options[eleveSelect.selectedIndex];
+        const classeId = selectedOption?.dataset.classe;
+        const matieres = classeId ? (matieresByClasse[classeId] ?? []) : [];
+
+        matiereSelect.innerHTML = '<option value="">Selectionner la matiere</option>';
+        matiereSelect.disabled = !classeId || matieres.length === 0;
+
+        matieres.forEach(matiere => {
+            const option = document.createElement('option');
+            option.value = matiere.id;
+            option.textContent = matiere.nom_matiere;
+
+            if (selectedMatiereId && String(matiere.id) === selectedMatiereId) {
+                option.selected = true;
+            }
+
+            matiereSelect.appendChild(option);
+        });
+    }
+
+    eleveSelect.addEventListener('change', populateMatieres);
+    populateMatieres();
+});
+</script>
+@endpush

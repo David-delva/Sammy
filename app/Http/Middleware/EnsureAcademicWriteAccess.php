@@ -7,20 +7,16 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ReadOnlyPastYear
+class EnsureAcademicWriteAccess
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->isMethod('GET')) {
+        $service = app(AcademicWriteAccessService::class);
+
+        if ($service->canManageSelectedYear($request->user())) {
             return $next($request);
         }
 
-        $service = app(AcademicWriteAccessService::class);
-
-        if (! $service->canManageSelectedYear($request->user())) {
-            abort(403, $service->denialMessage());
-        }
-
-        return $next($request);
+        abort(403, $service->denialMessage());
     }
 }

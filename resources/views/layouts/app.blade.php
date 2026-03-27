@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr" class="h-full">
 <head>
     <meta charset="UTF-8">
@@ -243,9 +243,9 @@
                             <div class="flex-1">
                                 <strong>Mode consultation :</strong> vous visualisez l'annee {{ $currentAcademicYear->libelle }}.
                                 @if($canManageAcademicData)
-                                    En tant qu'administrateur, les modifications restent autorisees.
+                                    Les modifications restent autorisees pour votre compte sur cette annee.
                                 @else
-                                    La modification est bloquee pour preserver l'historique.
+                                    La modification est bloquee pour le secretariat tant qu'un administrateur n'accorde pas d'autorisation explicite.
                                 @endif
                             </div>
                             <button onclick="window.location.href='{{ route('academic-year.reset') }}'" class="btn-secondary btn-sm self-center whitespace-nowrap" style="cursor: pointer;">

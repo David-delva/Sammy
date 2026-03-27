@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'readonly' => \App\Http\Middleware\ReadOnlyPastYear::class,
+            'academic-write-access' => \App\Http\Middleware\EnsureAcademicWriteAccess::class,
         ]);
     })
 

@@ -46,17 +46,20 @@ class BusinessAccessTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_secretariat_cannot_access_write_screens(): void
+    public function test_secretariat_can_access_write_screens_in_current_academic_year(): void
     {
         $user = User::factory()->create([
             'role' => 'secretariat',
         ]);
 
+        $this->createCurrentAcademicYear();
         $this->actingAs($user);
 
-        foreach (['eleves.create', 'classes.create', 'matieres.create', 'matieres.assigner', 'notes.create', 'notes.masse.index', 'annees.index'] as $routeName) {
-            $this->get(route($routeName))->assertForbidden();
+        foreach (['eleves.create', 'classes.create', 'matieres.create', 'matieres.assigner', 'notes.create', 'notes.masse.index'] as $routeName) {
+            $this->get(route($routeName))->assertOk();
         }
+
+        $this->get(route('annees.index'))->assertForbidden();
     }
 
     public function test_admin_can_access_admin_only_routes(): void
@@ -73,19 +76,19 @@ class BusinessAccessTest extends TestCase
         }
     }
 
-    public function test_secretariat_cannot_create_a_student(): void
+    public function test_secretariat_can_create_a_student_in_current_academic_year(): void
     {
         $user = User::factory()->create([
             'role' => 'secretariat',
         ]);
 
-        $this->createCurrentAcademicYear();
+        $annee = $this->createCurrentAcademicYear();
         $classe = Classe::create([
             'nom_classe' => '6eme A',
         ]);
 
         $response = $this->actingAs($user)->post(route('eleves.store'), [
-            'matricule' => 'E-FORBIDDEN-001',
+            'matricule' => 'E-SECRET-001',
             'nom' => 'Diallo',
             'prenom' => 'Aminata',
             'date_naissance' => '2011-02-15',
@@ -94,10 +97,19 @@ class BusinessAccessTest extends TestCase
             'classe_id' => $classe->id,
         ]);
 
-        $response->assertForbidden();
+        $response->assertRedirect(route('eleves.index'));
 
-        $this->assertDatabaseMissing('eleves', [
-            'matricule' => 'E-FORBIDDEN-001',
+        $this->assertDatabaseHas('eleves', [
+            'matricule' => 'E-SECRET-001',
+            'lieu_naissance' => 'Koulamoutou',
+        ]);
+
+        $eleve = Eleve::query()->where('matricule', 'E-SECRET-001')->firstOrFail();
+
+        $this->assertDatabaseHas('inscriptions', [
+            'eleve_id' => $eleve->id,
+            'classe_id' => $classe->id,
+            'annee_academique_id' => $annee->id,
         ]);
     }
 

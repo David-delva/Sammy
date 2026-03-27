@@ -25,7 +25,6 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified', 'role:admin,secretariat'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Reset academic year session (outside readonly middleware)
     Route::get('/reset-academic-year', function (Request $request) {
         session()->forget('academic_year_date');
         session()->save();
@@ -66,7 +65,7 @@ Route::middleware(['auth', 'verified', 'role:admin,secretariat'])->group(functio
     })->name('academic-year.reset');
 
     Route::middleware(['readonly'])->group(function () {
-        Route::middleware(['role:admin'])->group(function () {
+        Route::middleware(['academic-write-access'])->group(function () {
             Route::resource('eleves', EleveController::class)->except(['index', 'show'])->parameters([
                 'eleves' => 'eleve',
             ]);
@@ -83,6 +82,11 @@ Route::middleware(['auth', 'verified', 'role:admin,secretariat'])->group(functio
             Route::resource('notes', NoteController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
             Route::get('/notes-masse', [NoteMasseController::class, 'index'])->name('notes.masse.index');
             Route::post('/notes-masse', [NoteMasseController::class, 'store'])->name('notes.masse.store');
+        });
+
+        Route::middleware(['role:admin'])->group(function () {
+            Route::post('/annees/{annee}/write-access', [AnneeAcademiqueController::class, 'grantWriteAccess'])->name('annees.write-access.store');
+            Route::delete('/annees/{annee}/write-access/{user}', [AnneeAcademiqueController::class, 'revokeWriteAccess'])->name('annees.write-access.destroy');
             Route::resource('annees', AnneeAcademiqueController::class);
         });
 

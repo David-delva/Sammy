@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\AnneeAcademique;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 
 class AcademicYearService
@@ -17,7 +18,7 @@ class AcademicYearService
             return null;
         }
 
-        $date = $date ?? $this->selectedDate() ?? now()->toDateString();
+        $date = $this->sanitizeDate($date) ?? $this->selectedDate() ?? now()->toDateString();
 
         return AnneeAcademique::forDate($date, false) ?? $this->activeYear();
     }
@@ -53,16 +54,42 @@ class AcademicYearService
         return $this->selectedDate() ?? now()->toDateString();
     }
 
+    public function sanitizeDate(mixed $date): ?string
+    {
+        if (! is_string($date)) {
+            return null;
+        }
+
+        $date = trim($date);
+
+        if (! preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return null;
+        }
+
+        try {
+            $parsed = Carbon::createFromFormat('Y-m-d', $date);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return $parsed->format('Y-m-d') === $date ? $date : null;
+    }
+
     protected function selectedDate(): ?string
     {
-        $date = request()->query('date');
+        $date = $this->sanitizeDate(request()->query('date'));
 
         if (filled($date)) {
             return $date;
         }
 
         $sessionDate = session('academic_year_date');
+        $sanitizedSessionDate = $this->sanitizeDate($sessionDate);
 
-        return filled($sessionDate) ? $sessionDate : null;
+        if ($sessionDate !== null && $sanitizedSessionDate === null) {
+            session()->forget('academic_year_date');
+        }
+
+        return $sanitizedSessionDate;
     }
 }

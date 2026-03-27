@@ -40,7 +40,7 @@ class AcademicYearCacheInvalidationTest extends TestCase
         $this->actingAs($user)
             ->put(route('annees.update', $annee), [
                 'libelle' => '2026-2027',
-                'active' => true,
+                'active' => false,
             ])
             ->assertRedirect(route('annees.index'));
 

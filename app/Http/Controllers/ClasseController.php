@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classe;
+use App\Models\Eleve;
+use App\Models\Inscription;
 use Illuminate\Http\Request;
 
 class ClasseController extends Controller
@@ -11,7 +13,6 @@ class ClasseController extends Controller
     {
         $date = request()->query('date') ?? (function_exists('currentAcademicDate') ? currentAcademicDate() : (session('academic_year_date') ?? now()->toDateString()));
 
-        // Resolve academic year safely
         if (function_exists('currentAcademicYear')) {
             $annee = currentAcademicYear();
         } elseif (app()->bound('currentAcademicYear')) {
@@ -48,14 +49,37 @@ class ClasseController extends Controller
 
         Classe::create($validated);
 
-        return redirect()->route('classes.index')->with('success', 'Classe créée avec succès.');
+        return redirect()->route('classes.index')->with('success', 'Classe creee avec succes.');
     }
 
     public function show(Classe $classe)
     {
-        $classe->load(['eleves', 'matieres']);
+        $annee = currentAcademicYear();
 
-        return view('classes.show', compact('classe'));
+        if ($annee) {
+            $classe->setRelation(
+                'eleves',
+                Eleve::query()
+                    ->whereIn('id', Inscription::query()
+                        ->where('classe_id', $classe->id)
+                        ->where('annee_academique_id', $annee->id)
+                        ->select('eleve_id'))
+                    ->orderBy('nom')
+                    ->orderBy('prenom')
+                    ->get()
+            );
+
+            $classe->setRelation(
+                'matieres',
+                $classe->matieresForAnnee($annee->id)
+                    ->orderBy('nom_matiere')
+                    ->get()
+            );
+        } else {
+            $classe->load(['eleves', 'matieres']);
+        }
+
+        return view('classes.show', compact('classe', 'annee'));
     }
 
     public function edit(Classe $classe)
@@ -71,13 +95,13 @@ class ClasseController extends Controller
 
         $classe->update($validated);
 
-        return redirect()->route('classes.index')->with('success', 'Classe modifiée avec succès.');
+        return redirect()->route('classes.index')->with('success', 'Classe modifiee avec succes.');
     }
 
     public function destroy(Classe $classe)
     {
         $classe->delete();
 
-        return redirect()->route('classes.index')->with('success', 'Classe supprimée avec succès.');
+        return redirect()->route('classes.index')->with('success', 'Classe supprimee avec succes.');
     }
 }
