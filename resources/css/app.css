@@ -21,9 +21,9 @@
     --inst-border: rgba(44, 62, 80, 0.10);
     --inst-border-strong: rgba(26, 35, 126, 0.16);
     --inst-bg: #F8F9FA;
-    --inst-text: #2C3E50;
-    --inst-text-soft: #52657a;
-    --inst-text-muted: #738496;
+    --inst-text: #1F3246;
+    --inst-text-soft: #3E5569;
+    --inst-text-muted: #55697B;
 }
 
 @layer base {
