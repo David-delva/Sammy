@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', $eleve->nom . ' ' . $eleve->prenom)
 @section('breadcrumb', 'Scolarite / Eleves / Detail')
@@ -25,10 +25,27 @@
                 </div>
 
                 <div class="hero-actions">
-                    @if($canManageAcademicData)
+                    @if($canManageAcademicData && $eleve->resolved_classe)
                         <a href="{{ route('eleves.edit', ['eleve' => $eleve, 'date' => request()->query('date')]) }}" class="btn-secondary justify-center sm:w-auto">
                             <i class="bi bi-pencil"></i>
                             Modifier
+                        </a>
+                        @if($currentInscription)
+                            <a href="{{ route('factures.create', ['date' => request()->query('date'), 'inscription' => $currentInscription->id]) }}" class="btn-primary justify-center shadow-lg shadow-brand-600/20 sm:w-auto">
+                                <i class="bi bi-receipt"></i>
+                                Nouvelle facture
+                            </a>
+                        @endif
+                    @elseif($canManageAcademicData)
+                        <a href="{{ route('eleves.reinscriptions.index', ['date' => request()->query('date'), 'search' => $eleve->matricule]) }}" class="btn-primary justify-center shadow-lg shadow-brand-600/20 sm:w-auto">
+                            <i class="bi bi-arrow-repeat"></i>
+                            Reinscrire
+                        </a>
+                    @endif
+                    @if($currentInscription)
+                        <a href="{{ route('factures.index', ['date' => request()->query('date'), 'eleve' => $eleve->id]) }}" class="btn-secondary justify-center sm:w-auto">
+                            <i class="bi bi-printer"></i>
+                            Factures
                         </a>
                     @endif
                     <a href="{{ route('eleves.historique', ['eleve' => $eleve, 'date' => request()->query('date')]) }}" class="btn-secondary justify-center sm:w-auto">
@@ -235,3 +252,5 @@
     </div>
 </div>
 @endsection
+
+

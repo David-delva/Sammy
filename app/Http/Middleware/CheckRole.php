@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -19,8 +21,10 @@ class CheckRole
             return redirect('/login');
         }
 
-        if ($roles !== [] && ! in_array(auth()->user()->role, $roles, true)) {
-            abort(403, 'Accès non autorisé.');
+        $user = auth()->user();
+
+        if ($roles !== [] && ! $user->hasAnyRole($roles)) {
+            abort(403, 'Acces non autorise.');
         }
 
         return $next($request);

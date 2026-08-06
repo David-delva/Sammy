@@ -1,34 +1,34 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier un élève')
-@section('breadcrumb', 'Scolarité / Élèves / Modification')
+@section('title', 'Modifier un eleve')
+@section('breadcrumb', 'Scolarite / Eleves / Modification')
 
 @section('content')
 <div class="mx-auto max-w-5xl space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Scolarité</p>
-            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Modifier un élève</h2>
-            <p class="mt-2 text-sm text-gray-500">Mettez à jour les informations de <span class="font-medium text-gray-700">{{ $eleve->nom }} {{ $eleve->prenom }}</span>.</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Scolarite</p>
+            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Modifier un eleve</h2>
+            <p class="mt-2 text-sm text-gray-500">Mettez a jour les informations civiles et la classe de <span class="font-medium text-gray-700">{{ $eleve->nom }} {{ $eleve->prenom }}</span> pour l'annee selectionnee.</p>
         </div>
         <a href="{{ route('eleves.index', ['date' => request()->query('date')]) }}" class="btn-secondary self-start sm:self-auto">
             <i class="bi bi-arrow-left"></i>
-            Retour à la liste
+            Retour a la liste
         </a>
     </div>
 
     <div class="card">
         <div class="card-header">
             <div>
-                <h4>Édition du profil</h4>
-                <p class="mt-1 text-xs text-gray-400">Modifiez les informations civiles et la classe associée à l'année en cours.</p>
+                <h4>Edition du profil</h4>
+                <p class="mt-1 text-xs text-gray-400">Modifiez les informations civiles et la classe associee a l'annee en cours.</p>
             </div>
             @if($annee)
                 <span class="badge-blue">{{ $annee->libelle }}</span>
             @endif
         </div>
         <div class="card-body">
-            <form action="{{ route('eleves.update', $eleve) }}" method="POST" class="space-y-6">
+            <form action="{{ route('eleves.update', ['eleve' => $eleve, 'date' => request()->query('date')]) }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PUT')
 
@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="form-field">
-                        <label for="prenom" class="form-label">Prénom <span class="req">*</span></label>
+                        <label for="prenom" class="form-label">Prenom <span class="req">*</span></label>
                         <input type="text" id="prenom" name="prenom" value="{{ old('prenom', $eleve->prenom) }}" class="form-input @error('prenom') error @enderror" required>
                         @error('prenom')
                             <p class="form-error">{{ $message }}</p>
@@ -91,7 +91,7 @@
                         <label for="sexe" class="form-label">Sexe <span class="req">*</span></label>
                         <select id="sexe" name="sexe" class="form-select @error('sexe') error @enderror" required>
                             <option value="M" {{ old('sexe', $eleve->sexe) == 'M' ? 'selected' : '' }}>Masculin</option>
-                            <option value="F" {{ old('sexe', $eleve->sexe) == 'F' ? 'selected' : '' }}>Féminin</option>
+                            <option value="F" {{ old('sexe', $eleve->sexe) == 'F' ? 'selected' : '' }}>Feminin</option>
                         </select>
                         @error('sexe')
                             <p class="form-error">{{ $message }}</p>
@@ -99,11 +99,17 @@
                     </div>
                 </div>
 
+                @error('general')
+                    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                        {{ $message }}
+                    </div>
+                @enderror
+
                 <div class="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:justify-between">
                     <a href="{{ route('eleves.index', ['date' => request()->query('date')]) }}" class="btn-secondary justify-center">Annuler</a>
                     <button type="submit" class="btn-primary justify-center">
                         <i class="bi bi-save"></i>
-                        Mettre à jour
+                        Mettre a jour
                     </button>
                 </div>
             </form>

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Inscrire un élève')
-@section('breadcrumb', 'Scolarité / Élèves / Inscription')
+@section('title', 'Inscrire un eleve')
+@section('breadcrumb', 'Scolarite / Eleves / Inscription')
 
 @section('content')
 <div class="mx-auto max-w-6xl">
-    <!-- En-tête de page -->
+    <!-- En-tete de page -->
     <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
             <div class="flex items-center gap-2">
@@ -13,41 +13,55 @@
                     <i class="bi bi-person-plus-fill text-xl"></i>
                 </span>
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Scolarité</p>
-                    <h2 class="mt-0.5 text-2xl font-semibold tracking-tight text-gray-900">Inscrire un nouvel élève</h2>
+                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Scolarite</p>
+                    <h2 class="mt-0.5 text-2xl font-semibold tracking-tight text-gray-900">Inscrire un nouvel eleve</h2>
                 </div>
             </div>
-            <p class="mt-3 text-sm text-gray-500">Créez le profil de l'élève et rattachez-le à une classe pour l'année académique active.</p>
+            <p class="mt-3 text-sm text-gray-500">Creez le profil de l'eleve et rattachez-le a une classe pour l'annee academique active.</p>
         </div>
-        <a href="{{ route('eleves.index', ['date' => request()->query('date')]) }}" class="group inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow">
-            <i class="bi bi-arrow-left transition-transform group-hover:-translate-x-0.5"></i>
-            Retour à la liste
+        <a href="{{ route('eleves.index', ['date' => request()->query('date')]) }}" class="btn-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Retour a la liste
         </a>
     </div>
 
-    <!-- Alerte année académique -->
+    <!-- Alerte annee academique -->
     @if(! $annee)
         <div class="mb-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4">
             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
                 <i class="bi bi-exclamation-triangle-fill"></i>
             </span>
             <div class="flex-1">
-                <p class="text-sm font-medium text-amber-900">Aucune année académique active</p>
+                <p class="text-sm font-medium text-amber-900">Aucune annee academique active</p>
                 <p class="mt-1 text-sm text-amber-700">
-                    <a href="{{ route('annees.create') }}" class="font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-800">Créez une année académique</a>
-                    avant d'inscrire un élève.
+                    <a href="{{ route('annees.create') }}" class="font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-800">Creez une annee academique</a>
+                    avant d'inscrire un eleve.
                 </p>
             </div>
         </div>
     @endif
 
+    <div class="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50/80 p-4">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+            <i class="bi bi-arrow-repeat"></i>
+        </span>
+        <div class="flex-1">
+            <p class="text-sm font-medium text-blue-900">L'eleve existe deja ?</p>
+            <p class="mt-1 text-sm text-blue-700">Utilisez le parcours de reinscription pour rattacher un profil existant a l'annee selectionnee sans creer de doublon.</p>
+            <a href="{{ route('eleves.reinscriptions.index', ['date' => request()->query('date')]) }}" class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-blue-900 underline underline-offset-2 hover:text-blue-700">
+                <i class="bi bi-arrow-right"></i>
+                Ouvrir la reinscription
+            </a>
+        </div>
+    </div>
+
     <!-- Formulaire principal -->
     <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-        <!-- En-tête du formulaire -->
+        <!-- En-tete du formulaire -->
         <div class="flex flex-col gap-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h3 class="text-lg font-semibold text-gray-900">Informations de l'élève</h3>
-                <p class="mt-0.5 text-xs text-gray-500">Tous les champs marqués d'un astérisque sont obligatoires.</p>
+                <h3 class="text-lg font-semibold text-gray-900">Informations de l'eleve</h3>
+                <p class="mt-0.5 text-xs text-gray-500">Tous les champs marques d'un asterisque sont obligatoires.</p>
             </div>
             <div class="flex items-center gap-3">
                 @if($annee)
@@ -60,14 +74,14 @@
                     class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-700 to-blue-800 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/25 transition-all hover:from-blue-800 hover:to-blue-900 hover:shadow-lg hover:shadow-blue-500/30 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500 disabled:shadow-none"
                     {{ ! $annee ? 'disabled' : '' }}>
                     <i class="bi bi-person-plus-fill"></i>
-                    Inscrire l'élève
+                    Inscrire l'eleve
                 </button>
             </div>
         </div>
 
         <!-- Corps du formulaire -->
         <div class="px-6 py-6">
-            <form id="eleve-form" action="{{ route('eleves.store') }}" method="POST" class="space-y-6">
+            <form id="eleve-form" action="{{ route('eleves.store', ['date' => request()->query('date')]) }}" method="POST" class="space-y-6">
                 @csrf
 
                 <!-- Section : Informations principales -->
@@ -79,7 +93,7 @@
                         </label>
                         <input type="text" id="matricule" name="matricule" value="{{ old('matricule') }}" 
                             placeholder="Ex : E-2025-001" 
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 @error('matricule') border-red-300 focus:border-red-500 focus:ring-red-500/20 @enderror" 
+                            class="form-input @error('matricule') form-input error @enderror" 
                             required {{ ! $annee ? 'disabled' : '' }}>
                         @error('matricule')
                             <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
@@ -92,9 +106,9 @@
                             Classe <span class="text-red-500">*</span>
                         </label>
                         <select id="classe_id" name="classe_id" 
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 @error('classe_id') border-red-300 focus:border-red-500 focus:ring-red-500/20 @enderror" 
+                            class="form-select @error('classe_id') form-input error @enderror" 
                             required {{ ! $annee ? 'disabled' : '' }}>
-                            <option value="">Sélectionner une classe</option>
+                            <option value="">Selectionner une classe</option>
                             @foreach($classes as $classe)
                                 <option value="{{ $classe->id }}" {{ old('classe_id') == $classe->id ? 'selected' : '' }}>
                                     {{ $classe->nom_classe }}
@@ -112,7 +126,7 @@
                             Nom <span class="text-red-500">*</span>
                         </label>
                         <input type="text" id="nom" name="nom" value="{{ old('nom') }}" 
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 @error('nom') border-red-300 focus:border-red-500 focus:ring-red-500/20 @enderror" 
+                            class="form-input @error('nom') form-input error @enderror" 
                             required {{ ! $annee ? 'disabled' : '' }}>
                         @error('nom')
                             <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
@@ -122,10 +136,10 @@
                     <div class="group">
                         <label for="prenom" class="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
                             <i class="bi bi-person-badge text-gray-400 group-focus-within:text-brand-600"></i>
-                            Prénom <span class="text-red-500">*</span>
+                            Prenom <span class="text-red-500">*</span>
                         </label>
                         <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" 
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 @error('prenom') border-red-300 focus:border-red-500 focus:ring-red-500/20 @enderror" 
+                            class="form-input @error('prenom') form-input error @enderror" 
                             required {{ ! $annee ? 'disabled' : '' }}>
                         @error('prenom')
                             <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
@@ -138,7 +152,7 @@
                             Date de naissance <span class="text-red-500">*</span>
                         </label>
                         <input type="date" id="date_naissance" name="date_naissance" value="{{ old('date_naissance') }}" 
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 @error('date_naissance') border-red-300 focus:border-red-500 focus:ring-red-500/20 @enderror" 
+                            class="form-input @error('date_naissance') form-input error @enderror" 
                             required {{ ! $annee ? 'disabled' : '' }}>
                         @error('date_naissance')
                             <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
@@ -152,7 +166,7 @@
                         </label>
                         <input type="text" id="lieu_naissance" name="lieu_naissance" value="{{ old('lieu_naissance') }}" 
                             placeholder="Ex : Koulamoutou" 
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 @error('lieu_naissance') border-red-300 focus:border-red-500 focus:ring-red-500/20 @enderror" 
+                            class="form-input @error('lieu_naissance') form-input error @enderror" 
                             required {{ ! $annee ? 'disabled' : '' }}>
                         @error('lieu_naissance')
                             <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
@@ -165,11 +179,11 @@
                             Sexe <span class="text-red-500">*</span>
                         </label>
                         <select id="sexe" name="sexe" 
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 @error('sexe') border-red-300 focus:border-red-500 focus:ring-red-500/20 @enderror" 
+                            class="form-select @error('sexe') form-input error @enderror" 
                             required {{ ! $annee ? 'disabled' : '' }}>
-                            <option value="">Sélectionner</option>
+                            <option value="">Selectionner</option>
                             <option value="M" {{ old('sexe') == 'M' ? 'selected' : '' }}>Masculin</option>
-                            <option value="F" {{ old('sexe') == 'F' ? 'selected' : '' }}>Féminin</option>
+                            <option value="F" {{ old('sexe') == 'F' ? 'selected' : '' }}>Feminin</option>
                         </select>
                         @error('sexe')
                             <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
@@ -177,7 +191,7 @@
                     </div>
                 </div>
 
-                <!-- Erreur générale -->
+                <!-- Erreur generale -->
                 @error('general')
                     <div class="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
                         <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
@@ -190,14 +204,12 @@
                 <!-- Boutons d'action -->
                 <div class="flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-between">
                     <a href="{{ route('eleves.index', ['date' => request()->query('date')]) }}" 
-                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow">
+                        class="btn-secondary">
                         Annuler
                     </a>
-                    <button type="submit"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-700 to-blue-800 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/25 transition-all hover:from-blue-800 hover:to-blue-900 hover:shadow-lg hover:shadow-blue-500/30 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500 disabled:shadow-none"
-                        {{ ! $annee ? 'disabled' : '' }}>
+                    <button type="submit" class="btn-primary" {{ ! $annee ? 'disabled' : '' }}>
                         <i class="bi bi-check-circle-fill"></i>
-                        Inscrire l'élève
+                        Inscrire l'eleve
                     </button>
                 </div>
             </form>

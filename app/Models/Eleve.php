@@ -11,20 +11,26 @@ class Eleve extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'matricule',
-        'nom',
-        'prenom',
-        'date_naissance',
-        'lieu_naissance',
-        'sexe',
-    ];
+    protected $fillable = ['matricule', 'nom', 'prenom', 'date_naissance', 'lieu_naissance', 'sexe'];
 
     protected $casts = [
         'date_naissance' => 'date',
     ];
 
-    // --- Relations ---
+    public static function booted(): void
+    {
+        static::deleting(function (self $eleve): bool {
+            if ($eleve->inscriptions()->exists()) {
+                return false;
+            }
+
+            if ($eleve->notes()->exists()) {
+                return false;
+            }
+
+            return true;
+        });
+    }
 
     public function inscriptions(): HasMany
     {
@@ -33,7 +39,7 @@ class Eleve extends Model
 
     public function latestInscription(): HasOne
     {
-        return $this->hasOne(Inscription::class)->latestOfMany();
+        return $this->hasOne(Inscription::class)->latestOfMany('created_at');
     }
 
     public function notes(): HasMany
@@ -41,23 +47,50 @@ class Eleve extends Model
         return $this->hasMany(Note::class);
     }
 
-    // --- MÃ©thodes mÃ©tier ---
+    /**
+     * Retourne l'inscription la plus recente de l'eleve.
+     */
+    public function inscriptionActuelle(): ?Inscription
+    {
+        /** @var Inscription|null $inscription */
+        $inscription = $this->inscriptions()->latest('created_at')->first();
+
+        return $inscription;
+    }
 
     /**
-     * Retourne l'inscription correspondant Ã  l'annÃ©e acadÃ©mique d'une date donnÃ©e.
+     * Retourne l'inscription de l'eleve correspondant a une date donnee.
      */
     public function inscriptionForDate(?string $date = null): ?Inscription
     {
         $label = AnneeAcademique::labelForDate($date);
 
-        return $this->inscriptions()
+        /** @var Inscription|null $inscription */
+        $inscription = $this->inscriptions()
             ->whereHas('anneeAcademique', fn ($q) => $q->where('libelle', $label))
             ->latest('created_at')
             ->first();
+
+        return $inscription;
+    }
+
+    public function inscriptionForAcademicYear(?AnneeAcademique $annee): ?Inscription
+    {
+        if (! $annee) {
+            return null;
+        }
+
+        /** @var Inscription|null $inscription */
+        $inscription = $this->inscriptions()
+            ->where('annee_academique_id', $annee->id)
+            ->latest('created_at')
+            ->first();
+
+        return $inscription;
     }
 
     /**
-     * Retourne la classe de l'Ã©lÃ¨ve pour une date donnÃ©e (via inscription).
+     * Retourne la classe de l'eleve pour une date donnee (via inscription).
      */
     public function classeForDate(?string $date = null): ?Classe
     {

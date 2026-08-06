@@ -19,8 +19,8 @@
             </div>
             <p class="mt-3 max-w-3xl text-sm text-gray-500">Définissez quelles matières sont enseignées dans chaque classe et ajustez leur coefficient pour l'année académique en cours.</p>
         </div>
-        <a href="{{ route('matieres.index') }}" class="group inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow sm:self-auto">
-            <i class="bi bi-arrow-left transition-transform group-hover:-translate-x-0.5"></i>
+        <a href="{{ route('matieres.index') }}" class="btn-secondary sm:self-auto">
+            <i class="bi bi-arrow-left"></i>
             Retour au catalogue
         </a>
     </div>

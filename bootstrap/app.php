@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Trust the tunnel / reverse proxy so Laravel keeps HTTPS URLs for assets over ngrok.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'readonly' => \App\Http\Middleware\ReadOnlyPastYear::class,

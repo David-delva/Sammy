@@ -13,83 +13,20 @@
 <body class="min-h-screen text-slate-900 antialiased">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div class="absolute -left-16 top-12 h-64 w-64 rounded-full bg-brand-300/25 blur-3xl animate-float-slow"></div>
-        <div class="absolute right-0 top-24 h-80 w-80 rounded-full bg-emerald-200/20 blur-3xl animate-float-delayed"></div>
-        <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-navy-900/10 blur-3xl animate-float-slow"></div>
+        <div class="absolute right-0 top-24 h-80 w-80 rounded-full bg-blue-100 blur-3xl animate-float-delayed opacity-70"></div>
+        <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-emerald-200/20 blur-3xl animate-float-slow"></div>
     </div>
 
     <div class="relative isolate min-h-screen overflow-hidden px-4 py-6 sm:px-6 lg:px-8">
         <div class="institution-public-backdrop"></div>
 
         <div class="relative mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-7xl items-center">
-            <div class="institution-public-frame grid w-full overflow-hidden xl:grid-cols-[1.06fr_0.94fr]">
-                <aside class="institution-public-aside hidden min-h-[760px] flex-col justify-between overflow-hidden p-10 text-white xl:flex">
-                    <div>
-                        <div class="flex items-center gap-3">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 shadow-lg shadow-black/10">
-                                <i class="bi bi-mortarboard-fill text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold uppercase tracking-[0.28em] text-white/55">E.T.P.</p>
-                                <h1 class="mt-1 text-2xl font-semibold tracking-tight">Gestion scolaire</h1>
-                            </div>
-                        </div>
-
-                        <div class="mt-16 space-y-5">
-                            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-premium-200">Espace securise</p>
-                            <h2 class="text-4xl leading-tight tracking-tight" style="font-family: 'Source Serif 4', ui-serif, Georgia, serif;">Un acces moderne pour piloter classes, notes et parcours scolaires.</h2>
-                            <p class="max-w-md text-base leading-7 text-white/72">Toutes les operations essentielles de l'etablissement restent reunies dans une interface fluide, mobile et plus vivante.</p>
-                        </div>
-
-                        <div class="mt-12 grid gap-4">
-                            <div class="rounded-[26px] border border-white/10 bg-white/6 px-5 py-5 backdrop-blur-sm" data-tilt>
-                                <div class="flex items-start gap-3">
-                                    <span class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-premium-200">
-                                        <i class="bi bi-lightning-charge-fill"></i>
-                                    </span>
-                                    <div>
-                                        <p class="text-sm font-semibold text-white">Parcours rapides</p>
-                                        <p class="mt-1 text-sm leading-6 text-white/65">Connexion, saisie de notes, exports PDF et consultation annuelle dans le meme flux.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="rounded-[26px] border border-white/10 bg-white/6 px-5 py-5 backdrop-blur-sm" data-tilt>
-                                <div class="flex items-start gap-3">
-                                    <span class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-premium-200">
-                                        <i class="bi bi-phone"></i>
-                                    </span>
-                                    <div>
-                                        <p class="text-sm font-semibold text-white">Experience mobile</p>
-                                        <p class="mt-1 text-sm leading-6 text-white/65">Le shell adaptatif facilite les formulaires, les tableaux et les actions depuis petit ecran.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div class="rounded-[24px] border border-white/10 bg-white/6 px-4 py-4">
-                            <p class="text-white/55">Modules</p>
-                            <p class="mt-2 text-2xl font-semibold">6+</p>
-                            <p class="mt-1 text-white/65">gestion, notes, classement</p>
-                        </div>
-                        <div class="rounded-[24px] border border-white/10 bg-white/6 px-4 py-4">
-                            <p class="text-white/55">Contexte</p>
-                            <p class="mt-2 text-2xl font-semibold">Annuel</p>
-                            <p class="mt-1 text-white/65">suivi academique unifie</p>
-                        </div>
-                    </div>
-                </aside>
+            <div class="institution-public-frame grid w-full overflow-hidden xl:grid-cols-[1.08fr_0.92fr]">
+                <x-layout.guest-brand-panel />
 
                 <main class="flex items-center justify-center p-5 sm:p-8 lg:p-10 xl:p-12">
                     <div class="w-full max-w-lg space-y-6">
-                        <div class="text-center xl:hidden" data-reveal>
-                            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-900 text-white shadow-lg shadow-navy-900/15">
-                                <i class="bi bi-mortarboard-fill text-xl"></i>
-                            </div>
-                            <h1 class="mt-4 text-2xl font-semibold tracking-tight text-slate-900">E.T.P.</h1>
-                            <p class="mt-1 text-sm text-slate-500">Gestion scolaire</p>
-                        </div>
+                        <x-layout.guest-mobile-brand />
 
                         <div class="auth-panel">
                             <div class="relative">
@@ -97,8 +34,8 @@
                             </div>
                         </div>
 
-                        <div class="rounded-full border border-white/70 bg-white/75 px-5 py-3 text-center text-sm text-slate-500 shadow-sm backdrop-blur">
-                            <a href="{{ url('/') }}" class="font-medium text-brand-600 transition hover:text-brand-700">
+                        <div class="rounded-full border border-white/30 bg-white/14 px-5 py-3 text-center text-sm text-white/82 shadow-sm backdrop-blur">
+                            <a href="{{ url('/') }}" class="font-medium text-white transition hover:text-emerald-200">
                                 <i class="bi bi-arrow-left mr-1"></i>Retour au site
                             </a>
                         </div>

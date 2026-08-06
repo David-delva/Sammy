@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use App\Support\Authorization\Role;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -68,5 +71,38 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->forceFill([
             'email_verified_at' => now(),
         ])->save();
+    }
+
+    public function hasRole(Role|string $role): bool
+    {
+        $expected = $role instanceof Role
+            ? $role->value
+            : strtolower(trim($role));
+
+        return strtolower((string) $this->role) === $expected;
+    }
+
+    /**
+     * @param  array<int, Role|string>  $roles
+     */
+    public function hasAnyRole(array $roles): bool
+    {
+        foreach ($roles as $role) {
+            if ($this->hasRole($role)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(Role::ADMIN);
+    }
+
+    public function isSecretariat(): bool
+    {
+        return $this->hasRole(Role::SECRETARIAT);
     }
 }

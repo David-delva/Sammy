@@ -84,7 +84,7 @@
                             <label class="form-label" for="search">Recherche</label>
                             <div class="input-group">
                                 <span class="input-prefix"><i class="bi bi-search"></i></span>
-                                <input type="text" id="search" name="search" value="{{ $search ?? '' }}" placeholder="Eleve, matiere, matricule...">
+                                <input class="form-input" type="text" id="search" name="search" value="{{ $search ?? '' }}" placeholder="Eleve, matiere, matricule...">
                             </div>
                         </div>
 

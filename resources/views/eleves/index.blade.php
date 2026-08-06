@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Eleves')
 @section('breadcrumb', 'Scolarite / Eleves')
@@ -29,6 +29,10 @@
                         <a href="{{ route('eleves.create', ['date' => request()->query('date')]) }}" class="btn-primary justify-center shadow-lg shadow-brand-600/20 sm:w-auto">
                             <i class="bi bi-person-plus"></i>
                             Inscrire un eleve
+                        </a>
+                        <a href="{{ route('eleves.reinscriptions.index', ['date' => request()->query('date')]) }}" class="btn-secondary justify-center sm:w-auto">
+                            <i class="bi bi-arrow-repeat"></i>
+                            Reinscrire un eleve
                         </a>
                     @endif
                     <a href="{{ route('classement.index', ['date' => request()->query('date')]) }}" class="btn-secondary justify-center sm:w-auto">
@@ -121,12 +125,12 @@
                                 <i class="bi bi-pencil"></i>
                                 Modifier
                             </a>
-                            <form action="{{ route('eleves.destroy', $eleve) }}" method="POST" onsubmit="return confirm('Supprimer cet eleve ?')">
+                            <form action="{{ route('eleves.destroy', ['eleve' => $eleve, 'date' => request()->query('date')]) }}" method="POST" onsubmit="return confirm('Retirer cet eleve de l annee selectionnee ?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn-danger w-full justify-center">
                                     <i class="bi bi-trash"></i>
-                                    Supprimer
+                                    Retirer de l'annee
                                 </button>
                             </form>
                         @endif
@@ -185,12 +189,12 @@
                                             <i class="bi bi-pencil"></i>
                                             Modifier
                                         </a>
-                                        <form action="{{ route('eleves.destroy', $eleve) }}" method="POST" onsubmit="return confirm('Supprimer cet eleve ?')">
+                                        <form action="{{ route('eleves.destroy', ['eleve' => $eleve, 'date' => request()->query('date')]) }}" method="POST" onsubmit="return confirm('Retirer cet eleve de l annee selectionnee ?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn-danger btn-sm">
                                                 <i class="bi bi-trash"></i>
-                                                Supprimer
+                                                Retirer de l'annee
                                             </button>
                                         </form>
                                     @endif
@@ -222,3 +226,4 @@
     </section>
 </div>
 @endsection
+

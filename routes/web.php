@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AnneeAcademiqueController;
+use App\Http\Controllers\Billing\PaiementFactureController;
 use App\Http\Controllers\BulletinController;
 use App\Http\Controllers\ClasseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EleveController;
+use App\Http\Controllers\FactureController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NoteMasseController;
@@ -66,6 +68,14 @@ Route::middleware(['auth', 'verified', 'role:admin,secretariat'])->group(functio
 
     Route::middleware(['readonly'])->group(function () {
         Route::middleware(['academic-write-access'])->group(function () {
+            Route::get('/eleves/reinscriptions', [EleveController::class, 'reenrollmentIndex'])->name('eleves.reinscriptions.index');
+            Route::post('/eleves/{eleve}/reinscriptions', [EleveController::class, 'reenroll'])->name('eleves.reinscriptions.store');
+            Route::get('/factures/create', [FactureController::class, 'create'])->name('factures.create');
+            Route::post('/factures', [FactureController::class, 'store'])->name('factures.store');
+            Route::patch('/factures/{facture}/status', [FactureController::class, 'updateStatus'])->name('factures.status.update');
+            Route::post('/factures/{facture}/paiements', [PaiementFactureController::class, 'store'])->name('factures.paiements.store');
+            Route::delete('/factures/{facture}/paiements/{paiement}', [PaiementFactureController::class, 'destroy'])->name('factures.paiements.destroy');
+
             Route::resource('eleves', EleveController::class)->except(['index', 'show'])->parameters([
                 'eleves' => 'eleve',
             ]);
@@ -96,6 +106,9 @@ Route::middleware(['auth', 'verified', 'role:admin,secretariat'])->group(functio
         ]);
 
         Route::get('/bulletin/pdf/{id}', [BulletinController::class, 'generatePdf'])->name('bulletins.pdf');
+        Route::get('/factures', [FactureController::class, 'index'])->name('factures.index');
+        Route::get('/factures/{facture}', [FactureController::class, 'show'])->name('factures.show');
+        Route::get('/factures/{facture}/pdf', [FactureController::class, 'pdf'])->name('factures.pdf');
         Route::get('/classement', [App\Http\Controllers\ClassementController::class, 'index'])->name('classement.index');
         Route::get('/classement/pdf/{classe_id}', [App\Http\Controllers\ClassementController::class, 'exportPdf'])->name('classement.pdf');
         Route::get('/classes/{classe}/liste-pdf', [App\Http\Controllers\ListeClasseController::class, 'generatePdf'])->name('classes.liste.pdf');

@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEleveRequest;
+use App\Http\Requests\StoreReinscriptionRequest;
 use App\Http\Requests\UpdateEleveRequest;
-use App\Models\AnneeAcademique;
 use App\Models\Classe;
 use App\Models\Eleve;
+use App\Models\Facture;
 use App\Models\Inscription;
 use App\Models\Note;
 use App\Services\CalculationService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class EleveController extends Controller
@@ -54,15 +56,43 @@ class EleveController extends Controller
         return view('eleves.create', compact('classes', 'annee'));
     }
 
+    public function reenrollmentIndex(Request $request)
+    {
+        $annee = currentAcademicYear();
+        $search = trim((string) $request->query('search', ''));
+        $classes = Classe::orderBy('nom_classe')->get();
+        $candidates = null;
+
+        if ($annee) {
+            $candidates = Eleve::query()
+                ->with('latestInscription.classe')
+                ->whereDoesntHave('inscriptions', function ($query) use ($annee) {
+                    $query->where('annee_academique_id', $annee->id);
+                })
+                ->when($search !== '', function ($query) use ($search) {
+                    $query->where(function ($searchQuery) use ($search) {
+                        $searchQuery->where('matricule', 'like', "%{$search}%")
+                            ->orWhere('nom', 'like', "%{$search}%")
+                            ->orWhere('prenom', 'like', "%{$search}%");
+                    });
+                })
+                ->orderBy('nom')
+                ->orderBy('prenom')
+                ->paginate(20)
+                ->withQueryString();
+        }
+
+        return view('eleves.reinscriptions', compact('annee', 'classes', 'search', 'candidates'));
+    }
+
     public function store(StoreEleveRequest $request)
     {
-        $annee = currentAcademicYear()
-            ?? AnneeAcademique::forDate(now()->toDateString(), true);
+        $annee = currentAcademicYear();
 
         if (! $annee) {
             return back()
                 ->withInput()
-                ->withErrors(['general' => "Aucune annee academique active. Veuillez en creer une d'abord."]);
+                ->withErrors(['general' => "Aucune annee academique selectionnee. Veuillez en creer ou en choisir une d'abord."]);
         }
 
         DB::transaction(function () use ($request, $annee) {
@@ -78,7 +108,7 @@ class EleveController extends Controller
         });
 
         return redirect()
-            ->route('eleves.index')
+            ->route('eleves.index', $this->indexRouteParameters())
             ->with('success', "Eleve inscrit avec succes pour l'annee {$annee->libelle}.");
     }
 
@@ -86,6 +116,7 @@ class EleveController extends Controller
     {
         $date = request()->query('date') ?? currentAcademicDate();
         $annee = currentAcademicYear();
+        $currentInscription = $annee ? $eleve->inscriptionForAcademicYear($annee) : null;
 
         $eleve->load([
             'notes' => function ($query) use ($annee) {
@@ -158,7 +189,7 @@ class EleveController extends Controller
             ->filter()
             ->values();
 
-        return view('eleves.show', compact('eleve', 'annee', 'notesOverview', 'notesBySemestre'));
+        return view('eleves.show', compact('eleve', 'annee', 'currentInscription', 'notesOverview', 'notesBySemestre'));
     }
 
     public function edit(Eleve $eleve)
@@ -166,48 +197,123 @@ class EleveController extends Controller
         $date = request()->query('date') ?? currentAcademicDate();
         $annee = currentAcademicYear();
         $classes = Classe::orderBy('nom_classe')->get();
-        $inscription = $eleve->inscriptionForDate($date);
+        $inscription = $annee
+            ? $eleve->inscriptionForAcademicYear($annee)
+            : $eleve->inscriptionForDate($date);
+
+        if ($annee && ! $inscription) {
+            return redirect()
+                ->route('eleves.reinscriptions.index', $this->indexRouteParameters(['search' => $eleve->matricule]))
+                ->with('warning', "{$eleve->nom} {$eleve->prenom} n'est pas inscrit pour l'annee {$annee->libelle}. Utilisez la reinscription annuelle.");
+        }
 
         return view('eleves.edit', compact('eleve', 'classes', 'inscription', 'annee'));
     }
 
     public function update(UpdateEleveRequest $request, Eleve $eleve)
     {
-        $date = request()->query('date') ?? currentAcademicDate();
         $annee = currentAcademicYear();
 
-        DB::transaction(function () use ($request, $eleve, $annee, $date) {
+        if (! $annee) {
+            return back()
+                ->withInput()
+                ->withErrors(['general' => 'Aucune annee academique selectionnee.']);
+        }
+
+        $inscription = $eleve->inscriptionForAcademicYear($annee);
+
+        if (! $inscription) {
+            return redirect()
+                ->route('eleves.reinscriptions.index', $this->indexRouteParameters(['search' => $eleve->matricule]))
+                ->with('warning', "{$eleve->nom} {$eleve->prenom} n'est pas inscrit pour l'annee {$annee->libelle}. Reinscrivez-le d'abord.");
+        }
+
+        DB::transaction(function () use ($request, $eleve, $inscription) {
             $eleve->update($request->only([
                 'matricule', 'nom', 'prenom', 'date_naissance', 'lieu_naissance', 'sexe',
             ]));
 
-            if ($annee) {
-                $inscription = $eleve->inscriptionForDate($date);
-
-                if ($inscription) {
-                    $inscription->update(['classe_id' => $request->classe_id]);
-                } else {
-                    Inscription::create([
-                        'eleve_id' => $eleve->id,
-                        'classe_id' => $request->classe_id,
-                        'annee_academique_id' => $annee->id,
-                    ]);
-                }
-            }
+            $inscription->update([
+                'classe_id' => $request->classe_id,
+            ]);
         });
 
         return redirect()
-            ->route('eleves.index')
+            ->route('eleves.index', $this->indexRouteParameters())
             ->with('success', 'Eleve modifie avec succes.');
+    }
+
+    public function reenroll(StoreReinscriptionRequest $request, Eleve $eleve)
+    {
+        $annee = currentAcademicYear();
+
+        if (! $annee) {
+            return back()->with('error', 'Aucune annee academique selectionnee.');
+        }
+
+        if ($eleve->inscriptionForAcademicYear($annee)) {
+            return redirect()
+                ->route('eleves.index', $this->indexRouteParameters())
+                ->with('warning', "{$eleve->nom} {$eleve->prenom} est deja inscrit pour l'annee {$annee->libelle}.");
+        }
+
+        Inscription::create([
+            'eleve_id' => $eleve->id,
+            'classe_id' => $request->integer('classe_id'),
+            'annee_academique_id' => $annee->id,
+        ]);
+
+        return redirect()
+            ->route('eleves.index', $this->indexRouteParameters())
+            ->with('success', "{$eleve->nom} {$eleve->prenom} a ete reinscrit pour l'annee {$annee->libelle}.");
     }
 
     public function destroy(Eleve $eleve)
     {
-        $eleve->delete();
+        $annee = currentAcademicYear();
+
+        if (! $annee) {
+            return redirect()
+                ->route('eleves.index', $this->indexRouteParameters())
+                ->with('error', 'Aucune annee academique selectionnee.');
+        }
+
+        $inscription = $eleve->inscriptionForAcademicYear($annee);
+
+        if (! $inscription) {
+            return redirect()
+                ->route('eleves.index', $this->indexRouteParameters())
+                ->with('warning', "{$eleve->nom} {$eleve->prenom} n'est pas inscrit pour l'annee {$annee->libelle}.");
+        }
+
+        $hasNotesForYear = Note::query()
+            ->where('eleve_id', $eleve->id)
+            ->where('annee_academique_id', $annee->id)
+            ->exists();
+
+        if ($hasNotesForYear) {
+            return redirect()
+                ->route('eleves.index', $this->indexRouteParameters())
+                ->with('error', "Impossible de retirer {$eleve->nom} {$eleve->prenom} de l'annee {$annee->libelle} : des notes existent deja pour cette annee.");
+        }
+
+        $hasInvoicesForYear = Facture::query()
+            ->where('inscription_id', $inscription->id)
+            ->exists();
+
+        if ($hasInvoicesForYear) {
+            return redirect()
+                ->route('eleves.index', $this->indexRouteParameters())
+                ->with('error', "Impossible de retirer {$eleve->nom} {$eleve->prenom} de l'annee {$annee->libelle} : des factures d'inscription existent deja pour cette annee.");
+        }
+
+        DB::transaction(function () use ($inscription) {
+            $inscription->delete();
+        });
 
         return redirect()
-            ->route('eleves.index')
-            ->with('success', 'Eleve supprime avec succes.');
+            ->route('eleves.index', $this->indexRouteParameters())
+            ->with('success', "Inscription retiree avec succes pour l'annee {$annee->libelle}.");
     }
 
     public function historique(Eleve $eleve)
@@ -227,5 +333,12 @@ class EleveController extends Controller
             ->sortByDesc(fn ($item) => $item['annee']->libelle);
 
         return view('eleves.historique', compact('eleve', 'historique'));
+    }
+
+    protected function indexRouteParameters(array $extra = []): array
+    {
+        return array_filter(array_merge([
+            'date' => request()->query('date'),
+        ], $extra), fn ($value) => filled($value));
     }
 }

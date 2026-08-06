@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Secrétariat',
+            'name' => 'Secretariat',
             'email' => 'secretariat@ecole.com',
             'password' => Hash::make('password'),
             'role' => 'secretariat',
@@ -30,8 +30,8 @@ class UserSeeder extends Seeder
             'name' => 'Professeur Principal',
             'email' => 'gomambadelvadavid@gmail.com',
             'password' => Hash::make('password'),
-            'role' => 'administrateur',
-            // email_verified_at non défini → devra vérifier l'e-mail
+            'role' => 'secretariat',
+            // email_verified_at non defini -> devra verifier l'e-mail
         ]);
     }
 }

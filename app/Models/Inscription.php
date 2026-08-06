@@ -32,4 +32,9 @@ class Inscription extends Model
     {
         return $this->hasMany(Note::class, 'eleve_id', 'eleve_id');
     }
+
+    public function factures(): HasMany
+    {
+        return $this->hasMany(Facture::class);
+    }
 }

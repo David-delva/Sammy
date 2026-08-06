@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\AnneeAcademique;
@@ -24,11 +26,11 @@ class AcademicWriteAccessService
             return false;
         }
 
-        if ($user->role === 'admin') {
+        if ($user->isAdmin()) {
             return true;
         }
 
-        if ($user->role !== 'secretariat' || ! $annee) {
+        if (! $user->isSecretariat() || ! $annee) {
             return false;
         }
 
