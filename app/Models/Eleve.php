@@ -11,7 +11,7 @@ class Eleve extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['matricule', 'nom', 'prenom', 'date_naissance', 'lieu_naissance', 'sexe'];
+    protected $fillable = ['matricule', 'nom', 'prenom', 'date_naissance', 'lieu_naissance', 'sexe', 'bac', 'provenance'];
 
     protected $casts = [
         'date_naissance' => 'date',

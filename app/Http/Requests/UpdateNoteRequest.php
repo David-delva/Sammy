@@ -20,7 +20,7 @@ class UpdateNoteRequest extends FormRequest
             'eleve_id' => ['required', 'exists:eleves,id'],
             'matiere_id' => ['required', 'exists:matieres,id'],
             'note' => ['required', 'numeric', 'min:0', 'max:20'],
-            'type_devoir' => ['required', 'in:devoir,composition'],
+            'type_devoir' => ['required', 'in:devoir,composition,rattrapage'],
             'semestre' => ['required', 'integer', 'in:1,2'],
         ];
     }

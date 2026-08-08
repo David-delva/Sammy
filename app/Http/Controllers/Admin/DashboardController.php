@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AcademicResult;
 use App\Models\Classe;
 use App\Models\Inscription;
 use App\Models\Matiere;
 use App\Models\Note;
+use App\Models\ResultatAnnuel;
 use App\Services\AcademicCacheService;
 use Illuminate\Support\Facades\DB;
 
@@ -29,11 +29,10 @@ class DashboardController extends Controller
             300,
             function () use ($annee): array {
                 if ($annee) {
-                    $moyenneGenerale = AcademicResult::query()
+                    $moyenneGenerale = ResultatAnnuel::query()
                         ->where('annee_academique_id', $annee->id)
-                        ->where('period', AcademicResult::PERIOD_ANNUAL)
-                        ->whereNotNull('moyenne_generale')
-                        ->avg('moyenne_generale');
+                        ->whereNotNull('moyenne_annuelle')
+                        ->avg('moyenne_annuelle');
 
                     return [
                         'total_eleves' => Inscription::query()
@@ -55,10 +54,9 @@ class DashboardController extends Controller
                     ];
                 }
 
-                $moyenneGenerale = AcademicResult::query()
-                    ->where('period', AcademicResult::PERIOD_ANNUAL)
-                    ->whereNotNull('moyenne_generale')
-                    ->avg('moyenne_generale');
+                $moyenneGenerale = ResultatAnnuel::query()
+                    ->whereNotNull('moyenne_annuelle')
+                    ->avg('moyenne_annuelle');
 
                 return [
                     'total_eleves' => Inscription::query()->distinct()->count('eleve_id'),

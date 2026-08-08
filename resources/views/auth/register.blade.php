@@ -1,8 +1,8 @@
-<x-guest-layout>
+﻿<x-guest-layout>
     <div class="mb-8">
-        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Inscription</p>
-        <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Cr&eacute;er votre compte</h1>
-        <p class="mt-2 text-sm text-gray-500">Ouvrez un acc&egrave;s pour administrer l'ann&eacute;e scolaire, les classes et les r&eacute;sultats.</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cobalt-600">Inscription</p>
+        <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Creer votre compte</h1>
+        <p class="mt-2 text-sm text-gray-500">Ouvrez un acces pour administrer l'annee scolaire, les classes et les resultats.</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}" class="space-y-5">
@@ -26,7 +26,7 @@
 
         <div class="form-field">
             <label for="password" class="form-label">Mot de passe</label>
-            <input id="password" type="password" name="password" required autocomplete="new-password" placeholder="Minimum 8 caract&egrave;res" class="form-input @error('password') error @enderror">
+            <input id="password" type="password" name="password" required autocomplete="new-password" placeholder="Minimum 8 caracteres" class="form-input @error('password') error @enderror">
             @error('password')
                 <p class="form-error">{{ $message }}</p>
             @enderror
@@ -42,12 +42,12 @@
 
         <button type="submit" class="btn-primary w-full justify-center">
             <i class="bi bi-person-plus"></i>
-            Cr&eacute;er mon compte
+            Creer mon compte
         </button>
     </form>
 
     <div class="border-t border-gray-100 pt-5 text-center text-sm text-gray-500">
-        D&eacute;j&agrave; un compte ?
-        <a href="{{ route('login') }}" class="font-medium text-brand-600 transition hover:text-brand-700 hover:underline">Se connecter</a>
+        Deja un compte ?
+        <a href="{{ route('login') }}" class="font-medium text-cobalt-600 transition hover:text-cobalt-700 hover:underline">Se connecter</a>
     </div>
 </x-guest-layout>

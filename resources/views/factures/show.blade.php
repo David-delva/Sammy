@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="hero-actions">
-                    <a href="{{ route('factures.pdf', ['facture' => $facture, 'date' => request()->query('date')]) }}" class="btn-primary justify-center shadow-lg shadow-brand-600/20 sm:w-auto">
+                    <a href="{{ route('factures.pdf', ['facture' => $facture, 'date' => request()->query('date')]) }}" class="btn-primary justify-center shadow-lg shadow-cobalt-600/20 sm:w-auto">
                         <i class="bi bi-printer"></i>
                         Imprimer la facture
                     </a>
@@ -205,7 +205,7 @@
         <aside class="surface-card" data-tilt>
             <div class="relative space-y-5">
                 <div>
-                    <p class="text-xs font-bold uppercase tracking-[0.26em] text-brand-600">Actions</p>
+                    <p class="text-xs font-bold uppercase tracking-[0.26em] text-cobalt-600">Actions</p>
                     <h4 class="mt-3 text-xl font-semibold tracking-tight text-slate-900">Statut, paiements et impression</h4>
                 </div>
 
@@ -236,11 +236,11 @@
                         <p class="mt-1 text-xs text-slate-500">Ajoutez un paiement partiel ou complet. Le solde et le statut seront recalcules automatiquement.</p>
 
                         @if($facture->statut === \App\Models\Facture::STATUT_ANNULEE)
-                            <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900">
+                            <div class="mt-4 rounded-2xl border border-warning-200 bg-warning-50 px-4 py-4 text-sm text-warning-900">
                                 Cette facture est annulee. Aucun paiement supplementaire ne peut etre ajoute tant qu'elle reste annulee.
                             </div>
                         @elseif($soldeRestant <= 0)
-                            <div class="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-900">
+                            <div class="mt-4 rounded-2xl border border-success-200 bg-success-50 px-4 py-4 text-sm text-success-900">
                                 Le solde est deja nul. Aucun paiement supplementaire n'est requis.
                             </div>
                         @else

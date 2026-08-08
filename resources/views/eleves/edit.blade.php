@@ -7,7 +7,7 @@
 <div class="mx-auto max-w-5xl space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Scolarite</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cobalt-600">Scolarite</p>
             <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Modifier un eleve</h2>
             <p class="mt-2 text-sm text-gray-500">Mettez a jour les informations civiles et la classe de <span class="font-medium text-gray-700">{{ $eleve->nom }} {{ $eleve->prenom }}</span> pour l'annee selectionnee.</p>
         </div>
@@ -97,10 +97,26 @@
                             <p class="form-error">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    <div class="form-field">
+                        <label for="bac" class="form-label">Baccalauréat</label>
+                        <input type="text" id="bac" name="bac" value="{{ old('bac', $eleve->bac) }}" class="form-input @error('bac') error @enderror">
+                        @error('bac')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-field">
+                        <label for="provenance" class="form-label">Provenance</label>
+                        <input type="text" id="provenance" name="provenance" value="{{ old('provenance', $eleve->provenance) }}" class="form-input @error('provenance') error @enderror">
+                        @error('provenance')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 @error('general')
-                    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                    <div class="rounded-xl border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-800">
                         {{ $message }}
                     </div>
                 @enderror

@@ -22,6 +22,8 @@ class UpdateEleveRequest extends FormRequest
             'date_naissance' => ['required', 'date', 'before:today'],
             'lieu_naissance' => ['required', 'string', 'max:100'],
             'sexe' => ['required', 'in:M,F'],
+            'bac' => ['nullable', 'string', 'max:100'],
+            'provenance' => ['nullable', 'string', 'max:150'],
             'classe_id' => ['required', 'exists:classes,id'],
         ];
     }

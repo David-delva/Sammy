@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Gestion scolaire') - E.T.P.</title>
+    <title>@yield('title', 'Gestion scolaire') - INPTIC</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,11 +19,11 @@
     $pageBreadcrumb = trim($__env->yieldContent('breadcrumb'));
     $pageBreadcrumb = $pageBreadcrumb !== '' ? $pageBreadcrumb : null;
 @endphp
-<body class="min-h-screen text-slate-900" x-data="{ sidebarOpen: false }">
+<body class="min-h-screen text-slate-900 bg-gray-200" x-data="{ sidebarOpen: false }">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div class="absolute -left-20 top-10 h-64 w-64 rounded-full bg-brand-300/25 blur-3xl animate-float-slow"></div>
-        <div class="absolute right-0 top-32 h-72 w-72 rounded-full bg-blue-100 blur-3xl animate-float-delayed opacity-70"></div>
-        <div class="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-emerald-200/20 blur-3xl animate-float-slow"></div>
+        <div class="absolute -left-20 top-10 h-64 w-64 rounded-full bg-cobalt-300/25 blur-3xl animate-float-slow"></div>
+        <div class="absolute right-0 top-32 h-72 w-72 rounded-full bg-cobalt-100 blur-3xl animate-float-delayed opacity-70"></div>
+        <div class="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-success-200/20 blur-3xl animate-float-slow"></div>
     </div>
 
     <div class="mx-auto min-h-screen max-w-[1780px] px-3 py-3 sm:px-4">
@@ -32,7 +32,7 @@
                 <div class="container-fluid px-3">
                     <a class="navbar-brand d-flex align-items-center gap-2" href="#">
                         <i class="bi bi-mortarboard-fill text-primary fs-4"></i>
-                        <span class="fw-semibold">E.T.P.</span>
+                        <span class="fw-semibold">INPTIC</span>
                     </a>
                     <div class="d-flex align-items-center ms-auto">
                         <button class="btn btn-outline-primary d-lg-none" @click="sidebarOpen = true">

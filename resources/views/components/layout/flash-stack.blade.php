@@ -1,4 +1,4 @@
-@props([
+ï»¿@props([
     'isCurrentAcademicYear' => true,
     'currentAcademicYear' => null,
     'canManageAcademicData' => false,
@@ -8,22 +8,22 @@
     <div class="alert-warning animate-fadein" role="alert">
         <i class="bi bi-exclamation-diamond-fill mt-0.5 flex-shrink-0"></i>
         <div class="flex-1">
-            <strong>Mode consultation :</strong> vous visualisez l'année {{ $currentAcademicYear->libelle }}.
+            <strong>Mode consultation :</strong> vous visualisez l'annee {{ $currentAcademicYear->libelle }}.
             @if($canManageAcademicData)
-                Les modifications restent autorisées pour votre compte sur cette année.
+                Les modifications restent autorisees pour votre compte sur cette annee.
             @else
-                La modification est bloquée pour le secrétariat tant qu'un administrateur n'accorde pas d'autorisation explicite.
+                La modification est bloquee pour le secretariat tant qu'un administrateur n'accorde pas d'autorisation explicite.
             @endif
         </div>
         <button onclick="window.location.href='{{ route('academic-year.reset') }}'" class="btn-secondary btn-sm self-center whitespace-nowrap" style="cursor: pointer;">
-            Retour au présent
+            Retour au present
         </button>
     </div>
 @endif
 
 @if(session('success'))
     <div class="alert-success animate-fadein" role="alert">
-        <i class="bi bi-check-circle-fill flex-shrink-0 text-emerald-600"></i>
+        <i class="bi bi-check-circle-fill flex-shrink-0 text-success-600"></i>
         <span>{{ session('success') }}</span>
     </div>
 @endif
@@ -52,3 +52,4 @@
         </ul>
     </div>
 @endif
+

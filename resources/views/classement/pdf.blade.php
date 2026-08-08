@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -25,7 +25,7 @@
 
     <div class="header">
         <h1>Tableau d'Honneur & Classement</h1>
-        <p>Classe : {{ $classe->nom_classe }} | Année : {{ $annee->libelle }}</p>
+        <p>Classe : {{ $classe->nom_classe }} | Annee : {{ $annee->libelle }}</p>
     </div>
 
     <table>
@@ -33,7 +33,7 @@
             <tr>
                 <th style="width: 50px;">Rang</th>
                 <th style="width: 100px;">Matricule</th>
-                <th class="text-left">Nom & Prénom</th>
+                <th class="text-left">Nom & Prenom</th>
                 <th style="width: 80px;">Moyenne</th>
                 <th style="width: 100px;">Mention</th>
             </tr>
@@ -54,7 +54,7 @@
     </table>
 
     <div class="footer">
-        Document généré le {{ date('d/m/Y H:i') }} — Page 1/1
+        Document genere le {{ date('d/m/Y H:i') }} — Page 1/1
     </div>
 
 </body>

@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Bulletin - {{ $eleve->nom }} {{ $eleve->prenom }}</title>
+    <title>Bulletin de Notes - {{ $eleve->nom ?? '' }} {{ $eleve->prenom ?? '' }}</title>
     <style>
         @page {
             margin: 10mm 9mm;
@@ -10,7 +10,7 @@
 
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 8px;
+            font-size: 8.5px;
             color: #000000;
             margin: 0;
         }
@@ -25,311 +25,414 @@
         }
 
         .top td {
-            vertical-align: top;
+            vertical-align: middle;
         }
 
-        .ministry {
-            width: 72%;
+        .logo-cell {
+            width: 15%;
             text-align: center;
-            line-height: 1.28;
         }
 
-        .ministry .line {
-            text-transform: uppercase;
+        .inptic-header {
+            width: 55%;
+            text-align: center;
+            line-height: 1.3;
         }
 
-        .ministry .line-strong {
+        .inptic-header .main-title {
+            font-size: 9px;
             font-weight: bold;
             text-transform: uppercase;
         }
 
-        .ministry .meta {
-            margin-top: 3px;
+        .inptic-header .sub-title {
+            font-size: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 2px;
         }
 
         .republic {
-            width: 28%;
-            text-align: right;
-        }
-
-        .republic-box {
-            display: inline-block;
-            width: 118px;
-            border: 1px solid #000000;
+            width: 30%;
             text-align: center;
-            font-size: 8px;
-            line-height: 1.2;
+            line-height: 1.5;
         }
 
-        .republic-box .head {
-            background: #1d7f3f;
-            color: #ffffff;
+        .republic .head {
             font-weight: bold;
             text-transform: uppercase;
-            padding: 2px 4px;
+            font-size: 9px;
         }
 
-        .republic-box .subhead {
-            background: #f4dd42;
-            font-weight: bold;
-            padding: 2px 4px;
-        }
-
-        .school-year {
-            margin-top: 18px;
-            text-align: right;
-            font-size: 7px;
+        .republic .motto {
+            font-size: 8px;
         }
 
         .title-box {
-            width: 64%;
-            margin: 10px auto 10px;
-            border: 2px solid #4b4b4b;
-            background: #e7e7e7;
+            margin: 12px 0 4px;
             text-align: center;
-            padding: 5px 6px;
-            font-size: 11px;
+        }
+
+        .title-box .bulletin-title {
+            font-size: 13px;
             font-weight: bold;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
+        }
+
+        .title-box .annee-academique {
+            font-size: 9px;
+            margin-top: 2px;
+        }
+
+        .classe-box {
+            margin: 10px 0;
+            border: 1px solid #000000;
+            padding: 4px 8px;
+            font-size: 9px;
+            font-weight: bold;
         }
 
         .identity {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-size: 8.5px;
         }
 
-        .identity p {
-            margin: 4px 0;
+        .identity td {
+            border: 1px solid #000000;
+            padding: 3px 6px;
         }
 
-        .fill {
-            display: inline-block;
-            min-height: 10px;
-            border-bottom: 1px solid #000000;
-            vertical-align: bottom;
-            padding: 0 2px;
-            line-height: 1.1;
+        .identity .label {
+            font-weight: bold;
+            width: 30%;
+            background: #f2f2f2;
         }
 
-        .w-name { width: 155px; }
-        .w-prenom { width: 120px; }
-        .w-date { width: 72px; }
-        .w-place { width: 100px; }
-        .w-class { width: 75px; }
-
-        .notes th,
-        .notes td,
-        .summary td,
-        .decision td {
+        .grades-table th,
+        .grades-table td,
+        .summary-table td,
+        .credits-table td,
+        .credits-table th,
+        .decision-table td {
             border: 1px solid #000000;
         }
 
-        .notes th {
-            background: #efefef;
-            font-size: 7px;
+        .grades-table th {
+            background: #d9d9d9;
+            font-size: 8px;
             font-weight: bold;
             text-align: center;
-            padding: 2px 3px;
+            padding: 3px 2px;
         }
 
-        .notes td {
-            height: 15px;
-            padding: 1px 3px;
-            font-size: 7.4px;
-            text-align: center;
-        }
-
-        .notes .subject {
-            text-align: left;
-            width: 31%;
-        }
-
-        .notes .w-dev { width: 10%; }
-        .notes .w-comp { width: 10%; }
-        .notes .w-moy { width: 10%; }
-        .notes .w-coef { width: 8%; }
-        .notes .w-points { width: 12%; }
-        .notes .w-app { width: 19%; }
-
-        .total-row td {
-            font-weight: bold;
-        }
-
-        .summary {
-            margin-top: 0;
-        }
-
-        .summary td {
+        .grades-table td {
+            height: 16px;
             padding: 2px 4px;
-            font-size: 7.5px;
-        }
-
-        .summary .label {
-            font-weight: bold;
-        }
-
-        .summary .value {
+            font-size: 8px;
             text-align: center;
         }
 
-        .decision {
-            margin-top: -1px;
+        .grades-table .matiere-name {
+            text-align: left;
+            width: 40%;
         }
 
-        .decision td {
-            vertical-align: top;
-        }
-
-        .decision .head {
+        .ue-header td {
+            background: #f2f2f2;
             font-weight: bold;
-            padding: 3px 4px;
+            text-align: left;
+            padding: 3px 5px;
+            font-size: 8.5px;
         }
 
-        .decision .body {
-            height: 44px;
-            padding: 4px;
-            line-height: 1.35;
+        .ue-total td {
+            font-weight: bold;
+            background: #fafafa;
         }
 
-        .footer {
-            margin-top: 16px;
+        .ue-total .note-eleve {
+            background: #4a86c6;
+            color: #ffffff;
+        }
+
+        .absence-row td {
+            font-style: italic;
+        }
+
+        .summary-table {
+            margin-top: 8px;
+        }
+
+        .summary-table td {
+            padding: 4px 6px;
+            font-size: 8.5px;
+        }
+
+        .summary-table .label {
+            font-weight: bold;
+            width: 40%;
+        }
+
+        .summary-table .value {
             text-align: center;
-            font-size: 5.8px;
+            width: 30%;
+        }
+
+        .summary-table .moyenne-generale {
+            background: #4a86c6;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .credits-table {
+            margin-top: 10px;
+            font-size: 8px;
+        }
+
+        .credits-caption {
+            font-weight: bold;
+            font-size: 8.5px;
+            margin-top: 10px;
+            margin-bottom: 3px;
+        }
+
+        .credits-table th {
+            background: #d9d9d9;
+            padding: 3px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .credits-table td {
+            text-align: center;
+            padding: 3px;
+            height: 18px;
+        }
+
+        .decision-table {
+            margin-top: 8px;
+        }
+
+        .decision-table td {
+            padding: 6px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 9px;
+            height: 25px;
+        }
+
+        .footer-section {
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .footer-section .date-fait {
+            text-align: right;
+            font-size: 8px;
+            margin-bottom: 20px;
+        }
+
+        .signatures td {
+            width: 50%;
+            text-align: center;
+            vertical-align: bottom;
+            font-size: 8px;
+            font-weight: bold;
+            padding-top: 15px;
+        }
+
+        .legal-notice {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 7px;
+            font-style: italic;
+            color: #333333;
         }
     </style>
 </head>
 <body>
     @php
-        $rows = $lignes;
-        $targetRows = 14;
-
-        while (count($rows) < $targetRows) {
-            $rows[] = [
-                'matiere' => '',
-                'moyenne_devoirs' => '',
-                'note_composition' => '',
-                'moyenne' => '',
-                'coefficient' => '',
-                'moy_x_coef' => '',
-                'appreciation' => '',
-            ];
-        }
-
-        $nom = $eleve->nom ?? '';
-        $prenoms = $eleve->prenom ?? '';
-        $dateNaissance = $eleve->date_naissance ? $eleve->date_naissance->format('d/m/Y') : '';
+        $etudiantNom = $eleve->nom ?? '';
+        $etudiantPrenom = $eleve->prenom ?? '';
+        $dateNaissance = $eleve->date_naissance ? \Carbon\Carbon::parse($eleve->date_naissance)->format('d/m/Y') : '';
+        $lieuNaissance = $eleve->lieu_naissance ?? 'Non renseigne';
         $classeLibelle = $classe->nom_classe ?? '';
-        $moyenneDisplay = $moyenne_generale !== null ? number_format($moyenne_generale, 2, ',', ' ') : '';
-        $moyenneS1Display = $moyenne_semestre_1 !== null ? number_format($moyenne_semestre_1, 2, ',', ' ') : '';
-        $moyenneS2Display = $moyenne_semestre_2 !== null ? number_format($moyenne_semestre_2, 2, ',', ' ') : '';
-        $moyenneAnnuelleDisplay = $moyenne_annuelle !== null ? number_format($moyenne_annuelle, 2, ',', ' ') : '';
-        $rangDisplay = $rang ? $rang . ' / ' . $total_eleves : '';
-        $appreciationConseil = $mention ? 'Mention : ' . $mention : '';
+        $anneeLibelle = $annee->libelle ? str_replace('-', '/', $annee->libelle) : '';
+
+        $moyenneGenerale = $moyenne_generale !== null ? number_format((float) $moyenne_generale, 2, ',', ' ') : '';
+        $moyenneGeneraleClasseFmt = ($moyenne_generale_classe ?? null) !== null ? number_format((float) $moyenne_generale_classe, 2, ',', ' ') : '';
+        $rangDisplay = $rang ? $rang.'eme / '.$total_eleves : '';
+        $mentionDisplay = $mention ?? '';
+        $decisionJury = $decision ?? '';
+        $dateFait = $date_fait ?? date('d/m/Y');
     @endphp
 
     <div class="page">
+        <!-- EN-TETE -->
         <table class="top">
             <tr>
-                <td class="ministry">
-                    <div class="line">MINISTERE DE LA FORMATION PROFESSIONNELLE</div>
-                    <div class="line" style="height: 10px;"></div>
-                    <div class="line">ECOLE TECHNIQUE ET PROFESSIONNELLE DES METIERS</div>
-                    <div class="line-strong">E.T.P.M / KOULAMOUTOU</div>
-                    <div class="meta">TEL 066.06.89.00 / 077.49.45.46</div>
-                    <div class="meta">B.P 30 - KOULAMOUTOU</div>
+                <td class="logo-cell">
+                    <img src="{{ public_path('images/logo-inptic.png') }}" alt="Logo INPTIC" style="height: 55px; width: auto;" />
+                </td>
+                <td class="inptic-header">
+                    <div class="main-title">INSTITUT NATIONAL DE LA POSTE, DES TECHNOLOGIES<br>DE L'INFORMATION ET DE LA COMMUNICATION</div>
+                    <div class="sub-title">DIRECTION DES ETUDES ET DE LA PEDAGOGIE</div>
                 </td>
                 <td class="republic">
-                    <div class="republic-box">
-                        <div class="head">REPUBLIQUE GABONAISE</div>
-                        <div class="subhead">Union - Travail - Justice</div>
-                    </div>
-                    <div class="school-year">Année scolaire : {{ $annee->libelle }}</div>
+                    <div class="head">REPUBLIQUE GABONAISE</div>
+                    <div class="motto">Union - Travail - Justice</div>
                 </td>
             </tr>
         </table>
 
-        <div class="title-box">{{ $bulletin_titre }}</div>
-
-        <div class="identity">
-            <p>
-                Nom : <span class="fill w-name">{{ $nom }}</span>
-                prenoms : <span class="fill w-prenom">{{ $prenoms }}</span>
-            </p>
-            <p>
-                N&eacute;(e) le : <span class="fill w-date">{{ $dateNaissance }}</span>
-                &agrave; <span class="fill w-place">{{ $eleve->lieu_naissance ?? 'Non renseigné' }}</span>
-                classe : <span class="fill w-class">{{ $classeLibelle }}</span>
-            </p>
+        <!-- TITRE DU BULLETIN -->
+        <div class="title-box">
+            <div class="bulletin-title">{{ $bulletin_titre ?? 'Bulletin de Notes' }}</div>
+            <div class="annee-academique">Annee Academique : {{ $anneeLibelle }}</div>
         </div>
 
-        <table class="notes">
+        <!-- CLASSE -->
+        <div class="classe-box">Classe : {{ $classeLibelle }}</div>
+
+        <!-- IDENTITE DE L'ETUDIANT -->
+        <table class="identity">
+            <tr>
+                <td class="label">Nom et Prenom(s)</td>
+                <td>{{ $etudiantNom }} {{ $etudiantPrenom }}</td>
+            </tr>
+            <tr>
+                <td class="label">Date et lieu de naissance</td>
+                <td>Ne(e) le {{ $dateNaissance }} a {{ $lieuNaissance }}</td>
+            </tr>
+        </table>
+
+        <!-- TABLEAU DES NOTES -->
+        <table class="grades-table">
             <thead>
                 <tr>
-                    <th class="subject">Matieres</th>
-                    <th class="w-dev">Dev</th>
-                    <th class="w-comp">comp</th>
-                    <th class="w-moy">Moy/20</th>
-                    <th class="w-coef">coef</th>
-                    <th class="w-points">Moy*coef</th>
-                    <th class="w-app">Applications</th>
+                    <th class="matiere-name"></th>
+                    <th style="width: 12%;">Credits</th>
+                    <th style="width: 12%;">Coefficients</th>
+                    <th style="width: 18%;">Notes de l'etudiant</th>
+                    <th style="width: 18%;">Moyenne de classe</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($rows as $row)
-                    <tr>
-                        <td class="subject">{{ $row['matiere'] }}</td>
-                        <td>{{ $row['moyenne_devoirs'] }}</td>
-                        <td>{{ $row['note_composition'] }}</td>
-                        <td>{{ $row['moyenne'] }}</td>
-                        <td>{{ $row['coefficient'] }}</td>
-                        <td>{{ $row['moy_x_coef'] }}</td>
-                        <td>{{ $row['appreciation'] }}</td>
+                @if(isset($ues) && count($ues) > 0)
+                    @foreach($ues as $ue)
+                        <tr class="ue-header">
+                            <td colspan="5">{{ $ue->code ? $ue->code.' ' : '' }}{{ $ue->nom ?? '' }}</td>
+                        </tr>
+
+                        @if(isset($ue->matieres))
+                            @foreach($ue->matieres as $matiere)
+                                <tr>
+                                    <td class="matiere-name">{{ $matiere->nom ?? '' }}</td>
+                                    <td>{{ $matiere->credit ?? '' }}</td>
+                                    <td>{{ $matiere->coef !== null ? number_format($matiere->coef, 2, ',', ' ') : '' }}</td>
+                                    <td>{{ $matiere->note !== null ? number_format($matiere->note, 2, ',', ' ') : '' }}</td>
+                                    <td>{{ $matiere->moy_classe !== null ? number_format($matiere->moy_classe, 2, ',', ' ') : '' }}</td>
+                                </tr>
+                            @endforeach
+                        @endif
+
+                        <tr class="ue-total">
+                            <td class="matiere-name">Moyenne {{ $ue->code ?? '' }}</td>
+                            <td>{{ number_format($ue->credits_total ?? 0, 0) }}</td>
+                            <td>{{ number_format($ue->coefficients_total ?? 0, 2, ',', ' ') }}</td>
+                            <td class="note-eleve">{{ $ue->moyenne !== null ? number_format($ue->moyenne, 2, ',', ' ') : '' }}</td>
+                            <td>{{ $ue->moy_classe !== null ? number_format($ue->moy_classe, 2, ',', ' ') : '' }}</td>
+                        </tr>
+                    @endforeach
+
+                    <tr class="absence-row">
+                        <td class="matiere-name" colspan="3">Heures d'absence</td>
+                        <td>{{ ($heures_absence_total ?? 0) > 0 ? $heures_absence_total : '' }}</td>
+                        <td></td>
                     </tr>
-                @endforeach
-                <tr class="total-row">
-                    <td colspan="5" style="text-align: center;">Total</td>
-                    <td>{{ $total_points_formatted }}</td>
-                    <td></td>
+                @elseif(isset($lignes) && count($lignes) > 0)
+                    @foreach($lignes as $ligne)
+                        <tr>
+                            <td class="matiere-name">{{ $ligne['matiere'] }}</td>
+                            <td>{{ $ligne['credits'] ?: '' }}</td>
+                            <td>{{ $ligne['coefficient'] }}</td>
+                            <td>{{ $ligne['moyenne'] }}{{ $ligne['rattrapage'] ? ' (R)' : '' }}</td>
+                            <td></td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="5" style="height: 100px; text-align: center;">Aucune matiere enregistree pour ce semestre.</td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
+
+        <!-- RESUME : MOYENNE, RANG, MENTION -->
+        <table class="summary-table">
+            <tr>
+                <td class="label">Moyenne Generale</td>
+                <td class="value moyenne-generale">{{ $moyenneGenerale }}</td>
+                <td class="value">{{ $moyenneGeneraleClasseFmt }}</td>
+            </tr>
+            <tr>
+                <td class="label">Rang de l'etudiant au Semestre</td>
+                <td class="value" colspan="2">{{ $rangDisplay }}</td>
+            </tr>
+            <tr>
+                <td class="label">Mention</td>
+                <td class="value" colspan="2">{{ $mentionDisplay }}</td>
+            </tr>
+        </table>
+
+        @if(isset($ues) && count($ues) > 0)
+        <!-- VALIDATION DES CREDITS -->
+        <div class="credits-caption">Etat de la Validation des Credits au {{ $semestre_libelle ?? 'Semestre' }}</div>
+        <table class="credits-table">
+            <thead>
+                <tr>
+                    @foreach($ues as $ue)
+                        <th>{{ $ue->code ?? 'UE' }}</th>
+                    @endforeach
+                    <th>Credits Acquis au {{ $semestre_libelle ?? 'Semestre' }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    @foreach($ues as $ue)
+                        <td>{{ $ue->credits_acquis ?? 0 }} Credits / {{ $ue->credits_total ?? 0 }}</td>
+                    @endforeach
+                    <td>{{ $credits_acquis ?? 0 }} Credits / {{ $credits_total ?? 0 }}</td>
+                </tr>
+                <tr>
+                    @foreach($ues as $ue)
+                        <td>{{ ($ue->credits_acquis ?? 0) >= ($ue->credits_total ?? 0) ? 'UE Acquise' : 'UE Non Acquise' }}</td>
+                    @endforeach
+                    <td style="font-weight: bold;">{{ ($credits_acquis ?? 0) >= ($credits_total ?? 0) ? 'Semestre Acquis' : 'Semestre Non Acquis' }}</td>
                 </tr>
             </tbody>
         </table>
 
-        <table class="summary">
+        <!-- DECISION DU JURY -->
+        <table class="decision-table">
             <tr>
-                <td class="label" style="width: 34%;">Moyenne</td>
-                <td class="value" style="width: 18%;">{{ $moyenneDisplay }}</td>
-                <td class="label" style="width: 18%; text-align: center;">rang</td>
-                <td class="value" style="width: 30%;">{{ $rangDisplay }}</td>
-            </tr>
-            <tr>
-                <td class="label" colspan="3">Moyenne du 1&deg; semestre</td>
-                <td class="value">{{ $moyenneS1Display }}</td>
-            </tr>
-            <tr>
-                <td class="label" colspan="3">moyenne du 2&deg; semestre</td>
-                <td class="value">{{ $moyenneS2Display }}</td>
-            </tr>
-            <tr>
-                <td class="label" colspan="3">Moyenne annuelle</td>
-                <td class="value">{{ $moyenneAnnuelleDisplay }}</td>
+                <td>Decision du Jury : {{ $decisionJury }}</td>
             </tr>
         </table>
+        @endif
 
-        <table class="decision">
-            <tr>
-                <td style="width: 53%;">
-                    <div class="head">Appreciations du conseil de classe :</div>
-                    <div class="body">{{ $appreciationConseil }}</div>
-                </td>
-                <td>
-                    <div class="head">Cachet et signature du Directeur</div>
-                    <div class="body"></div>
-                </td>
-            </tr>
-        </table>
+        <!-- PIED DE PAGE ET SIGNATURES -->
+        <div class="footer-section">
+            <div class="date-fait">Fait a Libreville le {{ $dateFait }}</div>
+            <table class="signatures">
+                <tr>
+                    <td></td>
+                    <td>Le Directeur des Etudes et de la Pedagogie</td>
+                </tr>
+            </table>
+        </div>
 
-        <div class="footer">
-            Reconnu sous le N&deg;555/METRFP/SG/DGFP/SI du ministere de la Formation Professionnelle
+        <div class="legal-notice">
+            Il ne sera delivre qu'un seul et unique exemplaire de bulletins de notes. L'etudiant est donc prie d'en faire plusieurs copies legalisees.
         </div>
     </div>
 </body>

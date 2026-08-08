@@ -7,7 +7,7 @@
 <div class="mx-auto max-w-5xl space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Facturation</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cobalt-600">Facturation</p>
             <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Emettre une facture d'inscription</h2>
             <p class="mt-2 text-sm text-gray-500">Rattachez la facture a une inscription annuelle et preparez un document imprimable.</p>
         </div>

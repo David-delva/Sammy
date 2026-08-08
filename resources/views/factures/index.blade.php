@@ -28,7 +28,7 @@
 
                 <div class="hero-actions">
                     @if($canManageAcademicData)
-                        <a href="{{ route('factures.create', ['date' => request()->query('date'), 'eleve' => request()->query('eleve')]) }}" class="btn-primary justify-center shadow-lg shadow-brand-600/20 sm:w-auto">
+                        <a href="{{ route('factures.create', ['date' => request()->query('date'), 'eleve' => request()->query('eleve')]) }}" class="btn-primary justify-center shadow-lg shadow-cobalt-600/20 sm:w-auto">
                             <i class="bi bi-plus-circle"></i>
                             Nouvelle facture
                         </a>
@@ -180,7 +180,7 @@
                 @endphp
                 <article class="mobile-list-item">
                     <div class="flex items-start gap-3">
-                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cobalt-100 text-cobalt-700">
                             <i class="bi bi-receipt"></i>
                         </div>
                         <div class="min-w-0 flex-1">

@@ -1,12 +1,12 @@
-<section class="space-y-6">
+﻿<section class="space-y-6">
     <header class="space-y-2">
-        <div class="flex items-center gap-2 text-brand-600">
+        <div class="flex items-center gap-2 text-cobalt-600">
             <i class="bi bi-shield-lock text-base"></i>
             <p class="text-xs font-semibold uppercase tracking-[0.24em]">Mot de passe</p>
         </div>
         <div>
-            <h2 class="text-xl font-semibold tracking-tight text-gray-900">Renforcer la s&eacute;curit&eacute;</h2>
-            <p class="mt-1 text-sm text-gray-500">Choisissez un mot de passe long et unique pour prot&eacute;ger les acc&egrave;s &agrave; l'application.</p>
+            <h2 class="text-xl font-semibold tracking-tight text-gray-900">Renforcer la securite</h2>
+            <p class="mt-1 text-sm text-gray-500">Choisissez un mot de passe long et unique pour proteger les acces a l'application.</p>
         </div>
     </header>
 
@@ -43,11 +43,11 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
             <button class="btn-primary" type="submit">
                 <i class="bi bi-shield-check"></i>
-                Mettre &agrave; jour le mot de passe
+                Mettre a jour le mot de passe
             </button>
 
             @if (session('status') === 'password-updated')
-                <span class="badge-green">Mot de passe mis &agrave; jour</span>
+                <span class="badge-green">Mot de passe mis a jour</span>
             @endif
         </div>
     </form>

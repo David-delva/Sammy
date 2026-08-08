@@ -20,8 +20,12 @@ class AcademicSubjectResult extends Model
         'total_notes',
         'moyenne_devoirs',
         'note_composition',
+        'note_rattrapage',
+        'rattrapage_utilise',
         'moyenne_matiere',
         'moy_x_coef',
+        'credits_acquis',
+        'heures_absence',
         'last_recorded_at',
     ];
 
@@ -31,8 +35,12 @@ class AcademicSubjectResult extends Model
         'total_notes' => 'integer',
         'moyenne_devoirs' => 'float',
         'note_composition' => 'float',
+        'note_rattrapage' => 'float',
+        'rattrapage_utilise' => 'boolean',
         'moyenne_matiere' => 'float',
         'moy_x_coef' => 'float',
+        'credits_acquis' => 'integer',
+        'heures_absence' => 'integer',
         'last_recorded_at' => 'datetime',
     ];
 

@@ -1,8 +1,8 @@
-<x-guest-layout>
+﻿<x-guest-layout>
     <div class="mb-8">
-        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">R&eacute;initialisation</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cobalt-600">Reinitialisation</p>
         <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Choisir un nouveau mot de passe</h1>
-        <p class="mt-2 text-sm text-gray-500">D&eacute;finissez un mot de passe robuste pour s&eacute;curiser &agrave; nouveau votre compte.</p>
+        <p class="mt-2 text-sm text-gray-500">Definissez un mot de passe robuste pour securiser a nouveau votre compte.</p>
     </div>
 
     <form method="POST" action="{{ route('password.store') }}" class="space-y-5">
@@ -36,7 +36,7 @@
 
         <button type="submit" class="btn-primary w-full justify-center">
             <i class="bi bi-check-circle"></i>
-            R&eacute;initialiser le mot de passe
+            Reinitialiser le mot de passe
         </button>
     </form>
 </x-guest-layout>

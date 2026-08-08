@@ -14,6 +14,12 @@ class Note extends Model
 
     public const SEMESTRE_2 = 2;
 
+    public const TYPE_DEVOIR = 'devoir';
+
+    public const TYPE_COMPOSITION = 'composition';
+
+    public const TYPE_RATTRAPAGE = 'rattrapage';
+
     protected $fillable = [
         'eleve_id',
         'matiere_id',
@@ -33,6 +39,15 @@ class Note extends Model
         return [
             self::SEMESTRE_1 => '1er semestre',
             self::SEMESTRE_2 => '2e semestre',
+        ];
+    }
+
+    public static function typeDevoirOptions(): array
+    {
+        return [
+            self::TYPE_DEVOIR => 'Devoir (CC)',
+            self::TYPE_COMPOSITION => 'Composition (Examen)',
+            self::TYPE_RATTRAPAGE => 'Rattrapage',
         ];
     }
 

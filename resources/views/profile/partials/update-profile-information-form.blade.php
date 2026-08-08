@@ -1,12 +1,12 @@
-<section class="space-y-6">
+﻿<section class="space-y-6">
     <header class="space-y-2">
-        <div class="flex items-center gap-2 text-brand-600">
+        <div class="flex items-center gap-2 text-cobalt-600">
             <i class="bi bi-person-circle text-base"></i>
             <p class="text-xs font-semibold uppercase tracking-[0.24em]">Informations du profil</p>
         </div>
         <div>
-            <h2 class="text-xl font-semibold tracking-tight text-gray-900">Vos coordonn&eacute;es</h2>
-            <p class="mt-1 text-sm text-gray-500">Mettez &agrave; jour le nom affich&eacute; et l'adresse e-mail associ&eacute;e &agrave; votre compte.</p>
+            <h2 class="text-xl font-semibold tracking-tight text-gray-900">Vos coordonnees</h2>
+            <p class="mt-1 text-sm text-gray-500">Mettez a jour le nom affiche et l'adresse e-mail associee a votre compte.</p>
         </div>
     </header>
 
@@ -37,23 +37,23 @@
         </div>
 
         @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-            <div class="space-y-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4">
-                <div class="flex items-start gap-3 text-sm text-amber-900">
+            <div class="space-y-3 rounded-2xl border border-warning-200 bg-warning-50 px-4 py-4">
+                <div class="flex items-start gap-3 text-sm text-warning-900">
                     <i class="bi bi-envelope-exclamation mt-0.5"></i>
                     <div>
-                        <p class="font-semibold">Adresse e-mail non v&eacute;rifi&eacute;e</p>
-                        <p class="mt-1 leading-6 text-amber-800">Votre compte utilise une adresse non confirm&eacute;e. Renvoyez un e-mail de v&eacute;rification pour finaliser la s&eacute;curisation de l'acc&egrave;s.</p>
+                        <p class="font-semibold">Adresse e-mail non verifiee</p>
+                        <p class="mt-1 leading-6 text-warning-800">Votre compte utilise une adresse non confirmee. Renvoyez un e-mail de verification pour finaliser la securisation de l'acces.</p>
                     </div>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">
                     <button form="send-verification" class="btn-secondary btn-sm" type="submit">
                         <i class="bi bi-send"></i>
-                        Renvoyer l'e-mail de v&eacute;rification
+                        Renvoyer l'e-mail de verification
                     </button>
 
                     @if (session('status') === 'verification-link-sent')
-                        <span class="badge-green">Lien de v&eacute;rification envoy&eacute;</span>
+                        <span class="badge-green">Lien de verification envoye</span>
                     @endif
                 </div>
             </div>
@@ -66,7 +66,7 @@
             </button>
 
             @if (session('status') === 'profile-updated')
-                <span class="badge-green">Profil enregistr&eacute;</span>
+                <span class="badge-green">Profil enregistre</span>
             @endif
         </div>
     </form>

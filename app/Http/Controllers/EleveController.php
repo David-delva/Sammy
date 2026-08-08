@@ -97,7 +97,7 @@ class EleveController extends Controller
 
         DB::transaction(function () use ($request, $annee) {
             $eleve = Eleve::create($request->only([
-                'matricule', 'nom', 'prenom', 'date_naissance', 'lieu_naissance', 'sexe',
+                'matricule', 'nom', 'prenom', 'date_naissance', 'lieu_naissance', 'sexe', 'bac', 'provenance',
             ]));
 
             Inscription::create([
@@ -163,6 +163,7 @@ class EleveController extends Controller
                         $matiere = $notes->first()->matiere;
                         $moyenneDevoirs = $notes->where('type_devoir', 'devoir')->avg('note');
                         $noteComposition = $notes->where('type_devoir', 'composition')->max('note');
+                        $noteRattrapage = $notes->where('type_devoir', 'rattrapage')->max('note');
 
                         return [
                             'matiere' => $matiere,
@@ -170,6 +171,7 @@ class EleveController extends Controller
                             'total_notes' => $notes->count(),
                             'moyenne_devoirs' => $moyenneDevoirs !== null ? round($moyenneDevoirs, 2) : null,
                             'note_composition' => $noteComposition !== null ? round($noteComposition, 2) : null,
+                            'note_rattrapage' => $noteRattrapage !== null ? round($noteRattrapage, 2) : null,
                             'moyenne_matiere' => $calculationService->calculateMoyenneMatiere($eleve, $matiere, $annee, $semestre),
                             'derniere_saisie' => $notes->first()->created_at,
                         ];
@@ -230,7 +232,7 @@ class EleveController extends Controller
 
         DB::transaction(function () use ($request, $eleve, $inscription) {
             $eleve->update($request->only([
-                'matricule', 'nom', 'prenom', 'date_naissance', 'lieu_naissance', 'sexe',
+                'matricule', 'nom', 'prenom', 'date_naissance', 'lieu_naissance', 'sexe', 'bac', 'provenance',
             ]));
 
             $inscription->update([

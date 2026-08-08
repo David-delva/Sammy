@@ -1,4 +1,4 @@
-@php
+ï»¿@php
     $user = auth()->user();
 @endphp
 
@@ -34,11 +34,12 @@
             <div class="mt-1 border-t border-slate-100 pt-1">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-red-600 transition hover:bg-red-50">
-                        <i class="bi bi-box-arrow-right w-4"></i>Déconnexion
+                    <button type="submit" class="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-danger-600 transition hover:bg-danger-50">
+                        <i class="bi bi-box-arrow-right w-4"></i>Deconnexion
                     </button>
                 </form>
             </div>
         </div>
     </div>
 @endif
+

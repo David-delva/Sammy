@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Classement')
 @section('breadcrumb', 'Evaluations / Classement')
@@ -92,11 +92,11 @@
                     @foreach($classement as $item)
                         @php
                             $mentionClass = match($item['mention']) {
-                                'Excellent' => 'badge-green',
-                                'Tres Bien' => 'badge-blue',
-                                'Bien' => 'badge-purple',
-                                'Assez Bien' => 'badge-gray',
-                                default => 'badge-red',
+                                'Très Bien' => 'badge-green',
+                                'Bien'      => 'badge-blue',
+                                'Assez Bien'=> 'badge-purple',
+                                'Passable'  => 'badge-gray',
+                                default     => 'badge-red',
                             };
                         @endphp
                         <article class="mobile-list-item">
@@ -115,7 +115,7 @@
                                 </div>
                                 <div class="rounded-[20px] border border-slate-200 bg-white px-4 py-3 text-center shadow-sm">
                                     <p class="text-xs uppercase tracking-[0.18em] text-slate-400">Moy.</p>
-                                    <p class="mt-1 text-xl font-semibold {{ $item['moyenne'] >= 10 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($item['moyenne'], 2) }}</p>
+                                    <p class="mt-1 text-xl font-semibold {{ $item['moyenne'] >= 10 ? 'text-success-600' : 'text-danger-600' }}">{{ number_format($item['moyenne'], 2) }}</p>
                                 </div>
                             </div>
 
@@ -144,11 +144,11 @@
                             @foreach($classement as $item)
                                 @php
                                     $mentionClass = match($item['mention']) {
-                                        'Excellent' => 'badge-green',
-                                        'Tres Bien' => 'badge-blue',
-                                        'Bien' => 'badge-purple',
-                                        'Assez Bien' => 'badge-gray',
-                                        default => 'badge-red',
+                                        'Très Bien'  => 'badge-green',
+                                        'Bien'       => 'badge-blue',
+                                        'Assez Bien' => 'badge-purple',
+                                        'Passable'   => 'badge-gray',
+                                        default      => 'badge-red',
                                     };
                                 @endphp
                                 <tr>
@@ -164,7 +164,7 @@
                                         <div class="mt-1 text-xs text-slate-400">{{ $item['eleve']->matricule }}</div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="text-lg font-semibold {{ $item['moyenne'] >= 10 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($item['moyenne'], 2) }}</span>
+                                        <span class="text-lg font-semibold {{ $item['moyenne'] >= 10 ? 'text-success-600' : 'text-danger-600' }}">{{ number_format($item['moyenne'], 2) }}</span>
                                     </td>
                                     <td class="text-center">
                                         <span class="{{ $mentionClass }}">{{ $item['mention'] }}</span>

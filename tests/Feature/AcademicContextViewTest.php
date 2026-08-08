@@ -98,7 +98,7 @@ class AcademicContextViewTest extends TestCase
                 && $stats['total_classes'] === 1
                 && $stats['total_matieres'] === 1
                 && $stats['total_notes'] === 2
-                && $stats['moyenne_generale'] === 14.0;
+                && $stats['moyenne_generale'] === 14.4;
         });
     }
 

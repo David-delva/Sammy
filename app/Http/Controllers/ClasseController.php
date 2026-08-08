@@ -22,8 +22,7 @@ class ClasseController extends Controller
         }
 
         if ($annee) {
-            $classeIds = \App\Models\Inscription::where('annee_academique_id', $annee->id)->distinct('classe_id')->pluck('classe_id');
-            $classes = Classe::whereIn('id', $classeIds)->paginate(20);
+            $classes = Classe::paginate(20);
             $classes->getCollection()->transform(function ($c) use ($annee) {
                 $c->eleves_count = \App\Models\Inscription::where('annee_academique_id', $annee->id)->where('classe_id', $c->id)->count();
 

@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Notes')
 @section('breadcrumb', 'Evaluations / Notes')
@@ -25,12 +25,27 @@
                 </div>
 
                 <div class="hero-actions">
+                    <a href="{{ route('notes.export', array_filter([
+                        'date' => request()->query('date'),
+                        'semestre' => $selectedSemestre,
+                        'classe' => $selectedClasse,
+                        'matiere' => $selectedMatiere,
+                        'type_devoir' => $selectedType,
+                        'search' => $search,
+                    ])) }}" class="btn-secondary justify-center sm:w-auto">
+                        <i class="bi bi-file-earmark-arrow-down"></i>
+                        Exporter Excel
+                    </a>
                     @if($canManageAcademicData)
+                        <a href="{{ route('notes.import.form', ['date' => request()->query('date')]) }}" class="btn-secondary justify-center sm:w-auto">
+                            <i class="bi bi-file-earmark-arrow-up"></i>
+                            Importer (Excel/CSV)
+                        </a>
                         <a href="{{ route('notes.masse.index', ['date' => request()->query('date'), 'semestre' => $selectedSemestre]) }}" class="btn-secondary justify-center sm:w-auto">
                             <i class="bi bi-table"></i>
                             Saisie en masse
                         </a>
-                        <a href="{{ route('notes.create', ['date' => request()->query('date'), 'semestre' => $selectedSemestre]) }}" class="btn-primary justify-center shadow-lg shadow-brand-600/20 sm:w-auto">
+                        <a href="{{ route('notes.create', ['date' => request()->query('date'), 'semestre' => $selectedSemestre]) }}" class="btn-primary justify-center shadow-lg shadow-cobalt-600/20 sm:w-auto">
                             <i class="bi bi-plus-lg"></i>
                             Nouvelle note
                         </a>
@@ -112,8 +127,9 @@
                             <label class="form-label" for="type_devoir">Type</label>
                             <select id="type_devoir" name="type_devoir" class="form-select">
                                 <option value="">Tous les types</option>
-                                <option value="devoir" {{ $selectedType === 'devoir' ? 'selected' : '' }}>Devoir</option>
-                                <option value="composition" {{ $selectedType === 'composition' ? 'selected' : '' }}>Composition</option>
+                                @foreach(\App\Models\Note::typeDevoirOptions() as $value => $label)
+                                    <option value="{{ $value }}" {{ $selectedType === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -138,7 +154,7 @@
                             Reinitialiser
                         </a>
                         <span class="sm:ml-auto inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 shadow-sm">
-                            <i class="bi bi-journal-check text-brand-600"></i>
+                            <i class="bi bi-journal-check text-cobalt-600"></i>
                             {{ $notes->total() }} note(s)
                         </span>
                     </div>
@@ -147,7 +163,7 @@
         </div>
     </section>
 
-    <section class="card overflow-hidden">
+    <section class="card overflow-hidden notes-registry">
         <div class="card-header">
             <div>
                 <h4>Registre des notes</h4>
@@ -162,7 +178,7 @@
                     <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-3">
-                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 font-bold text-sm">
+                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cobalt-100 text-cobalt-700 font-bold text-sm">
                                     {{ substr($note->eleve->nom, 0, 1) }}{{ substr($note->eleve->prenom, 0, 1) }}
                                 </div>
                                 <div class="min-w-0">
@@ -172,8 +188,8 @@
                             </div>
                             <div class="mt-4 flex flex-wrap gap-2">
                                 <span class="badge-blue"><i class="bi bi-book-fill"></i>{{ $note->matiere->nom_matiere }}</span>
-                                <span class="{{ $note->type_devoir === 'composition' ? 'badge-yellow' : 'badge-gray' }}">
-                                    <i class="bi {{ $note->type_devoir === 'composition' ? 'bi-trophy-fill' : 'bi-file-text-fill' }}"></i>
+                                <span class="{{ match($note->type_devoir) { 'composition' => 'badge-yellow', 'rattrapage' => 'badge-red', default => 'badge-gray' } }}">
+                                    <i class="bi {{ match($note->type_devoir) { 'composition' => 'bi-trophy-fill', 'rattrapage' => 'bi-arrow-repeat', default => 'bi-file-text-fill' } }}"></i>
                                     {{ ucfirst($note->type_devoir) }}
                                 </span>
                                 <span class="badge-purple"><i class="bi bi-calendar3"></i>{{ $note->semestre_label }}</span>
@@ -181,7 +197,7 @@
                         </div>
                         <div class="rounded-[20px] border border-slate-200 bg-white px-4 py-3 text-center shadow-sm">
                             <p class="text-xs uppercase tracking-[0.18em] text-slate-400">Note</p>
-                            <p class="mt-1 text-xl font-semibold {{ $note->note >= 10 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($note->note, 2, ',', ' ') }}</p>
+                            <p class="mt-1 text-xl font-semibold {{ $note->note >= 10 ? 'text-success-600' : 'text-danger-600' }}">{{ number_format($note->note, 2, ',', ' ') }}</p>
                         </div>
                     </div>
 
@@ -230,7 +246,7 @@
                         <tr>
                             <td>
                                 <div class="flex items-center gap-3">
-                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 font-bold text-sm">
+                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cobalt-100 text-cobalt-700 font-bold text-sm">
                                         {{ substr($note->eleve->nom, 0, 1) }}{{ substr($note->eleve->prenom, 0, 1) }}
                                     </div>
                                     <div>
@@ -243,10 +259,10 @@
                                 <span class="badge-blue">{{ $note->matiere->nom_matiere }}</span>
                             </td>
                             <td class="text-center">
-                                <span class="text-lg font-semibold {{ $note->note >= 10 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($note->note, 2, ',', ' ') }}</span>
+                                <span class="text-lg font-semibold {{ $note->note >= 10 ? 'text-success-600' : 'text-danger-600' }}">{{ number_format($note->note, 2, ',', ' ') }}</span>
                             </td>
                             <td>
-                                <span class="{{ $note->type_devoir === 'composition' ? 'badge-yellow' : 'badge-gray' }}">{{ ucfirst($note->type_devoir) }}</span>
+                                <span class="{{ match($note->type_devoir) { 'composition' => 'badge-yellow', 'rattrapage' => 'badge-red', default => 'badge-gray' } }}">{{ ucfirst($note->type_devoir) }}</span>
                             </td>
                             <td>
                                 <span class="badge-purple">{{ $note->semestre_label }}</span>

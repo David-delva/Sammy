@@ -1,19 +1,19 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Créer une classe')
-@section('breadcrumb', 'Administration / Classes / Création')
+@section('title', 'Creer une classe')
+@section('breadcrumb', 'Administration / Classes / Creation')
 
 @section('content')
 <div class="mx-auto max-w-3xl space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Administration</p>
-            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Créer une nouvelle classe</h2>
-            <p class="mt-2 text-sm text-gray-500">Ajoutez une classe dans le catalogue pour l'utiliser dans les inscriptions et les assignations de matières.</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cobalt-600">Administration</p>
+            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">Creer une nouvelle classe</h2>
+            <p class="mt-2 text-sm text-gray-500">Ajoutez une classe dans le catalogue pour l'utiliser dans les inscriptions et les assignations de matieres.</p>
         </div>
         <a href="{{ route('classes.index', ['date' => request()->query('date')]) }}" class="btn-secondary self-start sm:self-auto">
             <i class="bi bi-arrow-left"></i>
-            Retour à la liste
+            Retour a la liste
         </a>
     </div>
 
@@ -34,7 +34,7 @@
                            class="form-input @error('nom_classe') error @enderror"
                            placeholder="Ex : 6e A, Terminale C, BTS 1"
                            required>
-                    <p class="form-hint">Choisissez un intitulé court, clair et unique dans le catalogue.</p>
+                    <p class="form-hint">Choisissez un intitule court, clair et unique dans le catalogue.</p>
                     @error('nom_classe')
                         <p class="form-error">{{ $message }}</p>
                     @enderror

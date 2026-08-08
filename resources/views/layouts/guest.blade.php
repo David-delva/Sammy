@@ -12,9 +12,9 @@
 </head>
 <body class="min-h-screen text-slate-900 antialiased">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div class="absolute -left-16 top-12 h-64 w-64 rounded-full bg-brand-300/25 blur-3xl animate-float-slow"></div>
-        <div class="absolute right-0 top-24 h-80 w-80 rounded-full bg-blue-100 blur-3xl animate-float-delayed opacity-70"></div>
-        <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-emerald-200/20 blur-3xl animate-float-slow"></div>
+        <div class="absolute -left-16 top-12 h-64 w-64 rounded-full bg-cobalt-300/25 blur-3xl animate-float-slow"></div>
+        <div class="absolute right-0 top-24 h-80 w-80 rounded-full bg-cobalt-100 blur-3xl animate-float-delayed opacity-70"></div>
+        <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-success-200/20 blur-3xl animate-float-slow"></div>
     </div>
 
     <div class="relative isolate min-h-screen overflow-hidden px-4 py-6 sm:px-6 lg:px-8">
@@ -35,7 +35,7 @@
                         </div>
 
                         <div class="rounded-full border border-white/30 bg-white/14 px-5 py-3 text-center text-sm text-white/82 shadow-sm backdrop-blur">
-                            <a href="{{ url('/') }}" class="font-medium text-white transition hover:text-emerald-200">
+                            <a href="{{ url('/') }}" class="font-medium text-white transition hover:text-success-200">
                                 <i class="bi bi-arrow-left mr-1"></i>Retour au site
                             </a>
                         </div>

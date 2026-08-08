@@ -109,15 +109,17 @@
                         @enderror
                     </div>
 
-                    <div class="form-field xl:col-span-2">
+                    <div class="form-field">
                         <label for="type_devoir" class="form-label">Type d'evaluation <span class="req">*</span></label>
                         <select id="type_devoir" name="type_devoir" class="form-select @error('type_devoir') error @enderror" required>
-                            <option value="devoir" {{ old('type_devoir') == 'devoir' ? 'selected' : '' }}>Devoir</option>
-                            <option value="composition" {{ old('type_devoir') == 'composition' ? 'selected' : '' }}>Composition</option>
+                            @foreach(\App\Models\Note::typeDevoirOptions() as $value => $label)
+                                <option value="{{ $value }}" {{ old('type_devoir') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
                         </select>
                         @error('type_devoir')
                             <p class="form-error">{{ $message }}</p>
                         @enderror
+                        <p class="form-hint">Une note de rattrapage remplace integralement la moyenne initiale de la matiere pour ce semestre (regle 4.1).</p>
                     </div>
                 </div>
 

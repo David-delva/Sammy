@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Historique scolaire')
 @section('breadcrumb', 'Scolarite / Eleves / Historique')
@@ -67,7 +67,7 @@
                     </div>
                     <div class="card-body space-y-4">
                         <div class="surface-soft flex items-center gap-4">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-cobalt-100 text-cobalt-700">
                                 <i class="bi bi-building text-xl"></i>
                             </div>
                             <div>
@@ -77,12 +77,12 @@
                         </div>
 
                         <div class="surface-soft flex items-center gap-4">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl {{ $item['moyenne_generale'] >= 10 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' }}">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl {{ $item['moyenne_generale'] >= 10 ? 'bg-success-100 text-success-700' : 'bg-danger-100 text-danger-700' }}">
                                 <i class="bi bi-graph-up-arrow text-xl"></i>
                             </div>
                             <div>
                                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Moyenne generale</p>
-                                <p class="mt-1 text-sm font-semibold {{ $item['moyenne_generale'] >= 10 ? 'text-emerald-600' : 'text-red-600' }}">
+                                <p class="mt-1 text-sm font-semibold {{ $item['moyenne_generale'] >= 10 ? 'text-success-600' : 'text-danger-600' }}">
                                     {{ $item['moyenne_generale'] ? number_format($item['moyenne_generale'], 2) . ' / 20' : '--' }}
                                 </p>
                             </div>

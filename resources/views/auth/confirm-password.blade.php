@@ -1,13 +1,13 @@
-<x-guest-layout>
+﻿<x-guest-layout>
     <div class="mb-8">
-        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">S&eacute;curit&eacute;</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cobalt-600">Securite</p>
         <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Confirmer votre mot de passe</h1>
-        <p class="mt-2 text-sm text-gray-500">Cette zone est prot&eacute;g&eacute;e. Saisissez votre mot de passe avant de continuer.</p>
+        <p class="mt-2 text-sm text-gray-500">Cette zone est protegee. Saisissez votre mot de passe avant de continuer.</p>
     </div>
 
     <div class="alert-info mb-6">
         <i class="bi bi-shield-lock"></i>
-        <span>Cette &eacute;tape confirme que vous &ecirc;tes bien &agrave; l'origine de l'action demand&eacute;e.</span>
+        <span>Cette etape confirme que vous etes bien a l'origine de l'action demandee.</span>
     </div>
 
     <form method="POST" action="{{ route('password.confirm') }}" class="space-y-5">

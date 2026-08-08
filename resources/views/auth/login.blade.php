@@ -1,8 +1,8 @@
-<x-guest-layout>
+﻿<x-guest-layout>
     <div class="mb-8">
-        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Connexion</p>
-        <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Acc&eacute;der &agrave; votre espace</h1>
-        <p class="mt-2 text-sm text-gray-500">Connectez-vous pour g&eacute;rer les &eacute;l&egrave;ves, les notes et les bulletins de votre &eacute;tablissement.</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cobalt-600">Connexion</p>
+        <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Acceder a votre espace</h1>
+        <p class="mt-2 text-sm text-gray-500">Connectez-vous pour gerer les eleves, les notes et les bulletins de votre etablissement.</p>
     </div>
 
     <x-auth-session-status class="mb-6" :status="session('status')" />
@@ -28,12 +28,12 @@
 
         <div class="flex items-center justify-between gap-4 text-sm">
             <label for="remember_me" class="flex items-center gap-3 text-gray-600">
-                <input id="remember_me" type="checkbox" name="remember" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                <input id="remember_me" type="checkbox" name="remember" class="h-4 w-4 rounded border-gray-300 text-cobalt-600 focus:ring-cobalt-500">
                 <span>Se souvenir de moi</span>
             </label>
 
             @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}" class="font-medium text-brand-600 transition hover:text-brand-700 hover:underline">Mot de passe oubli&eacute; ?</a>
+                <a href="{{ route('password.request') }}" class="font-medium text-cobalt-600 transition hover:text-cobalt-700 hover:underline">Mot de passe oublie ?</a>
             @endif
         </div>
 
@@ -46,7 +46,7 @@
     @if (Route::has('register'))
         <div class="border-t border-gray-100 pt-5 text-center text-sm text-gray-500">
             Pas encore de compte ?
-            <a href="{{ route('register') }}" class="font-medium text-brand-600 transition hover:text-brand-700 hover:underline">S'inscrire</a>
+            <a href="{{ route('register') }}" class="font-medium text-cobalt-600 transition hover:text-cobalt-700 hover:underline">S'inscrire</a>
         </div>
     @endif
 </x-guest-layout>

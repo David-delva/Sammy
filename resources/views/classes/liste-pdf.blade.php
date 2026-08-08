@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -240,8 +240,8 @@
             <tr>
                 <td>
                     <div class="eyebrow">{{ config('app.name', 'Gestion scolaire') }}</div>
-                    <p class="title">Feuille d'appel - Liste des &eacute;l&egrave;ves</p>
-                    <p class="subtitle">Ann&eacute;e scolaire : {{ $annee->libelle }} | &Eacute;dit&eacute;e le : {{ date('d/m/Y') }}</p>
+                    <p class="title">Feuille d'appel - Liste des eleves</p>
+                    <p class="subtitle">Annee scolaire : {{ $annee->libelle }} | Editee le : {{ date('d/m/Y') }}</p>
                 </td>
                 <td style="text-align: right; width: 180px;">
                     <span class="class-badge">{{ $classe->nom_classe }}</span>
@@ -253,14 +253,14 @@
             <tr>
                 <td>
                     <span class="label">Effectif</span>
-                    <span class="value">{{ $eleves->count() }} &eacute;l&egrave;ve(s)</span>
+                    <span class="value">{{ $eleves->count() }} eleve(s)</span>
                 </td>
                 <td>
-                    <span class="label">R&eacute;partition</span>
-                    <span class="value">{{ $eleves->where('sexe', 'M')->count() }} gar&ccedil;on(s) / {{ $eleves->where('sexe', 'F')->count() }} fille(s)</span>
+                    <span class="label">Repartition</span>
+                    <span class="value">{{ $eleves->where('sexe', 'M')->count() }} garcon(s) / {{ $eleves->where('sexe', 'F')->count() }} fille(s)</span>
                 </td>
                 <td>
-                    <span class="label">Mati&egrave;res</span>
+                    <span class="label">Matieres</span>
                     <span class="value">{{ $matieresData->count() }}</span>
                 </td>
                 <td>
@@ -274,7 +274,7 @@
             <thead>
                 <tr>
                     <th class="num">#</th>
-                    <th style="min-width: 155px; text-align: left;">Nom et pr&eacute;nom</th>
+                    <th style="min-width: 155px; text-align: left;">Nom et prenom</th>
                     <th style="width: 72px;">Matricule</th>
                     <th class="small">Sexe</th>
                     <th style="width: 68px;">Naissance</th>
@@ -301,7 +301,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="17" style="padding: 16px; text-align: center; color: #64748b;">Aucun &eacute;l&egrave;ve inscrit dans cette classe.</td>
+                        <td colspan="17" style="padding: 16px; text-align: center; color: #64748b;">Aucun eleve inscrit dans cette classe.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -314,7 +314,7 @@
                         <table class="subjects">
                             <thead>
                                 <tr>
-                                    <th>Mati&egrave;re</th>
+                                    <th>Matiere</th>
                                     <th class="text-right" style="width: 90px;">Coefficient</th>
                                 </tr>
                             </thead>
@@ -335,7 +335,7 @@
                         <table class="subjects">
                             <tbody>
                                 <tr>
-                                    <td style="text-align: center; color: #64748b;">Aucune mati&egrave;re affect&eacute;e &agrave; cette classe pour l'ann&eacute;e s&eacute;lectionn&eacute;e.</td>
+                                    <td style="text-align: center; color: #64748b;">Aucune matiere affectee a cette classe pour l'annee selectionnee.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -343,7 +343,7 @@
                 </td>
                 <td>
                     <div class="signature">
-                        <p class="title">Direction de l'&eacute;tablissement</p>
+                        <p class="title">Direction de l'etablissement</p>
                         <div class="line">Signature et cachet</div>
                     </div>
                 </td>

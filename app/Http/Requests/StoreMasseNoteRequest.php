@@ -18,7 +18,7 @@ class StoreMasseNoteRequest extends FormRequest
         return [
             'classe_id' => ['required', 'exists:classes,id'],
             'matiere_id' => ['required', 'exists:matieres,id'],
-            'type_devoir' => ['required', 'in:devoir,composition'],
+            'type_devoir' => ['required', 'in:devoir,composition,rattrapage'],
             'semestre' => ['required', 'integer', 'in:1,2'],
             'notes' => ['required', 'array'],
             'notes.*' => ['nullable', 'numeric', 'min:0', 'max:20'],

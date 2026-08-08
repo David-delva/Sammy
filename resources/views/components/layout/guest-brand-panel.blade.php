@@ -3,18 +3,18 @@
         [
             'icon' => 'bi-camera-video-fill',
             'title' => 'Classes en direct',
-            'description' => 'Les sessions vidéo et la communication de groupe restent disponibles dans le même espace de compte.',
+            'description' => 'Les sessions vidï¿½o et la communication de groupe restent disponibles dans le mï¿½me espace de compte.',
         ],
         [
             'icon' => 'bi-calendar2-week-fill',
             'title' => 'Planification quotidienne',
-            'description' => 'Les calendriers, la présence et les rappels sont prêts dès votre connexion.',
+            'description' => 'Les calendriers, la prï¿½sence et les rappels sont prï¿½ts dï¿½s votre connexion.',
         ],
     ];
 
     $statusCards = [
-        ['label' => 'Statut', 'value' => 'En ligne', 'hint' => 'toujours connecté'],
-        ['label' => 'Mode', 'value' => 'Sécurisé', 'hint' => 'accès enseignant et admin'],
+        ['label' => 'Statut', 'value' => 'En ligne', 'hint' => 'toujours connectï¿½'],
+        ['label' => 'Mode', 'value' => 'Sï¿½curisï¿½', 'hint' => 'accï¿½s enseignant et admin'],
     ];
 @endphp
 
@@ -22,18 +22,18 @@
     <div>
         <div class="flex items-center gap-3">
             <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 shadow-lg shadow-black/10">
-                <i class="bi bi-mortarboard-fill text-xl"></i>
+                <img src="/images/logo-inptic.png" alt="INPTIC logo" class="h-10 w-10 object-contain" />
             </div>
             <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.28em] text-white/55">E.T.P.</p>
-                <h1 class="mt-1 text-2xl font-semibold tracking-tight">Campus Connecté</h1>
+                <p class="text-xs font-semibold uppercase tracking-[0.28em] text-white/55">INPTIC</p>
+                <h1 class="mt-1 text-2xl font-semibold tracking-tight">Campus Connect</h1>
             </div>
         </div>
 
         <div class="mt-16 space-y-5">
-            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-white/60">Accès enseignant</p>
-            <h2 class="text-4xl leading-tight tracking-tight" style="font-family: 'Fraunces', ui-serif, Georgia, serif;">Un accès sécurisé pour les appels, les discussions, les calendriers et la présence.</h2>
-            <p class="max-w-md text-base leading-7 text-white/72">Connectez-vous à la plateforme, retrouvez votre rythme de classe et avancez dans la journée avec une interface plus claire.</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-white/60">Accï¿½s enseignant</p>
+            <h2 class="text-4xl leading-tight tracking-tight" style="font-family: 'Fraunces', ui-serif, Georgia, serif;">Un accï¿½s sï¿½curisï¿½ pour les appels, les discussions, les calendriers et la prï¿½sence.</h2>
+            <p class="max-w-md text-base leading-7 text-white/72">Connectez-vous ï¿½ la plateforme, retrouvez votre rythme de classe et avancez dans la journï¿½e avec une interface plus claire.</p>
         </div>
 
         <div class="mt-12 grid gap-4">

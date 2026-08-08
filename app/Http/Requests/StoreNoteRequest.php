@@ -19,7 +19,7 @@ class StoreNoteRequest extends FormRequest
             'eleve_id' => ['required', 'exists:eleves,id'],
             'matiere_id' => ['required', 'exists:matieres,id'],
             'note' => ['required', 'numeric', 'min:0', 'max:20'],
-            'type_devoir' => ['required', 'in:devoir,composition'],
+            'type_devoir' => ['required', 'in:devoir,composition,rattrapage'],
             'semestre' => ['required', 'integer', 'in:1,2'],
         ];
     }
@@ -29,7 +29,7 @@ class StoreNoteRequest extends FormRequest
         return [
             'note.min' => 'La note minimale est 0.',
             'note.max' => 'La note maximale est 20.',
-            'type_devoir.in' => 'Le type de devoir doit etre "devoir" ou "composition".',
+            'type_devoir.in' => 'Le type de devoir doit etre "devoir", "composition" ou "rattrapage".',
             'semestre.in' => 'Le semestre doit etre 1 ou 2.',
         ];
     }

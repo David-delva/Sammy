@@ -1,23 +1,23 @@
-<section
+﻿<section
     x-data="{ open: {{ $errors->userDeletion->isNotEmpty() ? 'true' : 'false' }} }"
     x-init="$watch('open', value => { if (value) { $nextTick(() => { if ($refs.password) { $refs.password.focus() } }) } })"
     @keydown.escape.window="open = false"
     class="space-y-6"
 >
     <header class="space-y-2">
-        <div class="flex items-center gap-2 text-red-600">
+        <div class="flex items-center gap-2 text-danger-600">
             <i class="bi bi-trash text-base"></i>
             <p class="text-xs font-semibold uppercase tracking-[0.24em]">Zone sensible</p>
         </div>
         <div>
             <h2 class="text-xl font-semibold tracking-tight text-gray-900">Supprimer le compte</h2>
-            <p class="mt-1 text-sm text-gray-500">Cette action est irr&eacute;versible. Elle supprime votre compte et l'ensemble des donn&eacute;es qui lui sont directement rattach&eacute;es.</p>
+            <p class="mt-1 text-sm text-gray-500">Cette action est irreversible. Elle supprime votre compte et l'ensemble des donnees qui lui sont directement rattachees.</p>
         </div>
     </header>
 
     <div class="alert-error">
-        <i class="bi bi-exclamation-octagon-fill text-red-600"></i>
-        <span>Avant de continuer, assurez-vous de ne plus avoir besoin des donn&eacute;es li&eacute;es &agrave; ce compte.</span>
+        <i class="bi bi-exclamation-octagon-fill text-danger-600"></i>
+        <span>Avant de continuer, assurez-vous de ne plus avoir besoin des donnees liees a ce compte.</span>
     </div>
 
     <button type="button" class="btn-danger" @click="open = true">
@@ -47,7 +47,7 @@
         >
             <div class="flex items-start justify-between gap-4">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-red-600">Confirmation</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-danger-600">Confirmation</p>
                     <h3 id="delete-account-title" class="mt-2 text-xl font-semibold tracking-tight text-gray-900">Confirmer la suppression</h3>
                 </div>
 
@@ -56,7 +56,7 @@
                 </button>
             </div>
 
-            <p class="mt-4 text-sm leading-7 text-gray-500">Saisissez votre mot de passe pour confirmer la suppression d&eacute;finitive du compte.</p>
+            <p class="mt-4 text-sm leading-7 text-gray-500">Saisissez votre mot de passe pour confirmer la suppression definitive du compte.</p>
 
             <form method="POST" action="{{ route('profile.destroy') }}" class="mt-6 space-y-5">
                 @csrf
@@ -81,7 +81,7 @@
                     <button type="button" class="btn-secondary justify-center" @click="open = false">Annuler</button>
                     <button type="submit" class="btn-danger justify-center">
                         <i class="bi bi-trash3"></i>
-                        Supprimer d&eacute;finitivement
+                        Supprimer definitivement
                     </button>
                 </div>
             </form>

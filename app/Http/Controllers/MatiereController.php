@@ -115,6 +115,7 @@ class MatiereController extends Controller
             'matieres' => 'array',
             'matieres.*.id' => 'required|exists:matieres,id',
             'matieres.*.coef' => 'required|integer|min:1|max:20',
+            'matieres.*.credits' => 'required|integer|min:0|max:30',
         ]);
 
         $annee = currentAcademicYear();
@@ -138,6 +139,7 @@ class MatiereController extends Controller
                     'matiere_id' => $item['id'],
                     'annee_academique_id' => $annee->id,
                     'coefficient' => $item['coef'],
+                    'credits' => $item['credits'],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];

@@ -1,4 +1,4 @@
-ï»¿<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
@@ -16,7 +16,7 @@
                         {{ __('Classes') }}
                     </x-nav-link>
                     <x-nav-link :href="route('eleves.index')" :active="request()->routeIs('eleves.*')">
-                        {{ __('Ã‰lÃ¨ves') }}
+                        {{ __('Élèves') }}
                     </x-nav-link>
                     <x-nav-link :href="route('factures.index')" :active="request()->routeIs('factures.*')">
                         {{ __('Factures') }}
@@ -26,7 +26,7 @@
                     </x-nav-link>
                     @if(auth()->user()->role === 'admin' || auth()->user()->role === 'secretariat')
                         <x-nav-link :href="route('matieres.index')" :active="request()->routeIs('matieres.*')">
-                            {{ __('MatiÃ¨res') }}
+                            {{ __('Matières') }}
                         </x-nav-link>
                         <x-nav-link :href="route('notes.index')" :active="request()->routeIs('notes.*')">
                             {{ __('Notes') }}
@@ -37,7 +37,7 @@
                     @endif
                     @if(auth()->user()->role === 'admin')
                         <x-nav-link :href="route('annees.index')" :active="request()->routeIs('annees.*')">
-                            {{ __('AnnÃ©es') }}
+                            {{ __('Années') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -68,7 +68,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('DÃ©connexion') }}
+                                {{ __('Déconnexion') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -95,7 +95,7 @@
                 {{ __('Classes') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('eleves.index')" :active="request()->routeIs('eleves.*')">
-                {{ __('Ã‰lÃ¨ves') }}
+                {{ __('Élèves') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('factures.index')" :active="request()->routeIs('factures.*')">
                 {{ __('Factures') }}
@@ -105,7 +105,7 @@
             </x-responsive-nav-link>
             @if(auth()->user()->role === 'admin' || auth()->user()->role === 'secretariat')
                 <x-responsive-nav-link :href="route('matieres.index')" :active="request()->routeIs('matieres.*')">
-                    {{ __('MatiÃ¨res') }}
+                    {{ __('Matières') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('notes.index')" :active="request()->routeIs('notes.*')">
                     {{ __('Notes') }}
@@ -116,7 +116,7 @@
             @endif
             @if(auth()->user()->role === 'admin')
                 <x-responsive-nav-link :href="route('annees.index')" :active="request()->routeIs('annees.*')">
-                    {{ __('AnnÃ©es') }}
+                    {{ __('Années') }}
                 </x-responsive-nav-link>
             @endif
         </div>
@@ -138,7 +138,7 @@
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('DÃ©connexion') }}
+                        {{ __('Déconnexion') }}
                     </x-responsive-nav-link>
                 </form>
             </div>

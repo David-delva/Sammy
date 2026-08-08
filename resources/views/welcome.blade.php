@@ -1,18 +1,18 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr" class="h-full scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E.T.P. - Campus ConnectÃ©</title>
+    <title>INPTIC - Campus Connecté</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen text-white antialiased">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div class="absolute -left-20 top-10 h-80 w-80 rounded-full bg-brand-300/25 blur-3xl animate-float-slow"></div>
-        <div class="absolute right-0 top-24 h-96 w-96 rounded-full bg-blue-100 blur-3xl animate-float-delayed opacity-70"></div>
-        <div class="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-emerald-200/20 blur-3xl animate-float-slow"></div>
+        <div class="absolute -left-20 top-10 h-80 w-80 rounded-full bg-cobalt-300/25 blur-3xl animate-float-slow"></div>
+        <div class="absolute right-0 top-24 h-96 w-96 rounded-full bg-cobalt-100 blur-3xl animate-float-delayed opacity-70"></div>
+        <div class="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-success-200/20 blur-3xl animate-float-slow"></div>
     </div>
 
     <div class="relative isolate overflow-hidden">
@@ -22,12 +22,12 @@
             <div class="mx-auto max-w-7xl rounded-[30px] border border-white/15 bg-white/10 shadow-[0_24px_60px_rgba(12,8,35,0.22)] backdrop-blur-2xl">
                 <div class="flex flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
                     <a href="{{ url('/') }}" class="flex items-center gap-3 text-white">
-                        <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-blue-500 text-white shadow-lg shadow-blue-500/25">
+                        <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cobalt-500 to-navy-500 text-white shadow-lg shadow-cobalt-500/25">
                             <i class="bi bi-mortarboard-fill text-lg"></i>
                         </span>
                         <span>
-                            <span class="block text-xs font-semibold uppercase tracking-[0.28em] text-white/60">E.T.P.</span>
-                            <span class="block text-base font-semibold tracking-tight">Campus ConnectÃ©</span>
+                            <span class="block text-xs font-semibold uppercase tracking-[0.28em] text-white/60">INPTIC</span>
+                            <span class="block text-base font-semibold tracking-tight">Campus Connecté</span>
                         </span>
                     </a>
 
@@ -69,35 +69,35 @@
             <section class="page-hero" data-reveal>
                 <div class="page-hero-grid">
                     <div>
-                        <p class="page-kicker">Suite Ã©ducative connectÃ©e</p>
-                        <h1 class="page-title">Restez connectÃ©s, Ã  tout moment.</h1>
+                        <p class="page-kicker">Suite éducative connectée</p>
+                        <h1 class="page-title">Restez connectés, à tout moment.</h1>
                         <p class="page-lead">
-                            Une plateforme scolaire plus vive pour enseigner, planifier, communiquer et suivre les Ã©lÃ¨ves.
-                            Appels vidÃ©o, discussions de groupe, calendriers et prÃ©sence s'unifient dans un espace fluide et moderne.
+                            Une plateforme scolaire plus vive pour enseigner, planifier, communiquer et suivre les élèves.
+                            Appels vidéo, discussions de groupe, calendriers et présence s'unifient dans un espace fluide et moderne.
                         </p>
 
                         <div class="hero-badges">
-                            <span class="hero-badge"><i class="bi bi-camera-video-fill"></i>Appels vidÃ©o</span>
+                            <span class="hero-badge"><i class="bi bi-camera-video-fill"></i>Appels vidéo</span>
                             <span class="hero-badge"><i class="bi bi-chat-dots-fill"></i>Discussions de groupe</span>
                             <span class="hero-badge"><i class="bi bi-calendar3"></i>Calendriers intelligents</span>
-                            <span class="hero-badge"><i class="bi bi-clipboard-check-fill"></i>Registres de prÃ©sence</span>
+                            <span class="hero-badge"><i class="bi bi-clipboard-check-fill"></i>Registres de présence</span>
                         </div>
 
                         <div class="hero-actions">
                             @auth
-                                <a href="{{ route('dashboard') }}" class="btn-primary justify-center shadow-lg shadow-brand-600/20 sm:w-auto">
-                                    DÃ©couvrir l'offre
+                                <a href="{{ route('dashboard') }}" class="btn-primary justify-center shadow-lg shadow-cobalt-600/20 sm:w-auto">
+                                    Découvrir l'offre
                                     <i class="bi bi-arrow-right"></i>
                                 </a>
                             @else
-                                <a href="{{ route('login') }}" class="btn-primary justify-center shadow-lg shadow-brand-600/20 sm:w-auto">
-                                    DÃ©couvrir l'offre
+                                <a href="{{ route('login') }}" class="btn-primary justify-center shadow-lg shadow-cobalt-600/20 sm:w-auto">
+                                    Découvrir l'offre
                                     <i class="bi bi-arrow-right"></i>
                                 </a>
                                 @if (Route::has('register'))
                                     <a href="{{ route('register') }}" class="btn-secondary justify-center sm:w-auto">
                                         <i class="bi bi-person-plus"></i>
-                                        CrÃ©er un compte
+                                        Créer un compte
                                     </a>
                                 @endif
                             @endauth
@@ -110,7 +110,7 @@
                             <div class="floating-chip one"><i class="bi bi-camera-video-fill"></i>Salle en direct</div>
                             <div class="floating-chip two"><i class="bi bi-chat-left-text-fill"></i>12 discussions</div>
                             <div class="floating-chip three"><i class="bi bi-calendar2-week-fill"></i>Planning hebdomadaire</div>
-                            <div class="floating-chip four"><i class="bi bi-check2-square"></i>PrÃ©sence active</div>
+                            <div class="floating-chip four"><i class="bi bi-check2-square"></i>Présence active</div>
                             <div class="mascot-platform"></div>
                             <div class="mascot-bot">
                                 <div class="mascot-head">
@@ -134,24 +134,24 @@
 
             <section id="packages" class="mt-8 grid gap-5 lg:grid-cols-4">
                 <article class="feature-tile p-5" data-tilt>
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-100 text-brand-700"><i class="bi bi-camera-video-fill text-xl"></i></span>
-                    <h2 class="mt-5 text-xl font-semibold tracking-tight text-slate-900">Cours vidÃ©o</h2>
-                    <p class="mt-3 text-sm leading-7 text-slate-500">Lancez des cours, du mentorat et du support Ã  distance grÃ¢ce Ã  des salles vidÃ©o stables pour chaque classe.</p>
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cobalt-100 text-cobalt-700"><i class="bi bi-camera-video-fill text-xl"></i></span>
+                    <h2 class="mt-5 text-xl font-semibold tracking-tight text-slate-900">Cours vidéo</h2>
+                    <p class="mt-3 text-sm leading-7 text-slate-500">Lancez des cours, du mentorat et du support à distance grâce à des salles vidéo stables pour chaque classe.</p>
                 </article>
                 <article class="feature-tile p-5" data-tilt>
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-700"><i class="bi bi-chat-left-dots-fill text-xl"></i></span>
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cobalt-100 text-cobalt-700"><i class="bi bi-chat-left-dots-fill text-xl"></i></span>
                     <h2 class="mt-5 text-xl font-semibold tracking-tight text-slate-900">Discussions de groupe</h2>
-                    <p class="mt-3 text-sm leading-7 text-slate-500">Gardez enseignants, Ã©lÃ¨ves et Ã©quipe administrative alignÃ©s avec des conversations en direct bien structurÃ©es.</p>
+                    <p class="mt-3 text-sm leading-7 text-slate-500">Gardez enseignants, élèves et équipe administrative alignés avec des conversations en direct bien structurées.</p>
                 </article>
                 <article class="feature-tile p-5" data-tilt>
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700"><i class="bi bi-calendar-event-fill text-xl"></i></span>
-                    <h2 class="mt-5 text-xl font-semibold tracking-tight text-slate-900">Calendriers partagÃ©s</h2>
-                    <p class="mt-3 text-sm leading-7 text-slate-500">Planifiez cours, examens, rappels et Ã©vÃ©nements scolaires dans une mÃªme couche visuelle.</p>
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-success-100 text-success-700"><i class="bi bi-calendar-event-fill text-xl"></i></span>
+                    <h2 class="mt-5 text-xl font-semibold tracking-tight text-slate-900">Calendriers partagés</h2>
+                    <p class="mt-3 text-sm leading-7 text-slate-500">Planifiez cours, examens, rappels et événements scolaires dans une même couche visuelle.</p>
                 </article>
                 <article class="feature-tile p-5" data-tilt>
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700"><i class="bi bi-clipboard-check-fill text-xl"></i></span>
-                    <h2 class="mt-5 text-xl font-semibold tracking-tight text-slate-900">Suivi de prÃ©sence</h2>
-                    <p class="mt-3 text-sm leading-7 text-slate-500">Suivez la prÃ©sence des Ã©lÃ¨ves avec des registres rapides et des statuts prÃªts pour l'administration.</p>
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-success-50 text-success-700"><i class="bi bi-clipboard-check-fill text-xl"></i></span>
+                    <h2 class="mt-5 text-xl font-semibold tracking-tight text-slate-900">Suivi de présence</h2>
+                    <p class="mt-3 text-sm leading-7 text-slate-500">Suivez la présence des élèves avec des registres rapides et des statuts prêts pour l'administration.</p>
                 </article>
             </section>
 
@@ -167,12 +167,12 @@
 
                     <div class="mt-6 grid gap-4 md:grid-cols-2">
                         <div class="teacher-metric">
-                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Salles connectÃ©es</p>
+                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Salles connectées</p>
                             <p class="mt-3 text-4xl font-semibold tracking-tight text-slate-900">08</p>
                             <div class="teacher-progress"><div class="teacher-progress-bar" style="width: 78%"></div></div>
                         </div>
                         <div class="teacher-metric">
-                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Synchronisation des prÃ©sences</p>
+                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Synchronisation des présences</p>
                             <p class="mt-3 text-4xl font-semibold tracking-tight text-slate-900">94%</p>
                             <div class="teacher-progress"><div class="teacher-progress-bar" style="width: 94%"></div></div>
                         </div>
@@ -186,9 +186,9 @@
                         </div>
                         <div class="mini-card">
                             <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Statut</p>
-                            <div class="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">
+                            <div class="mt-4 inline-flex items-center gap-2 rounded-full bg-success-50 px-3 py-2 text-sm font-semibold text-success-700">
                                 <span class="notification-pulse"></span>
-                                Tous les services sont prÃªts
+                                Tous les services sont prêts
                             </div>
                         </div>
                     </div>
@@ -197,18 +197,18 @@
                 <aside class="hero-panel" data-tilt>
                     <div>
                         <p class="text-xs font-bold uppercase tracking-[0.28em] text-white/45">Flux enseignant</p>
-                        <h3 class="mt-3 text-2xl font-semibold tracking-tight text-white">Un rythme plus fluide pour les cours en direct, la planification et le suivi des Ã©lÃ¨ves.</h3>
-                        <p class="mt-3 text-sm leading-7 text-white/72">Passez de la communication Ã  l'emploi du temps puis au suivi des prÃ©sences sans changer de contexte.</p>
+                        <h3 class="mt-3 text-2xl font-semibold tracking-tight text-white">Un rythme plus fluide pour les cours en direct, la planification et le suivi des élèves.</h3>
+                        <p class="mt-3 text-sm leading-7 text-white/72">Passez de la communication à l'emploi du temps puis au suivi des présences sans changer de contexte.</p>
                     </div>
 
                     <div class="grid gap-3">
                         <div class="rounded-[24px] border border-white/10 bg-white/10 p-4">
                             <p class="text-xs uppercase tracking-[0.22em] text-white/45">Assistance</p>
-                            <p class="mt-2 text-lg font-semibold text-white">Aide en temps rÃ©el et contact de l'Ã©tablissement</p>
+                            <p class="mt-2 text-lg font-semibold text-white">Aide en temps réel et contact de l'établissement</p>
                         </div>
                         <div class="rounded-[24px] border border-white/10 bg-white/10 p-4">
-                            <p class="text-xs uppercase tracking-[0.22em] text-white/45">AccÃ¨s</p>
-                            <p class="mt-2 text-lg font-semibold text-white">Compte, recherche et alertes rÃ©unis dans un seul en-tÃªte</p>
+                            <p class="text-xs uppercase tracking-[0.22em] text-white/45">Accès</p>
+                            <p class="mt-2 text-lg font-semibold text-white">Compte, recherche et alertes réunis dans un seul en-tête</p>
                         </div>
                     </div>
                 </aside>
@@ -218,17 +218,17 @@
                 <article class="feature-tile p-5">
                     <span class="badge-blue">Centre d'aide</span>
                     <h2 class="mt-4 text-xl font-semibold text-slate-900">Prise en main rapide</h2>
-                    <p class="mt-3 text-sm leading-7 text-slate-500">Faites monter les administrateurs et enseignants en compÃ©tence avec une interface familiÃ¨re et une navigation claire.</p>
+                    <p class="mt-3 text-sm leading-7 text-slate-500">Faites monter les administrateurs et enseignants en compétence avec une interface familière et une navigation claire.</p>
                 </article>
                 <article class="feature-tile p-5">
                     <span class="badge-yellow">Services</span>
-                    <h2 class="mt-4 text-xl font-semibold text-slate-900">Support opÃ©rationnel</h2>
-                    <p class="mt-3 text-sm leading-7 text-slate-500">Utilisez la facturation, les classements, les affectations et l'historique des Ã©lÃ¨ves dans une mÃªme plateforme connectÃ©e.</p>
+                    <h2 class="mt-4 text-xl font-semibold text-slate-900">Support opérationnel</h2>
+                    <p class="mt-3 text-sm leading-7 text-slate-500">Utilisez la facturation, les classements, les affectations et l'historique des élèves dans une même plateforme connectée.</p>
                 </article>
                 <article id="contact" class="feature-tile p-5">
                     <span class="badge-green">Contact</span>
-                    <h2 class="mt-4 text-xl font-semibold text-slate-900">PrÃªt Ã  activer votre campus ?</h2>
-                    <p class="mt-3 text-sm leading-7 text-slate-500">Ouvrez l'espace de travail, consultez l'offre en direct et gÃ©rez la journÃ©e scolaire depuis une interface moderne.</p>
+                    <h2 class="mt-4 text-xl font-semibold text-slate-900">Prêt à activer votre campus ?</h2>
+                    <p class="mt-3 text-sm leading-7 text-slate-500">Ouvrez l'espace de travail, consultez l'offre en direct et gérez la journée scolaire depuis une interface moderne.</p>
                     <div class="mt-5">
                         @auth
                             <a href="{{ route('dashboard') }}" class="btn-primary">Ouvrir le tableau de bord <i class="bi bi-arrow-right"></i></a>

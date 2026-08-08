@@ -1,55 +1,18 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Saisie en masse')
 @section('breadcrumb', 'Evaluations / Notes / Saisie en masse')
 
+@push('styles')
+<style>
+    main.flex-1 { overflow: hidden !important; }
+    .page-shell { height: 100%; display: flex; flex-direction: column; }
+</style>
+@endpush
+
 @section('content')
-<div class="space-y-6">
-    <section class="page-hero" data-reveal>
-        <div class="page-hero-grid">
-            <div>
-                <p class="page-kicker">Evaluations</p>
-                <h2 class="page-title">Une saisie collective plus rapide, lisible et confortable sur chaque appareil.</h2>
-                <p class="page-lead">
-                    Selectionnez la classe, la matiere, le type d'evaluation et le semestre pour renseigner toute une liste d'eleves sans friction.
-                </p>
-
-                <div class="hero-badges">
-                    @if(isset($annee) && $annee)
-                        <span class="hero-badge"><i class="bi bi-calendar2-week"></i>{{ $annee->libelle }}</span>
-                    @endif
-                    @if($selectedClasse)
-                        <span class="hero-badge"><i class="bi bi-building"></i>Classe selectionnee</span>
-                    @endif
-                    @if($selectedSemestre)
-                        <span class="hero-badge"><i class="bi bi-calendar3"></i>{{ \App\Models\Note::semestreOptions()[$selectedSemestre] ?? 'Semestre' }}</span>
-                    @endif
-                </div>
-            </div>
-
-            <aside class="hero-panel" data-tilt>
-                <div>
-                    <p class="text-xs font-bold uppercase tracking-[0.28em] text-white/45">Productivite</p>
-                    <h3 class="mt-3 text-2xl font-semibold tracking-tight text-white">Le parcours guide la saisie du filtre jusqu'a l'enregistrement final.</h3>
-                    <p class="mt-3 text-sm leading-7 text-white/70">Navigation clavier, remplissage des absents et sauvegarde groupee restent disponibles sans surcharger l'ecran.</p>
-                </div>
-                <div class="grid gap-3 sm:grid-cols-2">
-                    <div class="rounded-[22px] border border-white/10 bg-white/8 px-4 py-4">
-                        <p class="text-xs uppercase tracking-[0.22em] text-white/45">Workflow</p>
-                        <p class="mt-2 text-2xl font-semibold text-white">4 etapes</p>
-                        <p class="mt-1 text-sm text-white/65">classe, matiere, type, semestre</p>
-                    </div>
-                    <div class="rounded-[22px] border border-white/10 bg-white/8 px-4 py-4">
-                        <p class="text-xs uppercase tracking-[0.22em] text-white/45">Gain de temps</p>
-                        <p class="mt-2 text-2xl font-semibold text-white">Massif</p>
-                        <p class="mt-1 text-sm text-white/65">saisie continue au clavier</p>
-                    </div>
-                </div>
-            </aside>
-        </div>
-    </section>
-
-    <section class="card">
+<div class="flex flex-col gap-3" style="height:calc(100vh - 8rem)">
+    <section class="card shrink-0">
         <div class="card-header">
             <div>
                 <h4>Filtrer la saisie</h4>
@@ -87,8 +50,9 @@
                     <label class="form-label" for="type_devoir">3. Type</label>
                     <select id="type_devoir" name="type_devoir" class="form-select" {{ !$selectedMatiere ? 'disabled' : '' }} onchange="document.getElementById('filterForm').submit()">
                         <option value="">Selectionner</option>
-                        <option value="devoir" {{ $selectedType == 'devoir' ? 'selected' : '' }}>Devoir</option>
-                        <option value="composition" {{ $selectedType == 'composition' ? 'selected' : '' }}>Composition</option>
+                        @foreach(\App\Models\Note::typeDevoirOptions() as $value => $label)
+                            <option value="{{ $value }}" {{ $selectedType == $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -110,7 +74,7 @@
     </section>
 
     @if($eleves->isNotEmpty())
-        <section class="card overflow-hidden">
+        <section class="card flex min-h-0 flex-1 flex-col overflow-hidden">
             <div class="card-header">
                 <div>
                     <h4>Liste des eleves a renseigner</h4>
@@ -128,19 +92,19 @@
                 </div>
             </div>
 
-            <form action="{{ route('notes.masse.store') }}" method="POST">
+            <form action="{{ route('notes.masse.store') }}" method="POST" class="flex min-h-0 flex-1 flex-col">
                 @csrf
                 <input type="hidden" name="classe_id" value="{{ $selectedClasse }}">
                 <input type="hidden" name="matiere_id" value="{{ $selectedMatiere }}">
                 <input type="hidden" name="type_devoir" value="{{ $selectedType }}">
                 <input type="hidden" name="semestre" value="{{ $selectedSemestre }}">
 
-                <div class="mobile-list sm:hidden">
+                <div class="mobile-list flex-1 overflow-y-auto sm:hidden">
                     @foreach($eleves as $index => $ins)
                         @php $noteExistante = $ins->notes->first(); @endphp
                         <article class="mobile-list-item">
                             <div class="flex items-start gap-3">
-                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 font-bold text-sm">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-cobalt-100 text-cobalt-700 font-bold text-sm">
                                     {{ substr($ins->eleve->nom, 0, 1) }}{{ substr($ins->eleve->prenom, 0, 1) }}
                                 </div>
                                 <div class="min-w-0 flex-1">
@@ -175,7 +139,7 @@
                     @endforeach
                 </div>
 
-                <div class="hidden overflow-x-auto sm:block">
+                <div class="hidden flex-1 overflow-y-auto sm:block">
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -223,7 +187,7 @@
 
                 <div class="flex flex-col gap-4 border-t border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                     <p class="text-sm text-slate-500">
-                        <i class="bi bi-info-circle mr-1 text-brand-600"></i>
+                        <i class="bi bi-info-circle mr-1 text-cobalt-600"></i>
                         Astuce : utilisez Entree pour passer rapidement au champ suivant.
                     </p>
                     <button type="submit" class="btn-primary justify-center">

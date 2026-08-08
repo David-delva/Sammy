@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AcademicResult;
 use App\Models\AcademicSubjectResult;
 use App\Models\AnneeAcademique;
+use App\Models\ResultatAnnuel;
 use App\Models\User;
 use App\Services\AcademicCacheService;
 use App\Services\AcademicWriteAccessService;
@@ -121,7 +121,7 @@ class AnneeAcademiqueController extends Controller
             'inscriptions' => $annee->inscriptions()->exists(),
             'notes' => DB::table('notes')->where('annee_academique_id', $annee->id)->exists(),
             'assignations de matieres' => DB::table('classe_matiere')->where('annee_academique_id', $annee->id)->exists(),
-            'resultats projetes' => AcademicResult::query()->where('annee_academique_id', $annee->id)->exists()
+            'resultats projetes' => ResultatAnnuel::query()->where('annee_academique_id', $annee->id)->exists()
                 || AcademicSubjectResult::query()->where('annee_academique_id', $annee->id)->exists(),
         ])->filter()->keys()->values();
 

@@ -27,7 +27,7 @@
                         Retour a la liste
                     </a>
                     @if($canManageAcademicData)
-                        <a href="{{ route('eleves.create', ['date' => request()->query('date')]) }}" class="btn-primary justify-center shadow-lg shadow-brand-600/20 sm:w-auto">
+                        <a href="{{ route('eleves.create', ['date' => request()->query('date')]) }}" class="btn-primary justify-center shadow-lg shadow-cobalt-600/20 sm:w-auto">
                             <i class="bi bi-person-plus"></i>
                             Nouveau profil
                         </a>
@@ -90,7 +90,7 @@
         @if(! $annee)
             <div class="card-body">
                 <div class="empty-state">
-                    <div class="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                    <div class="flex h-16 w-16 items-center justify-center rounded-full bg-warning-100 text-warning-600">
                         <i class="bi bi-exclamation-triangle text-2xl"></i>
                     </div>
                     <p class="mt-5 text-sm font-semibold text-slate-900">Aucune annee academique selectionnee</p>
@@ -102,7 +102,7 @@
                 @foreach($candidates as $candidate)
                     <article class="surface-card space-y-4">
                         <div class="flex items-start gap-3">
-                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
+                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cobalt-100 text-cobalt-700">
                                 <i class="bi bi-person-fill"></i>
                             </div>
                             <div class="min-w-0 flex-1">

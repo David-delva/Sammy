@@ -2,12 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\AcademicResult;
 use App\Models\AnneeAcademique;
 use App\Models\Classe;
 use App\Models\Eleve;
 use App\Models\Inscription;
 use App\Models\Matiere;
+use App\Models\Note;
+use App\Models\Semestre;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -55,15 +56,19 @@ class AcademicPerformanceProjectionSyncTest extends TestCase
             'eleve_id' => $eleve->id,
             'annee_academique_id' => $annee->id,
             'matiere_id' => $matiere->id,
-            'period' => AcademicResult::PERIOD_SEMESTRE_1,
+            'period' => Note::SEMESTRE_1,
             'moyenne_matiere' => 14.0,
         ]);
 
-        $this->assertDatabaseHas('academic_results', [
+        $semestre = Semestre::where('classe_id', $classe->id)
+            ->where('annee_academique_id', $annee->id)
+            ->where('numero', Note::SEMESTRE_1)
+            ->firstOrFail();
+
+        $this->assertDatabaseHas('resultat_semestres', [
             'eleve_id' => $eleve->id,
-            'annee_academique_id' => $annee->id,
-            'period' => AcademicResult::PERIOD_SEMESTRE_1,
-            'moyenne_generale' => 14.0,
+            'semestre_id' => $semestre->id,
+            'moyenne_semestre' => 14.0,
         ]);
     }
 
@@ -122,18 +127,21 @@ class AcademicPerformanceProjectionSyncTest extends TestCase
 
         $response->assertSessionHas('success');
 
-        $this->assertDatabaseHas('academic_results', [
+        $semestre = Semestre::where('classe_id', $classe->id)
+            ->where('annee_academique_id', $annee->id)
+            ->where('numero', Note::SEMESTRE_1)
+            ->firstOrFail();
+
+        $this->assertDatabaseHas('resultat_semestres', [
             'eleve_id' => $eleveA->id,
-            'annee_academique_id' => $annee->id,
-            'period' => AcademicResult::PERIOD_SEMESTRE_1,
-            'moyenne_generale' => 13.0,
+            'semestre_id' => $semestre->id,
+            'moyenne_semestre' => 13.0,
         ]);
 
-        $this->assertDatabaseHas('academic_results', [
+        $this->assertDatabaseHas('resultat_semestres', [
             'eleve_id' => $eleveB->id,
-            'annee_academique_id' => $annee->id,
-            'period' => AcademicResult::PERIOD_SEMESTRE_1,
-            'moyenne_generale' => 16.0,
+            'semestre_id' => $semestre->id,
+            'moyenne_semestre' => 16.0,
         ]);
     }
 }
